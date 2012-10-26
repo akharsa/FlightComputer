@@ -10,8 +10,11 @@
 
 #include <stdint.h>
 
-void ConsolePuts(char * buff,int color );
 void ConsoleInit(void);
+void ConsolePuts(char * buff);
+void ConsolePuts_(char * buff,int color );
+void ConsolePutNumber(int value, uint8_t base);
+void ConsolePutNumber_(int value, uint8_t base, int color);
 
 #define BLACK 		0
 #define RED			1
