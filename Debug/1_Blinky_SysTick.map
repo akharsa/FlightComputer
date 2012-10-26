@@ -1,0 +1,678 @@
+Archive member included because of file (symbol)
+
+C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+                              ./src/main.o (GPIO_SetDir)
+C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+                              ./src/main.o (PINSEL_ConfigPin)
+C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+                              ./src/main.o (SYSTICK_InternalInit)
+C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+                              ./src/main.o (UART_Init)
+C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+                              C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o) (SystemCoreClock)
+C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+                              C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o) (CLKPWR_GetPCLK)
+C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+                              C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o) (check_failed)
+c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libcr_c.a(__weak__main.o)
+                              ./src/cr_startup_lpc176x.o (__main)
+c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libcr_c.a(strlen.o)
+                              ./src/main.o (strlen)
+c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+                              C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o) (__aeabi_ui2f)
+
+Discarded input sections
+
+ .text          0x00000000        0x0 ./src/cr_startup_lpc176x.o
+ .data          0x00000000        0x0 ./src/cr_startup_lpc176x.o
+ .bss           0x00000000        0x0 ./src/cr_startup_lpc176x.o
+ .text          0x00000000        0x0 ./src/main.o
+ .data          0x00000000        0x0 ./src/main.o
+ .bss           0x00000000        0x0 ./src/main.o
+ .crp           0x00000000        0x4 ./src/main.o
+ .text          0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .data          0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .bss           0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_HalfWordGetPointer
+                0x00000000       0x7c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_ByteGetPointer
+                0x00000000       0x7c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.GPIO_ReadValue
+                0x00000000       0x30 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.GPIO_IntCmd
+                0x00000000       0x84 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.GPIO_GetIntStatus
+                0x00000000       0xc0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.GPIO_ClearInt
+                0x00000000       0x40 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_SetDir
+                0x00000000       0x28 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_SetValue
+                0x00000000       0x20 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_ClearValue
+                0x00000000       0x20 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_ReadValue
+                0x00000000       0x20 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_IntCmd
+                0x00000000       0x28 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_GetIntStatus
+                0x00000000       0x2c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_ClearInt
+                0x00000000       0x20 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_SetMask
+                0x00000000       0x50 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_HalfWordSetDir
+                0x00000000       0x9c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_HalfWordSetMask
+                0x00000000       0x9c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_HalfWordSetValue
+                0x00000000       0x40 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_HalfWordClearValue
+                0x00000000       0x40 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_HalfWordReadValue
+                0x00000000       0x44 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_ByteSetDir
+                0x00000000       0x70 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_ByteSetMask
+                0x00000000       0x78 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_ByteSetValue
+                0x00000000       0x3c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_ByteClearValue
+                0x00000000       0x3c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.FIO_ByteReadValue
+                0x00000000       0x40 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text          0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .data          0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .bss           0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .text.PINSEL_ConfigTraceFunc
+                0x00000000       0x54 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .text.PINSEL_SetI2C0Pins
+                0x00000000       0x3c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .text          0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .data          0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .bss           0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .text.SYSTICK_ExternalInit
+                0x00000000       0xc4 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .text.SYSTICK_GetCurrentValue
+                0x00000000       0x18 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .text          0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .data          0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .bss           0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_DeInit
+                0x00000000       0xcc C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_ConfigStructInit
+                0x00000000       0x34 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_ReceiveByte
+                0x00000000       0x78 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_Receive
+                0x00000000       0xd8 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_ForceBreak
+                0x00000000       0x88 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_IntConfig
+                0x00000000      0x1d0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_GetLineStatus
+                0x00000000       0x7c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_GetIntId
+                0x00000000       0x68 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_CheckBusy
+                0x00000000       0x2c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_FIFOConfig
+                0x00000000      0x184 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_FIFOConfigStructInit
+                0x00000000       0x34 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_ABCmd
+                0x00000000      0x15c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_ABClearIntPending
+                0x00000000       0x88 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_IrDAInvtInputCmd
+                0x00000000       0x84 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_IrDACmd
+                0x00000000       0x80 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_IrDAPulseDivConfig
+                0x00000000       0xac C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_FullModemForcePinState
+                0x00000000       0xcc C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_FullModemConfigMode
+                0x00000000       0xd8 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_FullModemGetStatus
+                0x00000000       0x38 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_RS485Config
+                0x00000000      0x1bc C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_RS485ReceiverCmd
+                0x00000000       0x48 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_RS485Send
+                0x00000000       0x84 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_RS485SendSlvAddr
+                0x00000000       0x28 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_RS485SendData
+                0x00000000       0x28 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text          0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .data          0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .bss           0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .text.SystemCoreClockUpdate
+                0x00000000      0x228 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .text          0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .data          0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .bss           0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .text.CLKPWR_SetPCLKDiv
+                0x00000000       0xd4 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .text.CLKPWR_Sleep
+                0x00000000       0x1c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .text.CLKPWR_DeepSleep
+                0x00000000       0x2c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .text.CLKPWR_PowerDown
+                0x00000000       0x2c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .text.CLKPWR_DeepPowerDown
+                0x00000000       0x2c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .text          0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+ .data          0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+ .bss           0x00000000        0x0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+ .text          0x00000000        0x0 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libcr_c.a(__weak__main.o)
+ .data          0x00000000        0x0 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libcr_c.a(__weak__main.o)
+ .bss           0x00000000        0x0 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libcr_c.a(__weak__main.o)
+ .text          0x00000000        0x0 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libcr_c.a(strlen.o)
+ .data          0x00000000        0x0 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libcr_c.a(strlen.o)
+ .bss           0x00000000        0x0 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libcr_c.a(strlen.o)
+ .text          0x00000000        0x0 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .data          0x00000000        0x0 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .bss           0x00000000        0x0 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_fmul
+                0x00000000       0xbc c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_fdiv
+                0x00000000       0xe8 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_fsub
+                0x00000000       0xe0 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_frsub
+                0x00000000        0xc c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_fadd
+                0x00000000       0xa4 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_fneg
+                0x00000000        0x6 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_f2iz
+                0x00000000       0x34 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_f2uiz
+                0x00000000       0x26 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_f2lz
+                0x00000000       0x5a c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_f2ulz
+                0x00000000       0x3c c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__bhs_ul2f
+                0x00000000       0x4a c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_i2f
+                0x00000000       0x10 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_l2f
+                0x00000000       0x16 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_ul2f
+                0x00000000        0x8 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_f2d
+                0x00000000       0x38 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_fcmpeq
+                0x00000000       0x1e c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_fcmplt
+                0x00000000       0x3a c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_fcmple
+                0x00000000       0x40 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_fcmpge
+                0x00000000       0x40 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_fcmpun
+                0x00000000       0x1a c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_cfcmple
+                0x00000000       0x24 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+ .text.__aeabi_cfrcmple
+                0x00000000        0xa c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+MFlash512        0x00000000         0x00080000         xr
+RamLoc32         0x10000000         0x00008000         xrw
+RamAHB32         0x2007c000         0x00008000         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD ./src/cr_startup_lpc176x.o
+LOAD ./src/main.o
+LOAD C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a
+START GROUP
+LOAD c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libcr_c.a
+LOAD c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a
+END GROUP
+                0x00080000                __top_MFlash512 = 0x80000
+                0x10008000                __top_RamLoc32 = 0x10008000
+                0x20084000                __top_RamAHB32 = 0x20084000
+
+.text           0x00000000     0x1538
+ FILL mask 0xff
+ *(.isr_vector)
+ .isr_vector    0x00000000       0xcc ./src/cr_startup_lpc176x.o
+                0x00000000                g_pfnVectors
+                0x000000cc                . = ALIGN (0x4)
+                0x000000cc                __section_table_start = .
+                0x000000cc                __data_section_table = .
+                0x000000cc        0x4 LONG 0x1538 LOADADDR (.data)
+                0x000000d0        0x4 LONG 0x10000000 ADDR (.data)
+                0x000000d4        0x4 LONG 0x8 SIZEOF (.data)
+                0x000000d8        0x4 LONG 0x1538 LOADADDR (.data_RAM2)
+                0x000000dc        0x4 LONG 0x2007c000 ADDR (.data_RAM2)
+                0x000000e0        0x4 LONG 0x0 SIZEOF (.data_RAM2)
+                0x000000e4                __data_section_table_end = .
+                0x000000e4                __bss_section_table = .
+                0x000000e4        0x4 LONG 0x10000008 ADDR (.bss)
+                0x000000e8        0x4 LONG 0x4 SIZEOF (.bss)
+                0x000000ec        0x4 LONG 0x2007c000 ADDR (.bss_RAM2)
+                0x000000f0        0x4 LONG 0x0 SIZEOF (.bss_RAM2)
+                0x000000f4                __bss_section_table_end = .
+                0x000000f4                __section_table_end = .
+ *(.after_vectors*)
+ .after_vectors
+                0x000000f4       0x78 ./src/cr_startup_lpc176x.o
+                0x000000f4                NMI_Handler
+                0x000000f6                HardFault_Handler
+                0x000000f8                MemManage_Handler
+                0x000000fa                BusFault_Handler
+                0x000000fc                UsageFault_Handler
+                0x000000fe                SVCall_Handler
+                0x00000100                DebugMon_Handler
+                0x00000102                PendSV_Handler
+                0x00000106                data_init
+                0x00000118                bss_init
+                0x00000128                ResetISR
+                0x00000168                EINT2_IRQHandler
+                0x00000168                UART1_IRQHandler
+                0x00000168                EINT3_IRQHandler
+                0x00000168                CANActivity_IRQHandler
+                0x00000168                TIMER3_IRQHandler
+                0x00000168                UART0_IRQHandler
+                0x00000168                I2C1_IRQHandler
+                0x00000168                I2C0_IRQHandler
+                0x00000168                IntDefaultHandler
+                0x00000168                PLL0_IRQHandler
+                0x00000168                CAN_IRQHandler
+                0x00000168                PWM1_IRQHandler
+                0x00000168                SSP0_IRQHandler
+                0x00000168                I2S_IRQHandler
+                0x00000168                I2C2_IRQHandler
+                0x00000168                RTC_IRQHandler
+                0x00000168                TIMER0_IRQHandler
+                0x00000168                SPI_IRQHandler
+                0x00000168                RIT_IRQHandler
+                0x00000168                EINT1_IRQHandler
+                0x00000168                TIMER1_IRQHandler
+                0x00000168                UART2_IRQHandler
+                0x00000168                ADC_IRQHandler
+                0x00000168                SSP1_IRQHandler
+                0x00000168                USB_IRQHandler
+                0x00000168                BOD_IRQHandler
+                0x00000168                TIMER2_IRQHandler
+                0x00000168                WDT_IRQHandler
+                0x00000168                QEI_IRQHandler
+                0x00000168                EINT0_IRQHandler
+                0x00000168                USBActivity_IRQHandler
+                0x00000168                DMA_IRQHandler
+                0x00000168                PLL1_IRQHandler
+                0x00000168                UART3_IRQHandler
+                0x00000168                MCPWM_IRQHandler
+                0x00000168                ENET_IRQHandler
+ *(.text*)
+ .text.main     0x0000016c       0xf8 ./src/main.o
+                0x0000016c                main
+ .text.SysTick_Handler
+                0x00000264      0x10c ./src/main.o
+                0x00000264                SysTick_Handler
+ .text.GPIO_GetPointer
+                0x00000370       0x7c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .text.GPIO_SetDir
+                0x000003ec       0x50 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+                0x000003ec                GPIO_SetDir
+ .text.GPIO_SetValue
+                0x0000043c       0x2c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+                0x0000043c                GPIO_SetValue
+ .text.GPIO_ClearValue
+                0x00000468       0x2c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+                0x00000468                GPIO_ClearValue
+ .text.set_PinFunc
+                0x00000494       0xa0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .text.set_ResistorMode
+                0x00000534       0xa0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .text.set_OpenDrainMode
+                0x000005d4       0x80 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .text.PINSEL_ConfigPin
+                0x00000654       0x54 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+                0x00000654                PINSEL_ConfigPin
+ .text.SYSTICK_InternalInit
+                0x000006a8       0xb0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+                0x000006a8                SYSTICK_InternalInit
+ .text.SYSTICK_Cmd
+                0x00000758       0x68 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+                0x00000758                SYSTICK_Cmd
+ .text.SYSTICK_IntCmd
+                0x000007c0       0x68 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+                0x000007c0                SYSTICK_IntCmd
+ .text.SYSTICK_ClearCounterFlag
+                0x00000828       0x24 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+                0x00000828                SYSTICK_ClearCounterFlag
+ .text.uart_set_divisors
+                0x0000084c      0x26c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .text.UART_Init
+                0x00000ab8      0x368 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+                0x00000ab8                UART_Init
+ .text.UART_SendByte
+                0x00000e20       0x78 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+                0x00000e20                UART_SendByte
+ .text.UART_Send
+                0x00000e98      0x10c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+                0x00000e98                UART_Send
+ .text.UART_TxCmd
+                0x00000fa4       0xe8 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+                0x00000fa4                UART_TxCmd
+ .text.SystemInit
+                0x0000108c      0x240 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+                0x0000108c                SystemInit
+ .text.CLKPWR_GetPCLKSEL
+                0x000012cc       0x54 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+                0x000012cc                CLKPWR_GetPCLKSEL
+ .text.CLKPWR_GetPCLK
+                0x00001320       0x70 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+                0x00001320                CLKPWR_GetPCLK
+ .text.CLKPWR_ConfigPPWR
+                0x00001390       0x80 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+                0x00001390                CLKPWR_ConfigPPWR
+ .text.check_failed
+                0x00001410        0xc C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+                0x00001410                check_failed
+ .text.__weak_main
+                0x0000141c        0x4 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libcr_c.a(__weak__main.o)
+                0x0000141c                __weak_main
+                0x0000141c                __main
+ .text.strlen   0x00001420       0x4e c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libcr_c.a(strlen.o)
+                0x00001420                strlen
+ .text.__bhs_ui2f
+                0x0000146e       0x26 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+                0x0000146e                __bhs_ui2f
+ .text.__aeabi_ui2f
+                0x00001494        0x8 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+                0x00001494                __aeabi_ui2f
+ .text.__aeabi_fcmpgt
+                0x0000149c       0x3a c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+                0x0000149c                __aeabi_fcmpgt
+ *(.rodata .rodata.*)
+ *fill*         0x000014d6        0x2 00
+ .rodata.welcome
+                0x000014d8       0x18 ./src/main.o
+                0x000014d8                welcome
+ .rodata        0x000014f0       0x24 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .rodata        0x00001514       0x24 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+                0x00001538                . = ALIGN (0x4)
+
+.glue_7         0x00001538        0x0
+ .glue_7        0x00000000        0x0 linker stubs
+
+.glue_7t        0x00001538        0x0
+ .glue_7t       0x00000000        0x0 linker stubs
+
+.vfp11_veneer   0x00001538        0x0
+ .vfp11_veneer  0x00000000        0x0 linker stubs
+
+.v4_bx          0x00001538        0x0
+ .v4_bx         0x00000000        0x0 linker stubs
+
+.ARM.extab
+ *(.ARM.extab* .gnu.linkonce.armextab.*)
+                0x00001538                __exidx_start = .
+
+.ARM.exidx
+ *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+                0x00001538                __exidx_end = .
+                0x00001538                _etext = .
+
+.data_RAM2      0x2007c000        0x0 load address 0x00001538
+ FILL mask 0xff
+ *(.data.$RAM2*)
+ *(.data.$RamAHB32*)
+                0x2007c000                . = ALIGN (0x4)
+
+.uninit_RESERVED
+ *(.bss.$RESERVED*)
+
+.data           0x10000000        0x8 load address 0x00001538
+ FILL mask 0xff
+                0x10000000                _data = .
+ *(vtable)
+ *(.data*)
+ .data.Cur_State
+                0x10000000        0x1 ./src/main.o
+                0x10000000                Cur_State
+ *fill*         0x10000001        0x3 00
+ .data.SystemCoreClock
+                0x10000004        0x4 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+                0x10000004                SystemCoreClock
+                0x10000008                . = ALIGN (0x4)
+                0x10000008                _edata = .
+
+.bss_RAM2       0x2007c000        0x0
+ *(.bss.$RAM2*)
+ *(.bss.$RamAHB32*)
+                0x2007c000                . = ALIGN (0x4)
+
+.bss            0x10000008        0x4
+                0x10000008                _bss = .
+ *(.bss*)
+ .bss.led.2492  0x10000008        0x4 ./src/main.o
+ *(COMMON)
+                0x1000000c                . = ALIGN (0x4)
+                0x1000000c                _ebss = .
+                0x1000000c                PROVIDE (end, .)
+                0x1000000c                PROVIDE (_pvHeapStart, .)
+                0x10008000                PROVIDE (_vStackTop, (__top_RamLoc32 - 0x0))
+OUTPUT(1_Blinky_SysTick.axf elf32-littlearm)
+
+.debug_abbrev   0x00000000      0xb90
+ .debug_abbrev  0x00000000      0x10f ./src/cr_startup_lpc176x.o
+ .debug_abbrev  0x0000010f      0x1a6 ./src/main.o
+ .debug_abbrev  0x000002b5      0x1cb C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .debug_abbrev  0x00000480      0x11f C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .debug_abbrev  0x0000059f      0x11a C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .debug_abbrev  0x000006b9      0x1d0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .debug_abbrev  0x00000889      0x106 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .debug_abbrev  0x0000098f      0x197 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .debug_abbrev  0x00000b26       0x6a C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+
+.debug_info     0x00000000     0x3af9
+ .debug_info    0x00000000      0x2e3 ./src/cr_startup_lpc176x.o
+ .debug_info    0x000002e3      0x4d0 ./src/main.o
+ .debug_info    0x000007b3      0xe2d C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .debug_info    0x000015e0      0x4b9 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .debug_info    0x00001a99      0x260 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .debug_info    0x00001cf9     0x1151 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .debug_info    0x00002e4a      0x515 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .debug_info    0x0000335f      0x6cd C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .debug_info    0x00003a2c       0xcd C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+
+.debug_line     0x00000000     0x34ce
+ .debug_line    0x00000000      0x3ef ./src/cr_startup_lpc176x.o
+ .debug_line    0x000003ef      0x5a3 ./src/main.o
+ .debug_line    0x00000992      0x763 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .debug_line    0x000010f5      0x51e C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .debug_line    0x00001613      0x575 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .debug_line    0x00001b88      0xbc3 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .debug_line    0x0000274b      0x459 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .debug_line    0x00002ba4      0x586 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .debug_line    0x0000312a      0x3a4 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+
+.debug_macinfo  0x00000000    0x43680
+ .debug_macinfo
+                0x00000000     0x312e ./src/cr_startup_lpc176x.o
+ .debug_macinfo
+                0x0000312e     0x9d37 ./src/main.o
+ .debug_macinfo
+                0x0000ce65     0x7c57 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .debug_macinfo
+                0x00014abc     0x7d75 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .debug_macinfo
+                0x0001c831     0x8f16 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .debug_macinfo
+                0x00025747     0xa5f3 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .debug_macinfo
+                0x0002fd3a     0x7999 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .debug_macinfo
+                0x000376d3     0x8b9a C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .debug_macinfo
+                0x0004026d     0x3413 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+
+.debug_loc      0x00000000     0x133e
+ .debug_loc     0x00000000      0x1b8 ./src/cr_startup_lpc176x.o
+ .debug_loc     0x000001b8       0x64 ./src/main.o
+ .debug_loc     0x0000021c      0x620 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .debug_loc     0x0000083c      0x150 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .debug_loc     0x0000098c      0x138 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .debug_loc     0x00000ac4      0x65a C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .debug_loc     0x0000111e       0x58 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .debug_loc     0x00001176      0x190 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .debug_loc     0x00001306       0x38 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+
+.debug_pubnames
+                0x00000000      0x808
+ .debug_pubnames
+                0x00000000      0x118 ./src/cr_startup_lpc176x.o
+ .debug_pubnames
+                0x00000118       0x56 ./src/main.o
+ .debug_pubnames
+                0x0000016e      0x203 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .debug_pubnames
+                0x00000371       0x59 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .debug_pubnames
+                0x000003ca       0xa0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .debug_pubnames
+                0x0000046a      0x271 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .debug_pubnames
+                0x000006db       0x4f C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .debug_pubnames
+                0x0000072a       0xbb C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .debug_pubnames
+                0x000007e5       0x23 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+
+.debug_pubtypes
+                0x00000000      0x572
+ .debug_pubtypes
+                0x00000000       0x12 ./src/cr_startup_lpc176x.o
+ .debug_pubtypes
+                0x00000012       0xc7 ./src/main.o
+ .debug_pubtypes
+                0x000000d9       0xb5 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .debug_pubtypes
+                0x0000018e       0x76 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .debug_pubtypes
+                0x00000204       0x5c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .debug_pubtypes
+                0x00000260      0x225 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .debug_pubtypes
+                0x00000485       0x57 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .debug_pubtypes
+                0x000004dc       0x6b C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .debug_pubtypes
+                0x00000547       0x2b C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+
+.debug_aranges  0x00000000      0x3d0
+ .debug_aranges
+                0x00000000       0x80 ./src/cr_startup_lpc176x.o
+ .debug_aranges
+                0x00000080       0x28 ./src/main.o
+ .debug_aranges
+                0x000000a8       0xf8 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .debug_aranges
+                0x000001a0       0x48 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .debug_aranges
+                0x000001e8       0x48 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .debug_aranges
+                0x00000230      0x100 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .debug_aranges
+                0x00000330       0x28 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .debug_aranges
+                0x00000358       0x58 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .debug_aranges
+                0x000003b0       0x20 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+
+.debug_ranges   0x00000000      0x340
+ .debug_ranges  0x00000000       0x70 ./src/cr_startup_lpc176x.o
+ .debug_ranges  0x00000070       0x18 ./src/main.o
+ .debug_ranges  0x00000088       0xe8 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .debug_ranges  0x00000170       0x38 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .debug_ranges  0x000001a8       0x38 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .debug_ranges  0x000001e0       0xf0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .debug_ranges  0x000002d0       0x18 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .debug_ranges  0x000002e8       0x48 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .debug_ranges  0x00000330       0x10 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+
+.debug_str      0x00000000     0x1704
+ .debug_str     0x00000000      0x21a ./src/cr_startup_lpc176x.o
+                                0x242 (size before relaxing)
+ .debug_str     0x0000021a      0x244 ./src/main.o
+                                0x32c (size before relaxing)
+ .debug_str     0x0000045e      0x482 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+                                0x565 (size before relaxing)
+ .debug_str     0x000008e0      0x216 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+                                0x379 (size before relaxing)
+ .debug_str     0x00000af6       0xda C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+                                0x206 (size before relaxing)
+ .debug_str     0x00000bd0      0x886 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+                                0xb52 (size before relaxing)
+ .debug_str     0x00001456      0x196 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+                                0x2f5 (size before relaxing)
+ .debug_str     0x000015ec       0xd6 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+                                0x3a0 (size before relaxing)
+ .debug_str     0x000016c2       0x42 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+                                0x127 (size before relaxing)
+
+.comment        0x00000000       0x2a
+ .comment       0x00000000       0x2a ./src/cr_startup_lpc176x.o
+                                 0x2b (size before relaxing)
+ .comment       0x00000000       0x2b ./src/main.o
+ .comment       0x00000000       0x2b C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .comment       0x00000000       0x2b C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .comment       0x00000000       0x2b C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .comment       0x00000000       0x2b C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .comment       0x00000000       0x2b C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .comment       0x00000000       0x2b C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .comment       0x00000000       0x2b C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+ .comment       0x00000000       0x2b c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libcr_c.a(__weak__main.o)
+ .comment       0x00000000       0x2b c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libcr_c.a(strlen.o)
+ .comment       0x00000000       0x2b c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+
+.ARM.attributes
+                0x00000000       0x31
+ .ARM.attributes
+                0x00000000       0x31 ./src/cr_startup_lpc176x.o
+ .ARM.attributes
+                0x00000031       0x31 ./src/main.o
+ .ARM.attributes
+                0x00000062       0x31 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .ARM.attributes
+                0x00000093       0x31 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .ARM.attributes
+                0x000000c4       0x31 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .ARM.attributes
+                0x000000f5       0x31 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .ARM.attributes
+                0x00000126       0x31 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .ARM.attributes
+                0x00000157       0x31 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .ARM.attributes
+                0x00000188       0x31 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
+ .ARM.attributes
+                0x000001b9       0x31 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libcr_c.a(__weak__main.o)
+ .ARM.attributes
+                0x000001ea       0x31 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libcr_c.a(strlen.o)
+ .ARM.attributes
+                0x0000021b       0x31 c:/nxp/lpcxpresso_4.2.2_275/lpcxpresso/tools/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libcr_eabihelpers.a(float.o)
+
+.debug_frame    0x00000000      0xb20
+ .debug_frame   0x00000000       0xf0 ./src/cr_startup_lpc176x.o
+ .debug_frame   0x000000f0       0x4c ./src/main.o
+ .debug_frame   0x0000013c      0x378 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_gpio.o)
+ .debug_frame   0x000004b4       0xbc C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_pinsel.o)
+ .debug_frame   0x00000570       0xc0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_systick.o)
+ .debug_frame   0x00000630      0x3a0 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_uart.o)
+ .debug_frame   0x000009d0       0x40 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(system_LPC17xx.o)
+ .debug_frame   0x00000a10       0xe4 C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_clkpwr.o)
+ .debug_frame   0x00000af4       0x2c C:\Users\Alan\Dropbox\Tesis\workspace\Lib_CMSIS2p0_and_Drivers_17XX\Debug\libLib_CMSIS2p0_and_Drivers_17XX.a(lpc17xx_libcfg_default.o)
