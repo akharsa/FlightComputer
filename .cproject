@@ -37,6 +37,8 @@
 								<option id="gnu.c.compiler.option.misc.other.482427792" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections" valueType="string"/>
 								<option id="com.crt.advproject.gcc.hdrlib.379352474" name="Use headers for C library" superClass="com.crt.advproject.gcc.hdrlib" value="com.crt.advproject.gcc.hdrlib.codered" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.908566759" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Tester/src/bsp/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Tester/src/bsp/board_specific}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Tester/src/CMSIS/Core/CM3/CoreSupport}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Tester/src/CMSIS/Core/CM3/DeviceSupport/NXP/LPC17xx}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Tester/src/CMSIS/Drivers/include}&quot;"/>
@@ -76,7 +78,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="bsp/src/qUART.c|bsp/src/qPWM.c|bsp/board_specific/qWDT.c|bsp/board_specific/qUART.c|bsp/board_specific/qTiming.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -258,7 +260,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="bsp/src/qUART.c|bsp/src/qPWM.c|bsp/board_specific/qWDT.c|bsp/board_specific/qUART.c|bsp/board_specific/qTiming.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

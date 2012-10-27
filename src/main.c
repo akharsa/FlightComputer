@@ -2,19 +2,43 @@
 #include "LPC17xx.h"
 #endif
 
+#include "lpc17xx_systick.h"
 #include "types.h"
 #include "DebugConsole.h"
 #include "qI2C.h"
 #include "eeprom.h"
+#include "board.h"
 
 #define EEPROM_ADDRESS		0xA0
 #define MPU6050_ADDRESS		0xD0
 #define HMC5883L_ADDRESS	0x3C
 #define BMP085_ADDRESS		0xEE
 
+
+uint32_t delay_counter=0;
+
 void halt(){
 	ConsolePuts_("EXECUTION HALTED DUE TO AN ERROR\r\n",RED);
 	for(;;);
+}
+
+void InitSysTick(){
+	SYSTICK_InternalInit(1);
+	SYSTICK_IntCmd(ENABLE);
+	SYSTICK_Cmd(DISABLE);
+}
+
+void delay(uint32_t ms){
+	delay_counter = ms;
+	SYSTICK_Cmd(ENABLE);
+	while (delay_counter>0);
+	SYSTICK_Cmd(DISABLE);
+}
+
+void SysTick_Handler(void)
+{
+	if (delay_counter>0)
+		delay_counter--;
 }
 
 void I2C_Scanner(){
@@ -74,12 +98,49 @@ void EEPROM_Test(){
 	ConsolePuts_("EEPROM read test finished\r\n", BLUE);
 }
 
+void ledTests(){
+	uint8_t i;
+
+	ConsolePuts_("Starting LEDs Test ...\r\n",BLUE);
+
+	for (i=0;i<TOTAL_LEDS;i++){
+		qLed_Init(leds[i]);
+		qLed_TurnOff(leds[i]);
+	}
+
+	for (i=0;i<5;i++){
+		qLed_TurnOn(STATUS_LED);
+		delay(100);
+		qLed_TurnOff(STATUS_LED);
+		delay(100);
+	}
+
+	for (i=0;i<5;i++){
+		qLed_TurnOn(FRONT_LEFT_LED);
+		delay(50);
+		qLed_TurnOff(FRONT_LEFT_LED);
+		qLed_TurnOn(FRONT_RIGHT_LED);
+		delay(50);
+		qLed_TurnOff(FRONT_RIGHT_LED);
+		qLed_TurnOn(REAR_RIGHT_LED);
+		delay(50);
+		qLed_TurnOff(REAR_RIGHT_LED);
+		qLed_TurnOn(REAR_LEFT_LED);
+		delay(50);
+		qLed_TurnOff(REAR_LEFT_LED);
+	}
+
+	ConsolePuts_("LEDs test finished\r\n", BLUE);
+
+}
+
 int main(void) {
+
 
 	//---------------------------------------------------------------
 	// Inits
 	//---------------------------------------------------------------
-
+	InitSysTick();
 	ConsoleInit();
 
 	ConsolePuts("\x1B[2J\x1B[0;0f");
@@ -93,17 +154,18 @@ int main(void) {
 		halt();
 	}
 
+
 	ConsolePuts("------------------------------------------------------------\r\n");
 	I2C_Scanner();
 	ConsolePuts("------------------------------------------------------------\r\n");
 	EEPROM_Test();
+	ConsolePuts("------------------------------------------------------------\r\n");
+	ledTests();
+	ConsolePuts("------------------------------------------------------------\r\n");
 
 	for(;;);
 	return 0;
 }
 
 
-void SysTick_Handler(void)
-{
 
-}
