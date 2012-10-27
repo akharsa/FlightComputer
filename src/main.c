@@ -10,6 +10,9 @@
 #include "board.h"
 #include "delay.h"
 
+#include "lpc17xx_adc.h"
+#include "lpc17xx_pinsel.h"
+
 #define EEPROM_ADDRESS		0xA0
 #define MPU6050_ADDRESS		0xD0
 #define HMC5883L_ADDRESS	0x3C
@@ -143,6 +146,7 @@ int main(void) {
 		halt();
 	}
 
+	/*
 	ConsolePuts("------------------------------------------------------------\r\n");
 	I2C_Scanner();
 	ConsolePuts("------------------------------------------------------------\r\n");
@@ -150,6 +154,36 @@ int main(void) {
 	ConsolePuts("------------------------------------------------------------\r\n");
 	ledTests();
 	ConsolePuts("------------------------------------------------------------\r\n");
+	 */
+
+	PINSEL_CFG_Type PinCfg;
+	uint16_t value;
+
+	PinCfg.Funcnum = PINSEL_FUNC_3;
+	PinCfg.OpenDrain = PINSEL_PINMODE_NORMAL;
+	PinCfg.Pinmode = PINSEL_PINMODE_TRISTATE;
+	PinCfg.Pinnum = PINSEL_PIN_31;
+	PinCfg.Portnum = PINSEL_PORT_1;
+	PINSEL_ConfigPin(&PinCfg);
+
+	// Inicializamos el Conversor A/D
+	ADC_Init(LPC_ADC, 200000);
+	ADC_IntConfig(LPC_ADC,ADC_ADINTEN5,DISABLE);
+	ADC_ChannelCmd(LPC_ADC,ADC_CHANNEL_5,ENABLE);
+
+	while(1){
+		// Start conversion
+		ADC_StartCmd(LPC_ADC,ADC_START_NOW);
+
+		//Wait conversion complete
+		while (!(ADC_ChannelGetStatus(LPC_ADC,ADC_CHANNEL_5,ADC_DATA_DONE)));
+		value =  ADC_ChannelGetData(LPC_ADC,ADC_CHANNEL_5);
+		ConsolePuts("Channel 5 [mV]: ");
+		ConsolePutNumber((value*3300)/4096,10);
+		//ConsolePutNumber(value,10);
+		ConsolePuts("      \r");
+		delay(200);
+	}
 
 	for(;;);
 	return 0;
