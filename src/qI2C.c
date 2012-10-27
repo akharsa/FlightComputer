@@ -87,3 +87,61 @@ Status qI2C_Read(uint8_t slaveAddr, uint8_t* pBuffer, uint8_t readAddr, uint16_t
 	res = I2C_MasterTransferData(LPC_I2C1, &rxsetup, I2C_TRANSFER_POLLING);
 	return res;
 }
+
+// 16bit addressing on device
+
+Status qI2C_Write_(uint8_t slaveAddr,uint8_t* pBuffer, uint16_t writeAddr, uint16_t NumByteToWrite)
+{
+
+	I2C_M_SETUP_Type txsetup;
+	uint8_t sendBuffer[NumByteToWrite+2];
+	Status res;
+
+	//uint8_t sendBuffer[NumByteToWrite+1]; = {writeAddr,*pBuffer};
+	sendBuffer[0] = (uint8_t)(writeAddr & 0xFF00)>>8;
+	sendBuffer[1] = (uint8_t)(writeAddr & 0x00FF);
+
+	memcpy(&sendBuffer[2],pBuffer,NumByteToWrite);
+
+	txsetup.sl_addr7bit = slaveAddr>>1;
+	txsetup.tx_data = sendBuffer;
+	txsetup.tx_length = sizeof(sendBuffer);
+	txsetup.rx_data = NULL;
+	txsetup.rx_length = 0;
+	txsetup.retransmissions_max = 3;
+
+	res = I2C_MasterTransferData(LPC_I2C1, &txsetup, I2C_TRANSFER_POLLING);
+	return res;
+}
+
+/**
+* @brief  Reads a block of data from the MPU6050.
+* @param  slaveAddr  : slave address MPU6050_DEFAULT_ADDRESS
+* @param  pBuffer : pointer to the buffer that receives the data read from the MPU6050.
+* @param  readAddr : MPU6050's internal address to read from.
+* @param  NumByteToRead : number of bytes to read from the MPU6050 ( NumByteToRead >1  only for the Mgnetometer readinf).
+* @return None
+*/
+
+
+Status qI2C_Read_(uint8_t slaveAddr, uint8_t* pBuffer, uint16_t readAddr, uint16_t NumByteToRead)
+{
+	Status res;
+	I2C_M_SETUP_Type rxsetup;
+	uint8_t readAddress[2];
+
+	//Tricky reading 16 bit addresses
+	readAddress[0] = (uint8_t)(readAddr & 0xFF00)>>8;
+	readAddress[1] = (uint8_t)(readAddr & 0x00FF);
+
+	rxsetup.sl_addr7bit = slaveAddr >> 1;
+	rxsetup.tx_data = readAddress;
+	rxsetup.tx_length = 2;
+	rxsetup.rx_data = pBuffer;
+	rxsetup.rx_length = NumByteToRead;
+	rxsetup.retransmissions_max = MAX_RETRANSMISSION;
+
+	res = I2C_MasterTransferData(LPC_I2C1, &rxsetup, I2C_TRANSFER_POLLING);
+	return res;
+}
+

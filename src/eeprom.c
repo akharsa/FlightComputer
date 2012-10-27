@@ -23,6 +23,7 @@ Status eeprom_read(uint8_t devAddr, uint8_t* buf, uint16_t position, uint16_t le
 }
 
 //FIXME: No paging considered. Not boundary case handled.
+//FIXME: Add delay for writing?
 Status eeprom_write(uint8_t devAddr, uint8_t* buf, uint16_t position, uint16_t len)
 {
 	Status res;

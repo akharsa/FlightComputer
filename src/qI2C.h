@@ -19,9 +19,14 @@ void MPU6050_I2C_ByteWrite(uint8_t slaveAddr, uint8_t* pBuffer, uint8_t writeAdd
 #endif
 
 Status qI2C_Init();
+
+// 8 bit addressing on device
 Status qI2C_Read(uint8_t slaveAddr,uint8_t* pBuffer, uint8_t readAddr, uint16_t NumByteToRead);
 Status qI2C_Write(uint8_t slaveAddr,uint8_t* pBuffer, uint8_t writeAddr, uint16_t NumByteToWrite);
 
+// 16 bit addressing on device
+Status qI2C_Write_(uint8_t slaveAddr,uint8_t* pBuffer, uint16_t writeAddr, uint16_t NumByteToWrite);
+Status qI2C_Read_(uint8_t slaveAddr, uint8_t* pBuffer, uint16_t readAddr, uint16_t NumByteToRead);
 
 
 #endif
