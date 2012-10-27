@@ -2,43 +2,22 @@
 #include "LPC17xx.h"
 #endif
 
-#include "lpc17xx_systick.h"
+
 #include "types.h"
 #include "DebugConsole.h"
 #include "qI2C.h"
 #include "eeprom.h"
 #include "board.h"
+#include "delay.h"
 
 #define EEPROM_ADDRESS		0xA0
 #define MPU6050_ADDRESS		0xD0
 #define HMC5883L_ADDRESS	0x3C
 #define BMP085_ADDRESS		0xEE
 
-
-uint32_t delay_counter=0;
-
 void halt(){
 	ConsolePuts_("EXECUTION HALTED DUE TO AN ERROR\r\n",RED);
 	for(;;);
-}
-
-void InitSysTick(){
-	SYSTICK_InternalInit(1);
-	SYSTICK_IntCmd(ENABLE);
-	SYSTICK_Cmd(DISABLE);
-}
-
-void delay(uint32_t ms){
-	delay_counter = ms;
-	SYSTICK_Cmd(ENABLE);
-	while (delay_counter>0);
-	SYSTICK_Cmd(DISABLE);
-}
-
-void SysTick_Handler(void)
-{
-	if (delay_counter>0)
-		delay_counter--;
 }
 
 void I2C_Scanner(){
@@ -108,6 +87,7 @@ void ledTests(){
 		qLed_TurnOff(leds[i]);
 	}
 
+	ConsolePuts("Status led test\r\n");
 	for (i=0;i<5;i++){
 		qLed_TurnOn(STATUS_LED);
 		delay(100);
@@ -115,6 +95,7 @@ void ledTests(){
 		delay(100);
 	}
 
+	ConsolePuts("Sideleds test\r\n");
 	for (i=0;i<5;i++){
 		qLed_TurnOn(FRONT_LEFT_LED);
 		delay(50);
@@ -130,6 +111,14 @@ void ledTests(){
 		qLed_TurnOff(REAR_LEFT_LED);
 	}
 
+	ConsolePuts("External test\r\n");
+	qLed_TurnOn(EXTERNAL_1_LED);
+	delay(100);
+	qLed_TurnOff(EXTERNAL_1_LED);
+	qLed_TurnOn(EXTERNAL_2_LED);
+	delay(100);
+	qLed_TurnOff(EXTERNAL_2_LED);
+
 	ConsolePuts_("LEDs test finished\r\n", BLUE);
 
 }
@@ -140,7 +129,7 @@ int main(void) {
 	//---------------------------------------------------------------
 	// Inits
 	//---------------------------------------------------------------
-	InitSysTick();
+	delayInit();
 	ConsoleInit();
 
 	ConsolePuts("\x1B[2J\x1B[0;0f");
@@ -153,7 +142,6 @@ int main(void) {
 		ConsolePuts_("[ERROR]\r\n",RED);
 		halt();
 	}
-
 
 	ConsolePuts("------------------------------------------------------------\r\n");
 	I2C_Scanner();
