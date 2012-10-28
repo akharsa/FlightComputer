@@ -183,69 +183,24 @@ int main(void) {
 	analogTest();
 	ConsolePuts("------------------------------------------------------------\r\n");
 */
-	PWM_TIMERCFG_Type PWMCfgDat;
-	PWM_MATCHCFG_Type PWMMatchCfgDat;
-	PINSEL_CFG_Type PinCfg;
-	uint8_t temp;
 
-	/* PWM block section -------------------------------------------- */
-	/* Initialize PWM peripheral, timer mode
-	 * PWM prescale value = 1 (absolute value - tick value) */
-	PWMCfgDat.PrescaleOption = PWM_TIMER_PRESCALE_USVAL;
-	PWMCfgDat.PrescaleValue = 1;
-	PWM_Init(LPC_PWM1, PWM_MODE_TIMER, (void *) &PWMCfgDat);
+	qPWM_Init(10000);
+	qPWM_InitChannel(MOTOR1);
 
-	/*
-	 * Initialize PWM pin connect
-	 */
-	PinCfg.Funcnum = 1; //son todos 1
-	PinCfg.OpenDrain = 0;
-	PinCfg.Pinmode = 0;
-	PinCfg.Portnum = 2;
-	PinCfg.Pinnum = 4;
-	PINSEL_ConfigPin(&PinCfg);
+	delay(10);
+	int i;
 
-	/* Set match value for PWM match channel 0 = 256, update immediately */
-	PWM_MatchUpdate(LPC_PWM1, 0, 100000, PWM_MATCH_UPDATE_NOW);
-	/* PWM Timer/Counter will be reset when channel 0 matching
-	 * no interrupt when match
-	 * no stop when match */
-	PWMMatchCfgDat.IntOnMatch = DISABLE;
-	PWMMatchCfgDat.MatchChannel = 0;
-	PWMMatchCfgDat.ResetOnMatch = ENABLE;
-	PWMMatchCfgDat.StopOnMatch = DISABLE;
-	PWM_ConfigMatch(LPC_PWM1, &PWMMatchCfgDat);
+	while(1){
+		for (i=0;i<1000;i++){
+			qPWM_SetDuty(MOTOR1,i*10);
+			delay(1);
+		}
 
-	/* Configure PWM channel edge option
-	 * Note: PWM Channel 1 is in single mode as default state and
-	 * can not be changed to double edge mode */
-	for (temp = 2; temp < 7; temp++)
-	{
-		PWM_ChannelConfig(LPC_PWM1, temp, PWM_CHANNEL_SINGLE_EDGE);
+		for (i=1000;i>0;i--){
+			qPWM_SetDuty(MOTOR1,i*10);
+			delay(1);
+		}
 	}
-
-	/* Set up match value */
-	PWM_MatchUpdate(LPC_PWM1, 5, 25000, PWM_MATCH_UPDATE_NOW);
-
-	/* Configure match option */
-	PWMMatchCfgDat.IntOnMatch = DISABLE;
-	PWMMatchCfgDat.MatchChannel = 5;
-	PWMMatchCfgDat.ResetOnMatch = DISABLE;
-	PWMMatchCfgDat.StopOnMatch = DISABLE;
-	PWM_ConfigMatch(LPC_PWM1, &PWMMatchCfgDat);
-	/* Enable PWM Channel Output */
-	PWM_ChannelCmd(LPC_PWM1, 5, ENABLE);
-	/* Increase match value by 10 */
-
-
-	/* Reset and Start counter */
-	PWM_ResetCounter(LPC_PWM1);
-	PWM_CounterCmd(LPC_PWM1, ENABLE);
-
-	/* Start PWM now */
-	PWM_Cmd(LPC_PWM1, ENABLE);
-
-
 
 	for(;;);
 	return 0;

@@ -10,6 +10,7 @@
 
 #include "leds.h"
 #include "qAnalog.h"
+#include "qPWM.h"
 
 #define EEPROM_ADDRESS				0xA0
 #define MPU6050_ADDRESS				0xD0
@@ -29,7 +30,13 @@
 #define TEMPERATURE_ANALOG			&analog[1]
 #define VOLTAGE_ANALOG				&analog[0]
 
+#define MOTOR1						&pwm[4]
+#define MOTOR2						&pwm[3]
+#define MOTOR3						&pwm[1]
+#define MOTOR4						&pwm[0]
+
 extern qAnalogInput analog[];
 extern qLed leds[];
+extern qPWM_Channel pwm[];
 
 #endif /* BOARD_H_ */
