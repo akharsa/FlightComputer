@@ -151,6 +151,44 @@ void analogTest(){
 	ConsolePuts_("Analog test finished\r\n", BLUE);
 }
 
+
+void PWM_Test(){
+	int i,j;
+
+	ConsolePuts_("PWM test started...\r\n", BLUE);
+
+	qPWM_Init(10000);
+
+	qPWM_InitChannel(MOTOR1);
+	qPWM_InitChannel(MOTOR2);
+	qPWM_InitChannel(MOTOR3);
+	qPWM_InitChannel(MOTOR4);
+
+	delay(10); //don't know why but must be here por propper PWM init.
+
+	for (j=0;j<3;j++){
+		for (i=0;i<1000;i++){
+			qPWM_SetDuty(MOTOR1,i*10);
+			qPWM_SetDuty(MOTOR2,i*10);
+			qPWM_SetDuty(MOTOR3,i*10);
+			qPWM_SetDuty(MOTOR4,i*10);
+			delay(1);
+		}
+
+		for (i=1000;i>0;i--){
+			qPWM_SetDuty(MOTOR1,i*10);
+			qPWM_SetDuty(MOTOR2,i*10);
+			qPWM_SetDuty(MOTOR3,i*10);
+			qPWM_SetDuty(MOTOR4,i*10);
+			delay(1);
+		}
+	}
+
+	ConsolePuts_("PWM test finished\r\n", BLUE);
+
+}
+
+
 int main(void) {
 
 
@@ -172,7 +210,7 @@ int main(void) {
 		halt();
 	}
 
-/*
+
 	ConsolePuts("------------------------------------------------------------\r\n");
 	I2C_Scanner();
 	ConsolePuts("------------------------------------------------------------\r\n");
@@ -182,25 +220,8 @@ int main(void) {
 	ConsolePuts("------------------------------------------------------------\r\n");
 	analogTest();
 	ConsolePuts("------------------------------------------------------------\r\n");
-*/
-
-	qPWM_Init(10000);
-	qPWM_InitChannel(MOTOR1);
-
-	delay(10);
-	int i;
-
-	while(1){
-		for (i=0;i<1000;i++){
-			qPWM_SetDuty(MOTOR1,i*10);
-			delay(1);
-		}
-
-		for (i=1000;i>0;i--){
-			qPWM_SetDuty(MOTOR1,i*10);
-			delay(1);
-		}
-	}
+	PWM_Test();
+	ConsolePuts("------------------------------------------------------------\r\n");
 
 	for(;;);
 	return 0;
