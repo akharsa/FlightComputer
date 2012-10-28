@@ -9,6 +9,13 @@
 #define BOARD_H_
 
 #include "leds.h"
+#include "qAnalog.h"
+
+#define EEPROM_ADDRESS				0xA0
+#define MPU6050_ADDRESS				0xD0
+#define HMC5883L_ADDRESS			0x3C
+#define BMP085_ADDRESS				0xEE
+
 
 #define	STATUS_LED					leds[0]
 #define	REAR_RIGHT_LED				leds[1]
@@ -17,9 +24,12 @@
 #define	FRONT_LEFT_LED				leds[4]
 #define	EXTERNAL_1_LED				leds[5] //LED5 - P7
 #define	EXTERNAL_2_LED				leds[6] //LED6 - P8
-
 #define TOTAL_LEDS					7
 
+#define TEMPERATURE_ANALOG			&analog[1]
+#define VOLTAGE_ANALOG				&analog[0]
+
+extern qAnalogInput analog[];
 extern qLed leds[];
 
 #endif /* BOARD_H_ */
