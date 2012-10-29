@@ -190,7 +190,7 @@ void PWM_Test(){
 
 
 char read( unsigned char device_addr,unsigned char register_addr, unsigned char * register_data,  unsigned char read_length ){
-	qI2C_Write(device_addr,register_data,register_addr,read_length);
+	qI2C_Read(device_addr,register_data,register_addr,read_length);
 	return 0;
 }
 
@@ -231,8 +231,8 @@ int main(void) {
 	//ConsolePuts("------------------------------------------------------------\r\n");
 
 	bmp085_t bmp;
-	bmp.bus_write = read;
-	bmp.bus_read = write;
+	bmp.bus_write = write;
+	bmp.bus_read = read;
 	bmp.delay_msec = delay;
 
 
@@ -242,10 +242,25 @@ int main(void) {
 	delay(1);
 	GPIO_SetValue(1,(1<<1));
 
+	uint8_t buffer[256];
+	Status res;
+	int i;
+	res = qI2C_Read(0xEE,buffer,0,256);
+
+	for (i=0;i<256;i++){
+		ConsolePuts("0x");
+		ConsolePutNumber(i,16);
+		ConsolePuts(": ");
+		ConsolePutNumber(buffer[i],16);
+		ConsolePuts("\r\n");
+	}
+
+
 
 	bmp085_init(&bmp);
 	short temperature;
 	long pressure;
+
 
 
 	while (1){

@@ -221,7 +221,7 @@ Disclaimer
 #define BMP085_T_MEASURE        0x2E				// temperature measurent 
 #define BMP085_P_MEASURE        0x34				// pressure measurement
 
-#define BMP085_TEMP_CONVERSION_TIME  150				// TO be spec'd by GL or SB
+#define BMP085_TEMP_CONVERSION_TIME  10				// TO be spec'd by GL or SB
 
 
 /* SMD500 specific constants */

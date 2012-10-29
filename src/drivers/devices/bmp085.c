@@ -105,7 +105,7 @@ int bmp085_init(bmp085_t *bmp085)
   p_bmp085->number_of_samples = 1;  
   p_bmp085->oversampling_setting=0;
 
-  if (p_bmp085->chip_id == 0) {            /* get bitslice */
+  if (p_bmp085->chip_id == BMP085_CHIP_ID) {            /* get bitslice */
     p_bmp085->sensortype = BOSCH_PRESSURE_BMP085;
     
     comres += p_bmp085->BMP085_BUS_READ_FUNC(p_bmp085->dev_addr, BMP085_VERSION_REG, &data, 1); /* read Version reg */
