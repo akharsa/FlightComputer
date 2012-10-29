@@ -15,6 +15,8 @@
 
 #include "qAnalog.h"
 
+#include "MPU6050.h"
+
 
 void halt(){
 	ConsolePuts_("EXECUTION HALTED DUE TO AN ERROR\r\n",RED);
@@ -209,7 +211,6 @@ int main(void) {
 		halt();
 	}
 
-
 	ConsolePuts("------------------------------------------------------------\r\n");
 	I2C_Scanner();
 	ConsolePuts("------------------------------------------------------------\r\n");
@@ -221,6 +222,41 @@ int main(void) {
 	ConsolePuts("------------------------------------------------------------\r\n");
 	PWM_Test();
 	ConsolePuts("------------------------------------------------------------\r\n");
+
+	int16_t sensors[9];
+	int16_t temperature;
+
+	if (MPU6050_testConnection()==TRUE){
+			MPU6050_initialize();
+
+			MPU6050_setI2CMasterModeEnabled(FALSE);
+			MPU6050_setI2CBypassEnabled(TRUE);
+
+			while(1){
+			MPU6050_getMotion6(&sensors[0],&sensors[1],&sensors[2],&sensors[3],&sensors[4],&sensors[5]);
+			temperature = MPU6050_getTemperature();
+
+			/*
+			ConsolePuts("Temperature: ");
+			ConsolePutNumber((temperature+12421)/340,10);
+			ConsolePuts("\r");
+
+			ConsolePutNumber(sensors[0],10);
+			ConsolePuts("    ");
+			ConsolePutNumber(sensors[1],10);
+			ConsolePuts("    ");
+			ConsolePutNumber(sensors[2],10);
+			ConsolePuts("    ");
+			ConsolePutNumber(sensors[3],10);
+			ConsolePuts("    ");
+			ConsolePutNumber(sensors[4],10);
+			ConsolePuts("    ");
+			ConsolePutNumber(sensors[5],10);
+			ConsolePuts("\r");
+			 	*/
+			delay(100);
+			}
+	}
 
 	for(;;);
 	return 0;

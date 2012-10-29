@@ -145,3 +145,58 @@ Status qI2C_Read_(uint8_t slaveAddr, uint8_t* pBuffer, uint16_t readAddr, uint16
 	return res;
 }
 
+Status qI2C_WriteBit(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitNum, uint8_t data){
+	uint8_t tmp;
+	Status res;
+
+	res = qI2C_Read(slaveAddr,&tmp,regAddr,1);
+
+	if (res==SUCCESS){
+		tmp = (data != 0) ? (tmp | (1 << bitNum)) : (tmp & ~(1 << bitNum));
+		res = qI2C_Write(slaveAddr,&tmp,regAddr,1);
+	}
+
+	return res;
+}
+
+Status qI2C_ReadBit(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitNum, uint8_t * data){
+	uint8_t tmp;
+	Status res;
+	res = qI2C_Read(slaveAddr,&tmp,regAddr,1);
+	*data = tmp & (1 << bitNum);
+	return res;
+}
+
+Status qI2C_WriteBits(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint8_t data){
+	uint8_t tmp;
+	Status res;
+	res = qI2C_Read(slaveAddr,&tmp,regAddr,1);
+	if (res==SUCCESS){
+		uint8_t mask = ((1 << length) - 1) << (bitStart - length + 1);
+		data <<= (bitStart - length + 1); // shift data into correct position
+		data &= mask; // zero all non-important bits in data
+		tmp &= ~(mask); // zero all important bits in existing byte
+		tmp |= data; // combine data with existing byte
+		res = qI2C_Write(slaveAddr,&tmp,regAddr,1);
+	}
+	return res;
+}
+
+
+Status qI2C_ReadBits(uint8_t slaveAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint8_t *data){
+	uint8_t tmp;
+	Status res;
+
+	res = qI2C_Read(slaveAddr,&tmp,regAddr,1);
+
+	if (res==SUCCESS){
+		uint8_t mask = ((1 << length) - 1) << (bitStart - length + 1);
+		tmp &= mask;
+		tmp >>= (bitStart - length + 1);
+		*data = tmp;
+	}
+
+	return res;
+}
+
+
