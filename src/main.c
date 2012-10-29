@@ -9,13 +9,9 @@
 #include "eeprom.h"
 #include "board.h"
 #include "delay.h"
-
-#include "lpc17xx_pwm.h"
-#include "lpc17xx_pinsel.h"
-
 #include "qAnalog.h"
-
 #include "MPU6050.h"
+#include "HMC5883L.h"
 
 
 void halt(){
@@ -220,11 +216,12 @@ int main(void) {
 	ConsolePuts("------------------------------------------------------------\r\n");
 	analogTest();
 	ConsolePuts("------------------------------------------------------------\r\n");
-	PWM_Test();
-	ConsolePuts("------------------------------------------------------------\r\n");
+	//PWM_Test();
+	//ConsolePuts("------------------------------------------------------------\r\n");
 
 	int16_t sensors[9];
 	int16_t temperature;
+	int16_t mag[3];
 
 	if (MPU6050_testConnection()==TRUE){
 			MPU6050_initialize();
@@ -232,11 +229,32 @@ int main(void) {
 			MPU6050_setI2CMasterModeEnabled(FALSE);
 			MPU6050_setI2CBypassEnabled(TRUE);
 
+			HMC5883L_initialize();
+			if (HMC5883L_testConnection()==TRUE){
+				while(1){
+					HMC5883L_setMeasurementBias(1);
+					HMC5883L_getHeading(&mag[0],&mag[1],&mag[2]);
+					HMC5883L_getHeading(&mag[0],&mag[1],&mag[2]);
+					ConsolePuts("MAG:");
+					ConsolePutNumber(mag[0],10);
+					ConsolePuts("\t\t");
+					ConsolePutNumber(mag[1],10);
+					ConsolePuts("\t\t");
+					ConsolePutNumber(mag[2],10);
+					ConsolePuts("\r\n");
+					delay(100);
+				}
+			}
+
 			while(1){
+
+
+
+
+			/*
 			MPU6050_getMotion6(&sensors[0],&sensors[1],&sensors[2],&sensors[3],&sensors[4],&sensors[5]);
 			temperature = MPU6050_getTemperature();
 
-			/*
 			ConsolePuts("Temperature: ");
 			ConsolePutNumber((temperature+12421)/340,10);
 			ConsolePuts("\r");
@@ -254,7 +272,7 @@ int main(void) {
 			ConsolePutNumber(sensors[5],10);
 			ConsolePuts("\r");
 			 	*/
-			delay(100);
+				delay(100);
 			}
 	}
 
