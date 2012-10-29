@@ -12,6 +12,8 @@
 #include "qAnalog.h"
 #include "MPU6050.h"
 #include "HMC5883L.h"
+#include "bmp085.h"
+#include "lpc17xx_gpio.h"
 
 
 void halt(){
@@ -187,6 +189,15 @@ void PWM_Test(){
 }
 
 
+char read( unsigned char device_addr,unsigned char register_addr, unsigned char * register_data,  unsigned char read_length ){
+	qI2C_Write(device_addr,register_data,register_addr,read_length);
+	return 0;
+}
+
+char write(unsigned char device_addr,unsigned char register_addr, unsigned char * register_data, unsigned char write_length ){
+	qI2C_Write(device_addr,register_data,register_addr,write_length);
+}
+
 int main(void) {
 
 	//---------------------------------------------------------------
@@ -219,16 +230,50 @@ int main(void) {
 	//PWM_Test();
 	//ConsolePuts("------------------------------------------------------------\r\n");
 
+	bmp085_t bmp;
+	bmp.bus_write = read;
+	bmp.bus_read = write;
+	bmp.delay_msec = delay;
+
+
+	GPIO_SetDir(1,(1<<1),1);
+
+	GPIO_ClearValue(1,(1<<1));
+	delay(1);
+	GPIO_SetValue(1,(1<<1));
+
+
+	bmp085_init(&bmp);
+	short temperature;
+	long pressure;
+
+
+	while (1){
+		temperature = bmp085_get_temperature(bmp085_get_ut());
+		temperature = bmp085_get_temperature(bmp085_get_ut());
+		pressure = bmp085_get_pressure(bmp085_get_up());
+		pressure = bmp085_get_pressure(bmp085_get_up());
+
+		ConsolePuts("PRESSURE:");
+		ConsolePutNumber(temperature,10);
+		ConsolePuts("\t\t");
+		ConsolePutNumber(pressure,10);
+		ConsolePuts("\r\n");
+		delay(100);
+	}
+
+#if 0
 	int16_t sensors[9];
 	int16_t temperature;
 	int16_t mag[3];
+
 
 	if (MPU6050_testConnection()==TRUE){
 			MPU6050_initialize();
 
 			MPU6050_setI2CMasterModeEnabled(FALSE);
 			MPU6050_setI2CBypassEnabled(TRUE);
-
+#if 0
 			HMC5883L_initialize();
 			if (HMC5883L_testConnection()==TRUE){
 				while(1){
@@ -245,36 +290,37 @@ int main(void) {
 					delay(100);
 				}
 			}
+#endif
 
+#if 0
 			while(1){
 
+				MPU6050_getMotion6(&sensors[0],&sensors[1],&sensors[2],&sensors[3],&sensors[4],&sensors[5]);
+				temperature = MPU6050_getTemperature();
 
+				ConsolePuts("Temperature: ");
+				ConsolePutNumber((temperature+12421)/340,10);
+				ConsolePuts("\r");
 
+				ConsolePutNumber(sensors[0],10);
+				ConsolePuts("    ");
+				ConsolePutNumber(sensors[1],10);
+				ConsolePuts("    ");
+				ConsolePutNumber(sensors[2],10);
+				ConsolePuts("    ");
+				ConsolePutNumber(sensors[3],10);
+				ConsolePuts("    ");
+				ConsolePutNumber(sensors[4],10);
+				ConsolePuts("    ");
+				ConsolePutNumber(sensors[5],10);
+				ConsolePuts("\r");
 
-			/*
-			MPU6050_getMotion6(&sensors[0],&sensors[1],&sensors[2],&sensors[3],&sensors[4],&sensors[5]);
-			temperature = MPU6050_getTemperature();
-
-			ConsolePuts("Temperature: ");
-			ConsolePutNumber((temperature+12421)/340,10);
-			ConsolePuts("\r");
-
-			ConsolePutNumber(sensors[0],10);
-			ConsolePuts("    ");
-			ConsolePutNumber(sensors[1],10);
-			ConsolePuts("    ");
-			ConsolePutNumber(sensors[2],10);
-			ConsolePuts("    ");
-			ConsolePutNumber(sensors[3],10);
-			ConsolePuts("    ");
-			ConsolePutNumber(sensors[4],10);
-			ConsolePuts("    ");
-			ConsolePutNumber(sensors[5],10);
-			ConsolePuts("\r");
-			 	*/
 				delay(100);
 			}
+#endif
 	}
+
+#endif
 
 	for(;;);
 	return 0;
