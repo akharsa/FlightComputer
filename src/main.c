@@ -13,7 +13,7 @@
 #include "MPU6050.h"
 #include "HMC5883L.h"
 #include "bmp085.h"
-#include "lpc17xx_gpio.h"
+#include "math.h"
 
 
 void halt(){
@@ -166,7 +166,7 @@ void PWM_Test(){
 
 	delay(10); //don't know why but must be here por propper PWM init.
 
-	for (j=0;j<3;j++){
+	for (j=0;j<1;j++){
 		for (i=0;i<1000;i++){
 			qPWM_SetDuty(MOTOR1,i*10);
 			qPWM_SetDuty(MOTOR2,i*10);
@@ -188,17 +188,90 @@ void PWM_Test(){
 
 }
 
+void Barometer_Test(){
+	short temperature;
+	long pressure;
+	int altitude;
 
-char read( unsigned char device_addr,unsigned char register_addr, unsigned char * register_data,  unsigned char read_length ){
-	qI2C_Read(device_addr,register_data,register_addr,read_length);
-	return 0;
+	ConsolePuts_("Testing barometer BMP085...\r\n", BLUE);
+
+	BMP085_Init();
+
+	ConsolePuts("Connection...\t\t\t\t");
+
+	if (BMP085_TestConnection()==SUCCESS){
+		ConsolePuts_("[OK]\r\n",GREEN);
+
+		ConsolePuts("Getting data...\r\n");
+		temperature = BMP085_GetTemperature();
+		pressure = BMP085_GetPressure();
+		altitude = ceil(BMP085_CalculateAltitude(101016,pressure)*100.0);
+
+		ConsolePuts("Temperature [0.1C]:  ");
+		ConsolePutNumber(temperature,10);
+		ConsolePuts("\r\n");
+		ConsolePuts("Pressure [pa]:  ");
+		ConsolePutNumber(pressure,10);
+		ConsolePuts("\r\n");
+		ConsolePuts("Altitude [0.01 m]:  ");
+		ConsolePutNumber(altitude,10);
+		ConsolePuts("\r\n");
+
+	}else{
+		ConsolePuts_("[ERROR]\r\n",RED);
+	}
+
+	ConsolePuts_("Barometer test Finished...\r\n", BLUE);
+
 }
 
-char write(unsigned char device_addr,unsigned char register_addr, unsigned char * register_data, unsigned char write_length ){
-	qI2C_Write(device_addr,register_data,register_addr,write_length);
+void MPU6050_Test(){
+	int16_t sensors[9];
+	int16_t temperature;
+
+	ConsolePuts_("Testing MPU6050...\r\n", BLUE);
+
+	ConsolePuts("Connection...\t\t\t\t");
+
+	if (MPU6050_testConnection()==TRUE){
+			ConsolePuts_("[OK]\r\n",GREEN);
+			ConsolePuts("Initializing...\r\n");
+			MPU6050_initialize();
+			ConsolePuts("Getting data...\r\n");
+
+			MPU6050_getMotion6(&sensors[0],&sensors[1],&sensors[2],&sensors[3],&sensors[4],&sensors[5]);
+			temperature = MPU6050_getTemperature();
+
+			ConsolePuts("Temp: ");
+			ConsolePutNumber((temperature+12421)/340,10);
+			ConsolePuts("\r\n");
+
+			ConsolePuts("Acc & Gyro: ");
+			ConsolePutNumber(sensors[0],10);
+			ConsolePuts("\t");
+			ConsolePutNumber(sensors[1],10);
+			ConsolePuts("\t");
+			ConsolePutNumber(sensors[2],10);
+			ConsolePuts("\t");
+			ConsolePutNumber(sensors[3],10);
+			ConsolePuts("\t");
+			ConsolePutNumber(sensors[4],10);
+			ConsolePuts("\t");
+			ConsolePutNumber(sensors[5],10);
+			ConsolePuts("\r\n");
+
+	}else{
+		ConsolePuts_("[ERROR]\r\n",RED);
+	}
+
+	ConsolePuts_("MPU6050 test Finished...\r\n", BLUE);
 }
+
 
 int main(void) {
+	uint16_t board_temp,voltage, mpu_temp;
+	int32_t bmp_temp, pressure, altitude;
+	int16_t sensors[9];
 
 	//---------------------------------------------------------------
 	// Inits
@@ -220,75 +293,107 @@ int main(void) {
 
 	ConsolePuts("------------------------------------------------------------\r\n");
 	I2C_Scanner();
+	delay(500);
 	ConsolePuts("------------------------------------------------------------\r\n");
 	EEPROM_Test();
+	delay(500);
 	ConsolePuts("------------------------------------------------------------\r\n");
 	ledTests();
+	delay(500);
 	ConsolePuts("------------------------------------------------------------\r\n");
 	analogTest();
+	delay(500);
 	ConsolePuts("------------------------------------------------------------\r\n");
-	//PWM_Test();
-	//ConsolePuts("------------------------------------------------------------\r\n");
+	PWM_Test();
+	delay(500);
+	ConsolePuts("------------------------------------------------------------\r\n");
+	Barometer_Test();
+	delay(500);
+	ConsolePuts("------------------------------------------------------------\r\n");
+	MPU6050_Test();
+	delay(500);
+	ConsolePuts("------------------------------------------------------------\r\n");
+	delay(2000);
 
-	bmp085_t bmp;
-	bmp.bus_write = write;
-	bmp.bus_read = read;
-	bmp.delay_msec = delay;
-
-
-	GPIO_SetDir(1,(1<<1),1);
-
-	GPIO_ClearValue(1,(1<<1));
-	delay(1);
-	GPIO_SetValue(1,(1<<1));
-
-	uint8_t buffer[256];
-	Status res;
-	int i;
-	res = qI2C_Read(0xEE,buffer,0,256);
-
-	for (i=0;i<256;i++){
-		ConsolePuts("0x");
-		ConsolePutNumber(i,16);
-		ConsolePuts(": ");
-		ConsolePutNumber(buffer[i],16);
-		ConsolePuts("\r\n");
-	}
+	ConsolePuts("\x1B[2J\x1B[0;0f");
 
 
+	while(1){
 
-	bmp085_init(&bmp);
-	short temperature;
-	long pressure;
+		board_temp = qAnalog_Read(TEMPERATURE_ANALOG);
+		board_temp = board_temp*3300/4096;
+		board_temp = ((board_temp - 424)*100) / (625);
+		voltage = qAnalog_Read(VOLTAGE_ANALOG);
+		voltage = voltage*3300/4096;
+		voltage = (voltage*764)/100;
 
 
+		bmp_temp = BMP085_GetTemperature();
+		pressure = BMP085_GetPressure();
+		altitude = ceil(BMP085_CalculateAltitude(101016,pressure)*100.0);
 
-	while (1){
-		temperature = bmp085_get_temperature(bmp085_get_ut());
-		temperature = bmp085_get_temperature(bmp085_get_ut());
-		pressure = bmp085_get_pressure(bmp085_get_up());
-		pressure = bmp085_get_pressure(bmp085_get_up());
+		MPU6050_getMotion6(&sensors[0],&sensors[1],&sensors[2],&sensors[3],&sensors[4],&sensors[5]);
+		mpu_temp = MPU6050_getTemperature();
+		mpu_temp = (mpu_temp+12421)/340;
 
-		ConsolePuts("PRESSURE:");
-		ConsolePutNumber(temperature,10);
-		ConsolePuts("\t\t");
+		ConsolePuts("-----------------------------------------------------------------------\r\n");
+		ConsolePuts_("Analog sensors\r\n",BLUE);
+		ConsolePuts("-----------------------------------------------------------------------\r\n");
+		ConsolePuts("Temperature [C]:\t\t\t");
+		ConsolePutNumber(board_temp,10);
+		ConsolePuts("                           \r\n");
+		ConsolePuts("Battery voltage [mV]:\t\t\t");
+		ConsolePutNumber(voltage,10);
+		ConsolePuts("                           \r\n");
+
+		ConsolePuts("-----------------------------------------------------------------------\r\n");
+		ConsolePuts_("Barometer BMP085\r\n",BLUE);
+		ConsolePuts("-----------------------------------------------------------------------\r\n");
+		ConsolePuts("Temperature [0.1C]:\t\t\t");
+		ConsolePutNumber(bmp_temp,10);
+		ConsolePuts("                           \r\n");
+		ConsolePuts("Pressure [pa]:\t\t\t\t");
 		ConsolePutNumber(pressure,10);
-		ConsolePuts("\r\n");
-		delay(100);
+		ConsolePuts("                           \r\n");
+		ConsolePuts("Altitude [0.01 m]:\t\t\t");
+		ConsolePutNumber(altitude,10);
+		ConsolePuts("                           \r\n");
+
+		ConsolePuts("-----------------------------------------------------------------------\r\n");
+		ConsolePuts_("Accel + Gyro MPU6050\r\n",BLUE);
+		ConsolePuts("-----------------------------------------------------------------------\r\n");
+
+		ConsolePuts("Temperature [0.1C]:\t\t\t");
+		ConsolePutNumber(mpu_temp,10);
+		ConsolePuts("                           \r\n");
+
+		ConsolePuts("Accel:\t\t\t\t\t");
+		ConsolePutNumber(sensors[0],10);
+		ConsolePuts("\t");
+		ConsolePutNumber(sensors[1],10);
+		ConsolePuts("\t");
+		ConsolePutNumber(sensors[2],10);
+		ConsolePuts("                           \r\n");
+		ConsolePuts("Gyro:\t\t\t\t\t");
+		ConsolePutNumber(sensors[3],10);
+		ConsolePuts("\t");
+		ConsolePutNumber(sensors[4],10);
+		ConsolePuts("\t");
+		ConsolePutNumber(sensors[5],10);
+		ConsolePuts("                           \r\n");
+
+		delay(500);
+		ConsolePuts("\x1B[0;0f");
 	}
+	for(;;);
+	return 0;
+}
+
 
 #if 0
-	int16_t sensors[9];
-	int16_t temperature;
-	int16_t mag[3];
-
-
-	if (MPU6050_testConnection()==TRUE){
-			MPU6050_initialize();
-
 			MPU6050_setI2CMasterModeEnabled(FALSE);
 			MPU6050_setI2CBypassEnabled(TRUE);
-#if 0
+
 			HMC5883L_initialize();
 			if (HMC5883L_testConnection()==TRUE){
 				while(1){
@@ -306,40 +411,4 @@ int main(void) {
 				}
 			}
 #endif
-
-#if 0
-			while(1){
-
-				MPU6050_getMotion6(&sensors[0],&sensors[1],&sensors[2],&sensors[3],&sensors[4],&sensors[5]);
-				temperature = MPU6050_getTemperature();
-
-				ConsolePuts("Temperature: ");
-				ConsolePutNumber((temperature+12421)/340,10);
-				ConsolePuts("\r");
-
-				ConsolePutNumber(sensors[0],10);
-				ConsolePuts("    ");
-				ConsolePutNumber(sensors[1],10);
-				ConsolePuts("    ");
-				ConsolePutNumber(sensors[2],10);
-				ConsolePuts("    ");
-				ConsolePutNumber(sensors[3],10);
-				ConsolePuts("    ");
-				ConsolePutNumber(sensors[4],10);
-				ConsolePuts("    ");
-				ConsolePutNumber(sensors[5],10);
-				ConsolePuts("\r");
-
-				delay(100);
-			}
-#endif
-	}
-
-#endif
-
-	for(;;);
-	return 0;
-}
-
-
 
