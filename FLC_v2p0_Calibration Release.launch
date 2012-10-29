@@ -7,7 +7,7 @@
 <booleanAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN" value="true"/>
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN_SYMBOL" value="main"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="Release/1_Blinky_SysTick.axf"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="FLC_v2p0_Tester"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="FLC_v2p0_Calibration"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="com.crt.advproject.config.exe.release.481842698"/>
 <booleanAttribute key="org.eclipse.cdt.launch.use_terminal" value="false"/>
 </launchConfiguration>
