@@ -21,6 +21,7 @@ Status qLed_DeInit(qLed led){
 
 Status qLed_TurnOn(qLed led){
 	if (led.polarity==ACTIVE_HIGH){
+		//FIXME: no estan al reves pin y port?
 		GPIO_SetValue(led.pinNum,(1<<led.portNum));
 	}else{
 		GPIO_ClearValue(led.pinNum,(1<<led.portNum));

@@ -20,6 +20,11 @@
 #include "lpc17xx_timer.h"
 #include "lpc17xx_pinsel.h"
 
+#define MIN_INPUT 0
+#define MAX_INPUT 500
+#define WAIT_TIME 100
+#define SAMPLE_TIME	10
+
 int16_t speed = 0;
 char wdt=0;
 
@@ -70,6 +75,8 @@ int main(void) {
 	delayInit();
 	ConsoleInit();
 
+	ConsolePuts("=================================================================\r\n");
+
 	UART_IntConfig(LPC_UART0, UART_INTCFG_RBR, ENABLE);
 	NVIC_EnableIRQ(UART0_IRQn);
 
@@ -77,6 +84,7 @@ int main(void) {
 		qLed_Init(leds[i]);
 		qLed_TurnOff(leds[i]);
 	}
+
 #if 0
 	for (i=0;i<20;i++){
 		qLed_TurnOn(FRONT_LEFT_LED);
@@ -144,6 +152,76 @@ int main(void) {
 
 	//---------------------------------------------------------
 
+	GPIO_SetDir(0,(1<<24),1);
+	GPIO_ClearValue(0,(1<<24));
+
+
+	uint32_t j;
+	for (j=0;j<3;j++){
+		qLed_TurnOn(FRONT_LEFT_LED);
+		qLed_TurnOn(FRONT_RIGHT_LED);
+		qLed_TurnOn(REAR_LEFT_LED);
+		qLed_TurnOn(REAR_RIGHT_LED);
+		delay(200);
+		qLed_TurnOff(FRONT_LEFT_LED);
+		qLed_TurnOff(FRONT_RIGHT_LED);
+		qLed_TurnOff(REAR_LEFT_LED);
+		qLed_TurnOff(REAR_RIGHT_LED);
+		delay(800);
+	}
+
+#if 0
+	GPIO_SetDir(0,(1<<24),1);
+	while(1){
+		GPIO_SetValue(0,(1<<24));
+		delay(500);
+		GPIO_ClearValue(0,(1<<24));
+		delay(500);
+	}
+#endif
+
+
+	uint16_t input=0;
+
+
+
+	for (j=0;j<(MAX_INPUT-MIN_INPUT)*(WAIT_TIME/SAMPLE_TIME);j++){
+
+		GPIO_SetValue(0,(1<<24));
+		ConsolePutNumber(j,10);
+		ConsolePuts("\t");
+		ConsolePutNumber(speed_capture,10);
+		ConsolePuts("\t");
+		ConsolePutNumber(input,10);
+		ConsolePuts("\r\n");
+
+		if (j%(WAIT_TIME/SAMPLE_TIME) == 0){
+			input++;
+			qESC_SetOutput(MOTOR4,input);
+		}
+		GPIO_ClearValue(0,(1<<24));
+
+		delay(SAMPLE_TIME);
+	}
+
+
+/*
+	int k=0;
+	for (j=MIN_INPUT;j<MAX_INPUT;j++){
+		k = ((k+1)%10);
+		if (k==0){
+			qESC_SetOutput(MOTOR4,j);
+		}
+		delay(WAIT_TIME/10);
+		ConsolePutNumber(j,10);
+		ConsolePuts("\t");
+		ConsolePutNumber(speed_capture,10);
+		ConsolePuts("\r\n");
+	}
+*/
+	qESC_SetOutput(MOTOR4,0);
+
+/*
 	for(;;){
 		ConsolePuts("Speed: ");
 		ConsolePutNumber(speed,10);
@@ -153,10 +231,12 @@ int main(void) {
 		ConsolePuts("              \r\n");
 		delay(500);
 	}
+*/
 
-
+	while(1);
 	return 0;
 }
+
 #define STEP	1
 
 void UART0_IRQHandler(void){
