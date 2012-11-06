@@ -26,7 +26,7 @@
 #define SAMPLE_TIME	10
 
 int16_t speed = 0;
-uint16_t input=0;
+uint16_t input=150;
 char wdt=0;
 
 void halt(){
@@ -142,7 +142,7 @@ int main(void) {
 	GPIO_ClearValue(0,(1<<24));
 	int p;
 
-	for (p=0;p<50000000;p++);
+	for (p=0;p<10000000;p++);
 
 #if 0
 
@@ -171,7 +171,7 @@ int main(void) {
 #endif
 
 
-	SYSTICK_InternalInit(SAMPLE_TIME);
+	SYSTICK_InternalInit(1);
 	SYSTICK_IntCmd(ENABLE);
 	SYSTICK_Cmd(ENABLE);
 
@@ -198,7 +198,7 @@ int main(void) {
 	return 0;
 }
 
-#define STEP	1
+#define STEP	5
 
 void UART0_IRQHandler(void){
 	char c;
@@ -232,9 +232,50 @@ void UART0_IRQHandler(void){
 
 
 uint32_t j=0;
+uint32_t time = 0;
+typedef enum{IDLE, SETTLING, LOGGING} state_t;
+state_t state = IDLE;
 
 void SysTick_Handler(void)
 {
+	if ((time%3000) == 0){ // 3 seconds interval
+		switch (state){
+			case IDLE:
+				input = 150;
+				state = SETTLING;
+				break;
+			case SETTLING:
+				input += STEP;
+				qESC_SetOutput(MOTOR4,input);
+				GPIO_ClearValue(0,(1<<24));
+				state = LOGGING;
+				break;
+			case LOGGING:
+				GPIO_SetValue(0,(1<<24));
+				state = SETTLING;
+				break;
+
+		}
+	}
+
+	if ((time%10) == 0){ // 3 seconds interval
+		switch (state){
+			case SETTLING:
+				//ConsolePuts("LOG:\t");
+				ConsolePutNumber(time,10);
+				ConsolePuts("\t");
+				ConsolePutNumber(input,10);
+				ConsolePuts("\t");
+				ConsolePutNumber(speed_capture,10);
+				ConsolePuts("\r\n");
+				break;
+		}
+	}
+
+	time = time + 1;
+
+
+	/*
 	GPIO_SetValue(0,(1<<24));
 	ConsolePutNumber(j,10);
 	ConsolePuts("\t");
@@ -254,5 +295,6 @@ void SysTick_Handler(void)
 		qESC_SetOutput(MOTOR4,0);
 		GPIO_ClearValue(0,(1<<24));
 	}
+	*/
 }
 
