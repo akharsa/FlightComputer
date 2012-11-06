@@ -26,6 +26,7 @@
 #define SAMPLE_TIME	10
 
 int16_t speed = 0;
+uint16_t input=0;
 char wdt=0;
 
 void halt(){
@@ -62,9 +63,9 @@ void TIMER3_IRQHandler(void)
 
 
 int main(void) {
-	uint16_t board_temp,voltage, mpu_temp;
-	int32_t bmp_temp, pressure, altitude;
-	int16_t sensors[6];
+	//uint16_t board_temp,voltage, mpu_temp;
+	//int32_t bmp_temp, pressure, altitude;
+	//int16_t sensors[6];
 	uint8_t i;
 
 	//---------------------------------------------------------------
@@ -72,7 +73,7 @@ int main(void) {
 	//---------------------------------------------------------------
 
 
-	delayInit();
+	//delayInit();
 	ConsoleInit();
 
 	ConsolePuts("=================================================================\r\n");
@@ -84,21 +85,6 @@ int main(void) {
 		qLed_Init(leds[i]);
 		qLed_TurnOff(leds[i]);
 	}
-
-#if 0
-	for (i=0;i<20;i++){
-		qLed_TurnOn(FRONT_LEFT_LED);
-		qLed_TurnOn(FRONT_RIGHT_LED);
-		qLed_TurnOn(REAR_LEFT_LED);
-		qLed_TurnOn(REAR_RIGHT_LED);
-		delay(100);
-		qLed_TurnOff(FRONT_LEFT_LED);
-		qLed_TurnOff(FRONT_RIGHT_LED);
-		qLed_TurnOff(REAR_LEFT_LED);
-		qLed_TurnOff(REAR_RIGHT_LED);
-		delay(400);
-	}
-#endif
 
 	qESC_Init();
 	qESC_InitChannel(MOTOR1);
@@ -154,7 +140,11 @@ int main(void) {
 
 	GPIO_SetDir(0,(1<<24),1);
 	GPIO_ClearValue(0,(1<<24));
+	int p;
 
+	for (p=0;p<50000000;p++);
+
+#if 0
 
 	uint32_t j;
 	for (j=0;j<3;j++){
@@ -169,7 +159,7 @@ int main(void) {
 		qLed_TurnOff(REAR_RIGHT_LED);
 		delay(800);
 	}
-
+#endif
 #if 0
 	GPIO_SetDir(0,(1<<24),1);
 	while(1){
@@ -181,45 +171,17 @@ int main(void) {
 #endif
 
 
-	uint16_t input=0;
-
-
-
-	for (j=0;j<(MAX_INPUT-MIN_INPUT)*(WAIT_TIME/SAMPLE_TIME);j++){
-
-		GPIO_SetValue(0,(1<<24));
-		ConsolePutNumber(j,10);
-		ConsolePuts("\t");
-		ConsolePutNumber(speed_capture,10);
-		ConsolePuts("\t");
-		ConsolePutNumber(input,10);
-		ConsolePuts("\r\n");
-
-		if (j%(WAIT_TIME/SAMPLE_TIME) == 0){
-			input++;
-			qESC_SetOutput(MOTOR4,input);
-		}
-		GPIO_ClearValue(0,(1<<24));
-
-		delay(SAMPLE_TIME);
-	}
-
+	SYSTICK_InternalInit(SAMPLE_TIME);
+	SYSTICK_IntCmd(ENABLE);
+	SYSTICK_Cmd(ENABLE);
 
 /*
-	int k=0;
-	for (j=MIN_INPUT;j<MAX_INPUT;j++){
-		k = ((k+1)%10);
-		if (k==0){
-			qESC_SetOutput(MOTOR4,j);
-		}
-		delay(WAIT_TIME/10);
-		ConsolePutNumber(j,10);
-		ConsolePuts("\t");
-		ConsolePutNumber(speed_capture,10);
-		ConsolePuts("\r\n");
+	for (j=0;j<(MAX_INPUT-MIN_INPUT)*(WAIT_TIME/SAMPLE_TIME);j++){
+		delay(SAMPLE_TIME);
 	}
 */
-	qESC_SetOutput(MOTOR4,0);
+	while(1);
+
 
 /*
 	for(;;){
@@ -233,7 +195,6 @@ int main(void) {
 	}
 */
 
-	while(1);
 	return 0;
 }
 
@@ -267,5 +228,31 @@ void UART0_IRQHandler(void){
 	//qESC_SetOutput(MOTOR4,speed);
 
 
+}
+
+
+uint32_t j=0;
+
+void SysTick_Handler(void)
+{
+	GPIO_SetValue(0,(1<<24));
+	ConsolePutNumber(j,10);
+	ConsolePuts("\t");
+	ConsolePutNumber(speed_capture,10);
+	ConsolePuts("\t");
+	ConsolePutNumber(input,10);
+	ConsolePuts("\r\n");
+
+	if (j%(WAIT_TIME/SAMPLE_TIME) == 0){
+		qESC_SetOutput(MOTOR4,input);
+		input++;
+	}
+
+	j++;
+	if (j==(MAX_INPUT-MIN_INPUT)*(WAIT_TIME/SAMPLE_TIME)){
+		SYSTICK_Cmd(DISABLE);
+		qESC_SetOutput(MOTOR4,0);
+		GPIO_ClearValue(0,(1<<24));
+	}
 }
 

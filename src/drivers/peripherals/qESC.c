@@ -16,8 +16,10 @@ Status qESC_Init(){
 }
 
 Status qESC_InitChannel(qPWM_Channel * q){
+	int i;
 	qPWM_InitChannel(q);
-	delay(10);
+	//delay(10);
+	for (i=0;i<100000;i++);
 	qPWM_SetDuty(q,ESC_MIN_VALUE);
 	return SUCCESS;
 }
