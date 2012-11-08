@@ -20,13 +20,17 @@
 #include "lpc17xx_timer.h"
 #include "lpc17xx_pinsel.h"
 
-#define MIN_INPUT 0
-#define MAX_INPUT 500
-#define WAIT_TIME 100
-#define SAMPLE_TIME	10
+#define MIN_INPUT 		100
+#define MAX_INPUT 		1000
+#define WAIT_TIME 		1000
+
+
+#define STEP			5
+#define SAMPLE_TIME		10
+
 
 int16_t speed = 0;
-uint16_t input=150;
+uint16_t input;
 char wdt=0;
 
 void halt(){
@@ -198,7 +202,7 @@ int main(void) {
 	return 0;
 }
 
-#define STEP	5
+
 
 void UART0_IRQHandler(void){
 	char c;
@@ -238,10 +242,10 @@ state_t state = IDLE;
 
 void SysTick_Handler(void)
 {
-	if ((time%3000) == 0){ // 3 seconds interval
+	if ((time%WAIT_TIME) == 0){ // 3 seconds interval
 		switch (state){
 			case IDLE:
-				input = 150;
+				input = MIN_INPUT;
 				state = SETTLING;
 				break;
 			case SETTLING:
@@ -258,7 +262,7 @@ void SysTick_Handler(void)
 		}
 	}
 
-	if ((time%10) == 0){ // 3 seconds interval
+	if ((time%SAMPLE_TIME) == 0){ // 3 seconds interval
 		switch (state){
 			case SETTLING:
 				//ConsolePuts("LOG:\t");
@@ -274,6 +278,10 @@ void SysTick_Handler(void)
 
 	time = time + 1;
 
+	if (input == (MAX_INPUT + STEP)){
+		SYSTICK_Cmd(DISABLE);
+		qESC_SetOutput(MOTOR4,0);
+	}
 
 	/*
 	GPIO_SetValue(0,(1<<24));
