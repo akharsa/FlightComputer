@@ -77,7 +77,7 @@ int main(void) {
 	//---------------------------------------------------------------
 
 
-	//delayInit();
+	delayInit();
 	ConsoleInit();
 
 	ConsolePuts("=================================================================\r\n");
@@ -146,24 +146,8 @@ int main(void) {
 	GPIO_ClearValue(0,(1<<24));
 	int p;
 
-	for (p=0;p<10000000;p++);
+	delay(1000);
 
-#if 0
-
-	uint32_t j;
-	for (j=0;j<3;j++){
-		qLed_TurnOn(FRONT_LEFT_LED);
-		qLed_TurnOn(FRONT_RIGHT_LED);
-		qLed_TurnOn(REAR_LEFT_LED);
-		qLed_TurnOn(REAR_RIGHT_LED);
-		delay(200);
-		qLed_TurnOff(FRONT_LEFT_LED);
-		qLed_TurnOff(FRONT_RIGHT_LED);
-		qLed_TurnOff(REAR_LEFT_LED);
-		qLed_TurnOff(REAR_RIGHT_LED);
-		delay(800);
-	}
-#endif
 #if 0
 	GPIO_SetDir(0,(1<<24),1);
 	while(1){
@@ -174,10 +158,22 @@ int main(void) {
 	}
 #endif
 
+	int j;
+	GPIO_SetValue(0,(1<<24));
 
-	SYSTICK_InternalInit(1);
-	SYSTICK_IntCmd(ENABLE);
-	SYSTICK_Cmd(ENABLE);
+	for (j=200;j<=500;j=j+100){
+		GPIO_SetValue(0,(1<<24));
+		qESC_SetOutput(MOTOR4,j);
+		delay(5000);
+		qESC_SetOutput(MOTOR4,0);
+		GPIO_ClearValue(0,(1<<24));
+		delay(5000);
+	}
+
+
+	//SYSTICK_InternalInit(1);
+	//SYSTICK_IntCmd(ENABLE);
+	//SYSTICK_Cmd(ENABLE);
 
 /*
 	for (j=0;j<(MAX_INPUT-MIN_INPUT)*(WAIT_TIME/SAMPLE_TIME);j++){
@@ -239,7 +235,7 @@ uint32_t j=0;
 uint32_t time = 0;
 typedef enum{IDLE, SETTLING, LOGGING} state_t;
 state_t state = IDLE;
-
+#if 0
 void SysTick_Handler(void)
 {
 	if ((time%WAIT_TIME) == 0){ // 3 seconds interval
@@ -305,4 +301,5 @@ void SysTick_Handler(void)
 	}
 	*/
 }
+#endif
 

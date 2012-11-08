@@ -24,7 +24,7 @@ void delay(uint32_t ms){
 	SYSTICK_Cmd(DISABLE);
 }
 
-void _SysTick_Handler(void)
+void SysTick_Handler(void)
 {
 	if (delay_counter>0)
 		delay_counter--;
