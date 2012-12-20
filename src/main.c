@@ -103,10 +103,9 @@ void UART0_IRQHandler(void){
 	}
 
 	qESC_SetOutput(MOTOR1,speed);
-	//qESC_SetOutput(MOTOR2,speed);
-	//qESC_SetOutput(MOTOR3,speed);
-	//qESC_SetOutput(MOTOR4,speed);
-
+	qESC_SetOutput(MOTOR2,speed);
+	qESC_SetOutput(MOTOR3,speed);
+	qESC_SetOutput(MOTOR4,speed);
 
 }
 
