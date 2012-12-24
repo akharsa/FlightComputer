@@ -287,9 +287,11 @@ void UART_IntErr(uint8_t id, uint8_t bLSErrType)
 {
 	uint8_t test;
 	/* Loop forever */
+#if 0
 	while (1){
 		/* For testing purpose */
 		//\TODO: Handle the errors. For example Overrun.
 		test = bLSErrType;
 	}
+#endif
 }

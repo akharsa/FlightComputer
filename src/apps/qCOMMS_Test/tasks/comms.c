@@ -17,6 +17,8 @@
 #include "DebugConsole.h"
 #include "board.h"
 
+#include "qESC.h"
+#include "leds.h"
 
 extern xSemaphoreHandle TelemetrySmphr;
 
@@ -31,6 +33,9 @@ xQueueHandle ControlQueue;
 xQueueHandle SystemQueue;
 
 void Communications(void * pvParameters){
+
+	qLed_Init(FRONT_LEFT_LED);
+
 
 	vTaskDelay(3000/portTICK_RATE_MS);
 	//XXX: Should this be done in the comms api?
@@ -79,7 +84,18 @@ void UART_Rx_Handler(uint8_t * buff, size_t sz){
 				switch (msg.Type){
 					case MSG_TYPE_CONTROL:
 						//xSemaphoreGiveFromISR(TelemetrySmphr,&xHigherPriorityTaskWoken);
-						xQueueSendFromISR(ControlQueue,msg.Payload,&xHigherPriorityTaskWoken);
+						//xQueueSendFromISR(ControlQueue,msg.Payload,&xHigherPriorityTaskWoken);
+						qESC_SetOutput(MOTOR1,255-msg.Payload[3]);
+						qESC_SetOutput(MOTOR2,255-msg.Payload[3]);
+						qESC_SetOutput(MOTOR3,255-msg.Payload[3]);
+						qESC_SetOutput(MOTOR4,255-msg.Payload[3]);
+
+						if (msg.Payload[8]&0x40!=0){
+							qLed_TurnOn(FRONT_LEFT_LED);
+						}else{
+							qLed_TurnOff(FRONT_LEFT_LED);
+						}
+
 						break;
 					case MSG_TYPE_DEBUG:
 						ConsolePuts("ECHO: ");
