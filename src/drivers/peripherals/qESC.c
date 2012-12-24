@@ -8,7 +8,6 @@
 #include "types.h"
 #include "qESC.h"
 #include "qPWM.h"
-#include "delay.h"
 
 Status qESC_Init(){
 	qPWM_Init(ESC_FREC_RATE);

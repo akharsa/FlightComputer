@@ -15,6 +15,7 @@
 
 #include "string.h"
 #include "DebugConsole.h"
+#include "board.h"
 
 
 extern xSemaphoreHandle TelemetrySmphr;
@@ -31,22 +32,17 @@ xQueueHandle SystemQueue;
 
 void Communications(void * pvParameters){
 
+	vTaskDelay(3000/portTICK_RATE_MS);
 	//XXX: Should this be done in the comms api?
-	if (qUART_Init(0,115200,8,QUART_PARITY_NONE,8)==RET_ERROR){
+	if (qUART_Init(UART_GROUNDCOMM,57600,8,QUART_PARITY_NONE,1)==RET_ERROR){
 		while(1);
 	}
+	qUART_Register_RBR_Callback(UART_GROUNDCOMM, UART_Rx_Handler);
 
 	msg.Payload = msgBuff;
-	qUART_Register_RBR_Callback(0, UART_Rx_Handler);
-	qComms_SendMsg(0,0xBB,MSG_TYPE_SYSTEM,strlen((char *)buff),buff);
 
-	while(1){
-		//qComms_SendMsg(0,0xBB,MSG_TYPE_DEBUG,strlen((char *)buff),buff);
-		ConsolePuts_("Hello world!\r\n",CYAN);
-		ConsolePutNumber_(4095,16,WHITE);
-		ConsolePuts("\r\n");
-		vTaskDelay(1000/portTICK_RATE_MS);
-	}
+	ConsolePuts_("======================================\r\n",WHITE);
+	ConsolePuts_("Autopilot @ FLC_v2p0 running...\r\n\r\n",WHITE);
 
 	ControlQueue = xQueueCreate(4,sizeof(uint8_t)*255);
 	xTaskCreate( ControlDataHandle, ( signed char * ) "COMMS/CONTROL", configMINIMAL_STACK_SIZE, ( void * ) NULL, 1, NULL );
@@ -54,10 +50,12 @@ void Communications(void * pvParameters){
 }
 
 void ControlDataHandle(void * pvParameters){
-	uint8_t buff[255];
+	uint8_t buff[10];
+
 	for (;;){
 		xQueueReceive(ControlQueue,buff,portMAX_DELAY);
-		//qUART_Send(2,buff,strlen((char*)buff));
+		ConsolePutNumber_(buff[0],10,WHITE);
+		ConsolePuts("\r\n");
 	}
 }
 
@@ -67,9 +65,11 @@ void UART_Rx_Handler(uint8_t * buff, size_t sz){
 	int i;
 	static portBASE_TYPE xHigherPriorityTaskWoken;
 	xHigherPriorityTaskWoken = pdFALSE;
+	ret_t ret;
 
 	for (i=0;i<sz;i++){
-		switch (qComms_ParseByte(&msg,*(buff+i))){
+		ret=qComms_ParseByte(&msg,*(buff+i));
+		switch (ret){
 			case RET_MSG_BYTES_REMAINING:
 				break;
 			case RET_MSG_ERROR:
@@ -78,10 +78,13 @@ void UART_Rx_Handler(uint8_t * buff, size_t sz){
 			case RET_MSG_OK:
 				switch (msg.Type){
 					case MSG_TYPE_CONTROL:
-						break;
-					case MSG_TYPE_SYSTEM:
-						xSemaphoreGiveFromISR(TelemetrySmphr,&xHigherPriorityTaskWoken);
+						//xSemaphoreGiveFromISR(TelemetrySmphr,&xHigherPriorityTaskWoken);
 						xQueueSendFromISR(ControlQueue,msg.Payload,&xHigherPriorityTaskWoken);
+						break;
+					case MSG_TYPE_DEBUG:
+						ConsolePuts("ECHO: ");
+						ConsolePuts(msg.Payload);
+						ConsolePuts("\r\n");
 						break;
 					default:
 						break;
@@ -91,9 +94,7 @@ void UART_Rx_Handler(uint8_t * buff, size_t sz){
 				// Problem with memory
 				break;
 			case RET_OK:
-				// Neever
-				break;
-			default:
+				// Never
 				break;
 		}
 	}

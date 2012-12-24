@@ -8,7 +8,6 @@
 #include "types.h"
 #include "bmp085.h"
 #include "_bmp085.h"
-#include "delay.h"
 #include "qI2C.h"
 #include "math.h"
 

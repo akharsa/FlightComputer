@@ -77,14 +77,14 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="com.crt.advproject.config.exe.debug.1803071712.src/cr_startup_lpc176x.c" name="cr_startup_lpc176x.c" rcbsApplicability="disable" resourcePath="src/cr_startup_lpc176x.c" toolsToInvoke="com.crt.advproject.gcc.exe.debug.1924589528.1986616533">
+					<fileInfo id="com.crt.advproject.config.exe.debug.1803071712.src/cr_startup_lpc176x.c" name="cr_startup_lpc176x.c" rcbsApplicability="disable" resourcePath="src/system/cr_startup_lpc176x.c" toolsToInvoke="com.crt.advproject.gcc.exe.debug.1924589528.1986616533">
 						<tool id="com.crt.advproject.gcc.exe.debug.1924589528.1986616533" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1924589528">
 							<option id="gnu.c.compiler.option.optimization.flags.220105205" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
 							<inputType id="com.crt.advproject.compiler.input.278798737" superClass="com.crt.advproject.compiler.input"/>
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="apps/trash|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|bsp/board_specific/qUART.c|rtos/MemMang/heap_1.c|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="drivers/devices|apps/trash|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|bsp/board_specific/qUART.c|rtos/MemMang/heap_1.c|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -266,7 +266,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="apps/trash|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|bsp/board_specific/qUART.c|rtos/MemMang/heap_1.c|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="drivers/devices|apps/trash|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|bsp/board_specific/qUART.c|rtos/MemMang/heap_1.c|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

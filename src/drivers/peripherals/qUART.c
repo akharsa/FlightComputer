@@ -15,6 +15,8 @@
 
 #include "LightweightRingBuff.h"
 
+status_t qUARTStatus[qUART_TOTAL] = {0}; /* DEVICE_NOT_READY */
+
 //===========================================================
 // Defines
 //===========================================================

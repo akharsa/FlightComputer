@@ -18,7 +18,6 @@
 #endif
 
 #include "types.h"
-#include "../API_Config.h"
 
 //===========================================================
 // Defines
