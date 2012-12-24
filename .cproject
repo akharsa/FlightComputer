@@ -28,6 +28,7 @@
 								<option id="com.crt.advproject.gcc.arch.154908293" name="Architecture" superClass="com.crt.advproject.gcc.arch" value="com.crt.advproject.gcc.target.cm3" valueType="enumerated"/>
 								<option id="com.crt.advproject.gcc.thumb.1886720231" name="Thumb mode" superClass="com.crt.advproject.gcc.thumb" value="true" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.360274142" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="MY_ADDRESS=0xAA"/>
 									<listOptionValue builtIn="false" value="ARM_MATH_CM3"/>
 									<listOptionValue builtIn="false" value="__USE_CMSIS"/>
 									<listOptionValue builtIn="false" value="__REDLIB__"/>
@@ -37,6 +38,7 @@
 								<option id="gnu.c.compiler.option.misc.other.482427792" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections" valueType="string"/>
 								<option id="com.crt.advproject.gcc.hdrlib.379352474" name="Use headers for C library" superClass="com.crt.advproject.gcc.hdrlib" value="com.crt.advproject.gcc.hdrlib.codered" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.908566759" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Autopilot/src/api/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Autopilot/src/rtos/portable}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Autopilot/src/rtos/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Autopilot/src/drivers}&quot;"/>
@@ -82,7 +84,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="main.c|rtos/MemMang/heap_1.c|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|bsp/board_specific/qUART.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="apps/trash|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|bsp/board_specific/qUART.c|rtos/MemMang/heap_1.c|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -264,7 +266,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="main.c|rtos/MemMang/heap_1.c|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|bsp/board_specific/qUART.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="apps/trash|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|bsp/board_specific/qUART.c|rtos/MemMang/heap_1.c|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

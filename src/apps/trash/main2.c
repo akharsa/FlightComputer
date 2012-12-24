@@ -1,9 +1,3 @@
-/*
- * main2.c
- *
- *  Created on: 23/12/2012
- *      Author: alan
- */
 #include "FreeRTOS.h"
 #include "task.h"
 #include "board.h"
@@ -43,10 +37,8 @@ void SystemController(void * p){
 
 
 int main(void) {
-
 	xTaskCreate(SystemController, ( signed char * ) "System Controller", 1000, ( void * ) NULL, 3, NULL );
 	vTaskStartScheduler();
-
 	return 0 ;
 }
 

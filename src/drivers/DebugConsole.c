@@ -3,7 +3,7 @@
 #include "types.h"
 
 #include <string.h>
-
+#include "qCOMMS.h"
 
 
 static const char * colorArray[]={COLOR_BLACK,COLOR_RED,COLOR_GREEN,COLOR_YELLOW,COLOR_BLUE,COLOR_MAGENTA,COLOR_MAGENTA,COLOR_CYAN,COLOR_WHITE};
@@ -73,10 +73,10 @@ void ConsolePuts(char * buff){
 void ConsolePuts_(char * buff,int color ){
 
 	uint8_t * msgs[] = {(uint8_t *)(colorArray[color]),(uint8_t *)buff};
-	//uint8_t sz[] = {strlen((char*)colorArray[color]),strlen((char*)buff)};
 
-	UARTPuts(CONSOLE,msgs[0]);
-	UARTPuts(CONSOLE,msgs[1]);
+	qComms_SendMsg(0,0xBB,MSG_TYPE_DEBUG,(uint8_t)strlen((char*)msgs[0]),msgs[0]);
+	qComms_SendMsg(0,0xBB,MSG_TYPE_DEBUG,(uint8_t)strlen((char*)msgs[1]),msgs[1]);
+
 }
 
 void ConsolePutNumber(int value, uint8_t base){
