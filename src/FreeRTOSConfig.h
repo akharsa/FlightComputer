@@ -83,7 +83,7 @@
 
 #define configMAX_CO_ROUTINE_PRIORITIES ( 2 )
 
-#define configUSE_COUNTING_SEMAPHORES 	0
+#define configUSE_COUNTING_SEMAPHORES 	1
 #define configUSE_ALTERNATIVE_API 		0
 #define configCHECK_FOR_STACK_OVERFLOW	0
 #define configUSE_RECURSIVE_MUTEXES		1
@@ -101,7 +101,7 @@ to exclude the API function. */
 #define INCLUDE_vTaskDelayUntil				1
 #define INCLUDE_vTaskDelay					1
 #define INCLUDE_uxTaskGetStackHighWaterMark	1
-
+#define INCLUDE_xQueueGetMutexHolder		1
 
 /* Use the system definition, if there is one */
 #ifdef __NVIC_PRIO_BITS
@@ -110,10 +110,26 @@ to exclude the API function. */
 	#define configPRIO_BITS       5        /* 32 priority levels */
 #endif
 
+#if 0
 /* The lowest priority. */
 #define configKERNEL_INTERRUPT_PRIORITY 	( 31 << (8 - configPRIO_BITS) )
 /* Priority 5, or 160 as only the top three bits are implemented. */
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY 	( 5 << (8 - configPRIO_BITS) )
+#endif
+
+/* The maximum priority an interrupt that uses an interrupt safe FreeRTOS API
+function can have.  Note that lower priority have numerically higher values.  */
+#define configMAX_LIBRARY_INTERRUPT_PRIORITY	( 5 )
+
+/* The minimum possible interrupt priority. */
+#define configMIN_LIBRARY_INTERRUPT_PRIORITY	( 31 )
+
+/* The lowest priority. */
+#define configKERNEL_INTERRUPT_PRIORITY 		( configMIN_LIBRARY_INTERRUPT_PRIORITY << (8 - configPRIO_BITS) )
+
+/* Priority 5, or 248 as only the top five bits are implemented. */
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY 	( configMAX_LIBRARY_INTERRUPT_PRIORITY << (8 - configPRIO_BITS) )
+
 
 /* Priorities passed to NVIC_SetPriority() do not require shifting as the
 function does the shifting itself.  Note these priorities need to be equal to
@@ -122,7 +138,6 @@ value needs to be equal to or greater than 5 (on the Cortex-M3 the lower the
 numeric value the higher the interrupt priority). */
 #define configEMAC_INTERRUPT_PRIORITY		5
 #define configUSB_INTERRUPT_PRIORITY		6
-
 
 
 /*-----------------------------------------------------------

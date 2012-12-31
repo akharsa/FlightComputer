@@ -38,9 +38,11 @@
 								<option id="gnu.c.compiler.option.misc.other.482427792" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections" valueType="string"/>
 								<option id="com.crt.advproject.gcc.hdrlib.379352474" name="Use headers for C library" superClass="com.crt.advproject.gcc.hdrlib" value="com.crt.advproject.gcc.hdrlib.codered" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.908566759" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Autopilot/src/rtos/FreeRTOS/portable/GCC/ARM_CM3}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Autopilot/src/rtos/FreeRTOS-Plus-IO/Device/LPC17xx/SupportedBoards}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Autopilot/src/rtos/FreeRTOS-Plus-IO/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Autopilot/src/api/inc}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Autopilot/src/rtos/portable}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Autopilot/src/rtos/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Autopilot/src/rtos/FreeRTOS/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Autopilot/src/drivers}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Autopilot/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FLC_v2p0_Autopilot/src/CMSIS/Core/CM3/CoreSupport}&quot;"/>
@@ -84,7 +86,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="apps/trash|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|bsp/board_specific/qUART.c|rtos/MemMang/heap_1.c|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="drivers/peripherals/qUART2.c|apps/qCOMMS_Test/tasks/comms.c|rtos/FreeRTOS-Plus-IO/Device/LPC17xx/FreeRTOS_lpc17xx_ssp.c|rtos/FreeRTOS-Plus-IO/Device/LPC17xx/FreeRTOS_lpc17xx_i2c.c|drivers/peripherals/qUART.c|apps/trash|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|bsp/board_specific/qUART.c|rtos/MemMang/heap_1.c|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -266,7 +268,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="apps/trash|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|bsp/board_specific/qUART.c|rtos/MemMang/heap_1.c|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="drivers/peripherals/qUART2.c|apps/qCOMMS_Test/tasks/comms.c|rtos/FreeRTOS-Plus-IO/Device/LPC17xx/FreeRTOS_lpc17xx_ssp.c|rtos/FreeRTOS-Plus-IO/Device/LPC17xx/FreeRTOS_lpc17xx_i2c.c|drivers/peripherals/qUART.c|apps/trash|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|bsp/board_specific/qUART.c|rtos/MemMang/heap_1.c|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
