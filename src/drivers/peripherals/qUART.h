@@ -90,6 +90,15 @@ uint32_t qUART_Send(uint8_t qUART_ID, uint8_t * buff, size_t size);
  *********************************************************************/
 ret_t qUART_SendByte(uint8_t qUART_ID, uint8_t ch);
 
+/********************************************************************//**
+ * @brief 		Sends only one byte
+ * @param[in]	id UART number
+ * @param[in]	Byte Data to be sent
+ * @return 		RET_OK
+ * @return 		RET_ERROR
+ *********************************************************************/
+uint32_t qUART_Read(uint8_t qUART_ID, uint8_t *  ucBuffer, uint32_t len);
+
 #endif /* qUART_H_ */
 
 /*@}*/

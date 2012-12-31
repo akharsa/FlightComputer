@@ -24,10 +24,6 @@ Peripheral_Descriptor_t xOpenAndConfigureUARTPort( void )
     to polling. */
 	xUARTPort = FreeRTOS_open( "/UART0/", NULL );
 
-    /* FreeRTOS_open() returns NULL when the open operation cannot complete.  Check
-    the return value is not NULL. */
-    configASSERT( xUARTPort );
-
     /* Configure the port for zero copy Tx.  The third parameter is not used in
     this case. */
 //    FreeRTOS_ioctl( xUARTPort, ioctlUSE_ZERO_COPY_TX, NULL );
@@ -37,12 +33,13 @@ Peripheral_Descriptor_t xOpenAndConfigureUARTPort( void )
     parameter is used, and defines the buffer size.*/
     FreeRTOS_ioctl( xUARTPort, ioctlUSE_CIRCULAR_BUFFER_RX, ( void * ) 100 );
 
+
     /* Set the read timeout to 200ms.  This is the maximum time a FreeRTOS_read()
     call will wait for the requested amount of data to be available.  As the port
     is configured to use interrupts, the task performing the read is in the
     Blocked state while the operation is in progress, so not consuming any CPU time.
     An interrupt driven zero copy write does not require a timeout to be set. */
-    FreeRTOS_ioctl( xUARTPort, ioctlSET_RX_TIMEOUT, ( void * ) ( 200 / portTICK_RATE_MS ) );
+    FreeRTOS_ioctl( xUARTPort, ioctlSET_RX_TIMEOUT, ( void * )  100 );
 
     return xUARTPort;
 }
@@ -97,4 +94,9 @@ uint32_t qUART_Send(uint8_t qUART_ID, uint8_t * buff, size_t size){
 
 ret_t qUART_SendByte(uint8_t qUART_ID, uint8_t ch){
 	qUART_Send(qUART_ID,&ch,1);
+	return RET_OK;
+}
+
+uint32_t qUART_Read(uint8_t qUART_ID, uint8_t *  ucBuffer, uint32_t len){
+    return FreeRTOS_read( xOpenPort, ucBuffer, len);
 }

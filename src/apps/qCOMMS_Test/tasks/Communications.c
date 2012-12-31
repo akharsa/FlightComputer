@@ -6,6 +6,7 @@
  *
  */
 #include "FreeRTOS.h"
+#include "FreeRTOS_IO.h"
 #include "queue.h"
 #include "task.h"
 #include "semphr.h"
@@ -20,11 +21,67 @@
 #include "qESC.h"
 #include "leds.h"
 
+
+
+static Msg_t msg;
+static uint8_t payload[255];
+static uint8_t buffer[100];
+
 void Communications(void * pvParameters){
-	qLed_Init(FRONT_LEFT_LED);
+
+	uint32_t i=0, len;
+	msg.Payload = payload;
+	ret_t ret;
+
 	for(;;){
+		if ((len = qUART_Read(UART_GROUNDCOMM,buffer,100))>0){
 
+			for (i=0;i<len;i++){
+				ret=qComms_ParseByte(&msg,*(buffer+i));
+				switch (ret){
+					case RET_MSG_BYTES_REMAINING:
+						break;
+					case RET_MSG_ERROR:
+						break;
+					case RET_MSG_OK:
 
+						switch (msg.Type){
+							case MSG_TYPE_CONTROL:
+								qESC_SetOutput(MOTOR1,255-msg.Payload[3]);
+								qESC_SetOutput(MOTOR2,255-msg.Payload[3]);
+								qESC_SetOutput(MOTOR3,255-msg.Payload[3]);
+								qESC_SetOutput(MOTOR4,255-msg.Payload[3]);
+
+								if (msg.Payload[8]&0x40!=0){
+									qLed_TurnOn(FRONT_LEFT_LED);
+								}else{
+									qLed_TurnOff(FRONT_LEFT_LED);
+								}
+
+								break;
+							case MSG_TYPE_DEBUG:
+								ConsolePuts("ECHO: ");
+								ConsolePuts(msg.Payload);
+								ConsolePuts("\r\n");
+								break;
+							default:
+								break;
+						}
+
+						i = 0;
+						memset(msg.Payload,0,255);
+						msg.Length = 0;
+						break;
+
+					case RET_ERROR:
+						// Problem with memory
+						break;
+					case RET_OK:
+						// Never
+						break;
+				}
+			}
+		}
 
 	}
 
@@ -39,8 +96,6 @@ void Communications(void * pvParameters){
 
 	msg.Payload = msgBuff;
 
-	ConsolePuts_("======================================\r\n",WHITE);
-	ConsolePuts_("Autopilot @ FLC_v2p0 running...\r\n\r\n",WHITE);
 
 	ControlQueue = xQueueCreate(4,sizeof(uint8_t)*255);
 	xTaskCreate( ControlDataHandle, ( signed char * ) "COMMS/CONTROL", configMINIMAL_STACK_SIZE, ( void * ) NULL, 1, NULL );

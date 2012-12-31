@@ -33,16 +33,6 @@ void Telemetry(void * pvParameters){
 	Status res;
 	res = qI2C_Init();
 
-
-	qUART_Init(0,57600,8,QUART_PARITY_NONE,1);
-
-
-	for(;;){
-		//ConsolePuts_("MPU\r\n", BLUE);
-		ConsolePuts_("Testing MPU6050...\r\n", BLUE);
-        vTaskDelayUntil( &xLastWakeTime, 500/portTICK_RATE_MS);
-	}
-
 	ConsolePuts_("Testing MPU6050...\r\n", BLUE);
 	ConsolePuts("Connection...\t\t\t\t");
 
