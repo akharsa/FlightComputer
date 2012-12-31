@@ -233,7 +233,7 @@ void UARTx_IRQHandler(uint8_t id){
 	intsrc = UART_GetIntId(uarts[id]);
 	tmp = intsrc & UART_IIR_INTID_MASK;
 
-	/* Receive Line Status */
+	/* Receive Line Status: error checking register */
 	if (tmp == UART_IIR_INTID_RLS){
 		// Check line status
 		tmp1 = UART_GetLineStatus(uarts[id]);
@@ -287,11 +287,11 @@ void UART_IntErr(uint8_t id, uint8_t bLSErrType)
 {
 	uint8_t test;
 	/* Loop forever */
-#if 0
+
 	while (1){
 		/* For testing purpose */
 		//\TODO: Handle the errors. For example Overrun.
 		test = bLSErrType;
 	}
-#endif
+
 }

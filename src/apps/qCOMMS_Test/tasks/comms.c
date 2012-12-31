@@ -81,6 +81,8 @@ void UART_Rx_Handler(uint8_t * buff, size_t sz){
 				qUART_SendByte(2,'E');
 				break;
 			case RET_MSG_OK:
+				qLed_TurnOn(FRONT_LEFT_LED);
+				/*
 				switch (msg.Type){
 					case MSG_TYPE_CONTROL:
 						//xSemaphoreGiveFromISR(TelemetrySmphr,&xHigherPriorityTaskWoken);
@@ -104,8 +106,9 @@ void UART_Rx_Handler(uint8_t * buff, size_t sz){
 						break;
 					default:
 						break;
-				}
+				}*/
 				break;
+
 			case RET_ERROR:
 				// Problem with memory
 				break;
