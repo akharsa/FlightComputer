@@ -28,8 +28,8 @@ void AppMain(void) {
 	qESC_InitChannel(MOTOR3);
 	qESC_InitChannel(MOTOR4);
 
-	xTaskCreate( Communications, ( signed char * ) "COMMS", configMINIMAL_STACK_SIZE, ( void * ) NULL, 2, NULL );
-	//xTaskCreate(Telemetry, ( signed char * ) "TELEMETRY", 300, ( void * ) NULL, 1, NULL );
+	//xTaskCreate( Communications, ( signed char * ) "COMMS", configMINIMAL_STACK_SIZE, ( void * ) NULL, 2, NULL );
+	xTaskCreate(Telemetry, ( signed char * ) "TELEMETRY", 300, ( void * ) NULL, 1, NULL );
 	vTaskStartScheduler();
 
 	for(;;);

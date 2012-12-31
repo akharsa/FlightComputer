@@ -44,16 +44,16 @@
 #define FREERTOS_IO_CONFIG_H
 
 /* Globally include or exclude transfer modes. -------------------------------*/
-#define ioconfigUSE_ZERO_COPY_TX							1
+#define ioconfigUSE_ZERO_COPY_TX							0
 #define ioconfigUSE_TX_CHAR_QUEUE  							0
 #define ioconfigUSE_CIRCULAR_BUFFER_RX 						1
 #define ioconfigUSE_RX_CHAR_QUEUE 							0
 
 /* Peripheral options --------------------------------------------------------*/
 #define ioconfigINCLUDE_UART								1
-	#define ioconfigUSE_UART_POLLED_TX						0
+	#define ioconfigUSE_UART_POLLED_TX						1
 	#define ioconfigUSE_UART_POLLED_RX						0
-	#define ioconfigUSE_UART_ZERO_COPY_TX					1
+	#define ioconfigUSE_UART_ZERO_COPY_TX					0
 	#define ioconfigUSE_UART_TX_CHAR_QUEUE					0
 	#define ioconfigUSE_UART_CIRCULAR_BUFFER_RX				1
 	#define ioconfigUSE_UART_RX_CHAR_QUEUE					0

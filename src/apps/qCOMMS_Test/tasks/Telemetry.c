@@ -33,10 +33,18 @@ void Telemetry(void * pvParameters){
 	Status res;
 	res = qI2C_Init();
 
+
+	qUART_Init(0,57600,8,QUART_PARITY_NONE,1);
+
+
+	for(;;){
+		//ConsolePuts_("MPU\r\n", BLUE);
+		ConsolePuts_("Testing MPU6050...\r\n", BLUE);
+        vTaskDelayUntil( &xLastWakeTime, 500/portTICK_RATE_MS);
+	}
+
 	ConsolePuts_("Testing MPU6050...\r\n", BLUE);
 	ConsolePuts("Connection...\t\t\t\t");
-
-	qLed_Init(REAR_LEFT_LED);
 
 	if (MPU6050_testConnection()==TRUE){
 		ConsolePuts_("[OK]\r\n",GREEN);
@@ -52,44 +60,20 @@ void Telemetry(void * pvParameters){
 
 	for (;;){
 
-		//qLed_TurnOn(REAR_LEFT_LED);
-
-
-
+		qLed_TurnOn(REAR_LEFT_LED);
 
 		MPU6050_getMotion6(&sensors[0],&sensors[1],&sensors[2],&sensors[3],&sensors[4],&sensors[5]);
 
-		rotation = sensors[3];
-
-		if (rotation!=rotation_old){
-			if ((rotation<10) && (rotation>-10)){
-				qLed_TurnOn(REAR_LEFT_LED);
-
-				timerStop(&t1);
-				period = timerGetElapsed(&t1);
-				ConsolePutNumber_(period,10,BLACK);
-				ConsolePuts("\r\n");
-				timerStart(&t1);
-
-				//vTaskDelay(100/portTICK_RATE_MS);
-				qLed_TurnOff(REAR_LEFT_LED);
-			}
-		}
-		rotation_old = rotation;
-
-
-		/*
-		printf("Total time: %i\n",timerGetElapsed(&t1));
-
-
-		MPU6050_getMotion6(&sensors[0],&sensors[1],&sensors[2],&sensors[3],&sensors[4],&sensors[5]);
-
+		ConsolePutNumber(sensors[3],10);
+		ConsolePuts("\t\t");
+		ConsolePutNumber(sensors[4],10);
+		ConsolePuts("\t\t");
 		ConsolePutNumber(sensors[5],10);
 		ConsolePuts("\r\n");
 
 		qLed_TurnOff(REAR_LEFT_LED);
 
-        vTaskDelayUntil( &xLastWakeTime, 100/portTICK_RATE_MS);*/
+        vTaskDelayUntil( &xLastWakeTime, 100/portTICK_RATE_MS);
 
 	}
 
