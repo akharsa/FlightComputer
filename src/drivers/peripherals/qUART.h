@@ -90,6 +90,9 @@ uint32_t qUART_Send(uint8_t qUART_ID, uint8_t * buff, size_t size);
  *********************************************************************/
 ret_t qUART_SendByte(uint8_t qUART_ID, uint8_t ch);
 
+
+ret_t qUART_ReadByte(uint8_t id, uint8_t * buffer);
+
 #endif /* qUART_H_ */
 
 /*@}*/

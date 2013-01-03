@@ -83,7 +83,7 @@
 
 #define configMAX_CO_ROUTINE_PRIORITIES ( 2 )
 
-#define configUSE_COUNTING_SEMAPHORES 	0
+#define configUSE_COUNTING_SEMAPHORES 	1
 #define configUSE_ALTERNATIVE_API 		0
 #define configCHECK_FOR_STACK_OVERFLOW	0
 #define configUSE_RECURSIVE_MUTEXES		1

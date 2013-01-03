@@ -32,6 +32,8 @@
  *
  *  Ultra lightweight ring buffer, for fast insertion/deletion.
  */
+
+#include "FreeRTOS.h"
  
 #ifndef _ULW_RING_BUFF_H_
 #define _ULW_RING_BUFF_H_
@@ -41,8 +43,9 @@
 		#include <stdint.h>
 		#include <stdbool.h>
 
-	/* Defines: */
-		#define	ATOMIC_BLOCK(x)
+		/* Defines: */
+		//#define	ATOMIC_BLOCK(x)
+
 		/** Size of each ring buffer, in data elements - must be between 1 and 255. */
 		#define BUFFER_SIZE         128
 		
@@ -84,11 +87,12 @@
 		 */
 		static inline void RingBuffer_InitBuffer(RingBuff_t* const Buffer)
 		{
-			ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+			portENTER_CRITICAL();
 			{
 				Buffer->In  = Buffer->Buffer;
 				Buffer->Out = Buffer->Buffer;
 			}
+			portEXIT_CRITICAL();
 		}
 		
 		/** Retrieves the minimum number of bytes stored in a particular buffer. This value is computed
@@ -108,10 +112,11 @@
 		{
 			RingBuff_Count_t Count;
 			
-			ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+			portENTER_CRITICAL();
 			{
 				Count = Buffer->Count;
 			}
+			portEXIT_CRITICAL();
 			
 			return Count;
 		}
@@ -163,10 +168,11 @@
 			if (++Buffer->In == &Buffer->Buffer[BUFFER_SIZE])
 			  Buffer->In = Buffer->Buffer;
 
-			ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+			portENTER_CRITICAL();
 			{
 				Buffer->Count++;
 			}
+			portEXIT_CRITICAL();
 		}
 
 		/** Removes an element from the ring buffer.
@@ -186,10 +192,11 @@
 			if (++Buffer->Out == &Buffer->Buffer[BUFFER_SIZE])
 			  Buffer->Out = Buffer->Buffer;
 
-			ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+			portENTER_CRITICAL();
 			{
 				Buffer->Count--;
 			}
+			portEXIT_CRITICAL();
 			
 			return Data;
 		}

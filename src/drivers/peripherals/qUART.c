@@ -14,13 +14,17 @@
 #include "lpc17xx_gpdma.h"
 
 #include "LightweightRingBuff.h"
-
+#include "leds.h"
+#include "board.h"
 status_t qUARTStatus[qUART_TOTAL] = {0}; /* DEVICE_NOT_READY */
+
+#include "FreeRTOS.h"
+#include "task.h"
 
 //===========================================================
 // Defines
 //===========================================================
-#define FIFO_TRIGGER_LEVEL 14
+#define FIFO_TRIGGER_LEVEL 12
 
 //===========================================================
 // Variables
@@ -30,6 +34,7 @@ static uint8_t RxBuff[qUART_TOTAL][FIFO_TRIGGER_LEVEL];
 void (*RBR_Handler[qUART_TOTAL])(uint8_t *,size_t sz) = {NULL};
 
 static RingBuff_t UART_Out_Buffer[qUART_TOTAL];
+static RingBuff_t UART_In_Buffer[qUART_TOTAL];
 
 //===========================================================
 // Prototypes
@@ -119,6 +124,7 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
 	}
 
 	RingBuffer_InitBuffer(&UART_Out_Buffer[id]);
+	RingBuffer_InitBuffer(&UART_In_Buffer[id]);
 
 	// -------------------------------------------------------
 
@@ -135,24 +141,6 @@ ret_t qUART_DeInit(uint8_t id){
 		return RET_ERROR;
 	}
 }
-#if 0
-uint32_t qUART_Send(uint8_t id, uint8_t * buff, size_t size){
-	if (qUARTStatus[id] == DEVICE_NOT_READY){
-		return RET_ERROR;
-	}
-	return UART_Send(uarts[id],buff,size,BLOCKING);;
-}
-
-ret_t qUART_SendByte(uint8_t id, uint8_t ch){
-	if (qUARTStatus[id] == DEVICE_NOT_READY){
-		return RET_ERROR;
-	}
-
-	UART_SendByte(uarts[id],ch);
-
-	return RET_OK;
-}
-#endif
 
 uint32_t qUART_Send(uint8_t id, uint8_t * buff, size_t size){
 	int bLeft = size;
@@ -176,11 +164,10 @@ ret_t qUART_SendByte(uint8_t id, uint8_t ch){
 
 	UART_IntConfig(uarts[id], UART_INTCFG_THRE, DISABLE);
 
-	// Check for the FIFO Empty and the reingBuffer Empty
+	// Check for the FIFO Empty and the ringBuffer Empty
 	 if ( (uarts[id]->LSR & UART_LSR_THRE) && RingBuffer_IsEmpty(&UART_Out_Buffer[id]) ){
 		 UART_SendByte(uarts[id],ch);
 	 }else{
-
 		 UART_IntConfig(uarts[id], UART_INTCFG_THRE, ENABLE);
 		 while(RingBuffer_IsFull(&UART_Out_Buffer[id]));
 		 UART_IntConfig(uarts[id], UART_INTCFG_THRE, DISABLE);
@@ -206,6 +193,34 @@ ret_t qUART_Register_RBR_Callback(uint8_t id, void (*pf)(uint8_t *, size_t sz)){
 	return RET_OK;
 }
 
+ret_t qUART_ReadByte(uint8_t id, uint8_t * buffer){
+	if (!RingBuffer_IsEmpty(&UART_In_Buffer[id])){
+		*buffer = RingBuffer_Remove(&UART_In_Buffer[id]);
+		return RET_OK;
+	}else{
+		return RET_ERROR;
+	}
+}
+
+#if 0
+uint32_t qUART_Read(uint8_t id, uint8_t * buffer, uint32_t len){
+	uint32_t i=0;
+	uint32_t count;
+
+	count = RingBuffer_GetCount(&UART_In_Buffer[id]);
+
+	if (!RingBuffer_IsEmpty(&UART_In_Buffer[id])){
+		if (len > RingBuffer_GetCount(&UART_In_Buffer[id])){
+			len = RingBuffer_GetCount(&UART_In_Buffer[id]);
+		}
+		for (i=0;i<len;i++){
+			buffer[i] = RingBuffer_Remove(&UART_In_Buffer[id]);
+		}
+		return len;
+	}
+	return 0;
+}
+#endif
 
 //===========================================================
 // Handlers
@@ -225,7 +240,9 @@ void UART3_IRQHandler(void)
 }
 
 
+
 void UARTx_IRQHandler(uint8_t id){
+	uint32_t i;
 	uint32_t intsrc, tmp, tmp1;
 	uint32_t rLen;
 
@@ -254,14 +271,21 @@ void UARTx_IRQHandler(uint8_t id){
 		 * be FIFO_TRIGGER_LEVEL. If the IRQ was caused by CTI, then rLen is important
 		 */
 
-		rLen = UART_Receive(uarts[id], (uint8_t *)&RxBuff[0], FIFO_TRIGGER_LEVEL, NONE_BLOCKING);
+		qLed_TurnOn(STATUS_LED);
+		rLen = UART_Receive(uarts[id], (uint8_t *)&RxBuff[id], FIFO_TRIGGER_LEVEL, NONE_BLOCKING);
 
-		//FIXME: Hardcoding!!
-		//XXX: Maybe an intermediate buffer is needed.
+		for (i=0;i<rLen;i++){
+			if (!RingBuffer_IsFull(&UART_In_Buffer[id])){
+				RingBuffer_Insert(&UART_In_Buffer[id],RxBuff[id][i]);
+			}else{
+				UART_IntErr(id,0xFF);
+			}
+		}
+
 		if (RBR_Handler[id]!=NULL){
 			(*RBR_Handler[id])((uint8_t *)RxBuff,(size_t)rLen);
 		}
-
+		qLed_TurnOff(STATUS_LED);
 	}
 
 	/* Transmit Holding Empty */
@@ -285,13 +309,9 @@ void UARTx_IRQHandler(uint8_t id){
  **********************************************************************/
 void UART_IntErr(uint8_t id, uint8_t bLSErrType)
 {
-	uint8_t test;
-	/* Loop forever */
-
+//	qLed_TurnOn(FRONT_LEFT_LED);
 	while (1){
-		/* For testing purpose */
-		//\TODO: Handle the errors. For example Overrun.
-		test = bLSErrType;
+		//TODO: Handle the errors. For example Overrun.
 	}
 
 }
