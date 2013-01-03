@@ -85,10 +85,10 @@ void UART_Rx_Handler(uint8_t * buff, size_t sz){
 					case MSG_TYPE_CONTROL:
 						//xSemaphoreGiveFromISR(TelemetrySmphr,&xHigherPriorityTaskWoken);
 						//xQueueSendFromISR(ControlQueue,msg.Payload,&xHigherPriorityTaskWoken);
-						qESC_SetOutput(MOTOR1,255-msg.Payload[3]);
-						qESC_SetOutput(MOTOR2,255-msg.Payload[3]);
-						qESC_SetOutput(MOTOR3,255-msg.Payload[3]);
-						qESC_SetOutput(MOTOR4,255-msg.Payload[3]);
+						qESC_SetOutput(MOTOR1,(255-msg.Payload[3])*4);
+						qESC_SetOutput(MOTOR2,(255-msg.Payload[3])*4);
+						qESC_SetOutput(MOTOR3,(255-msg.Payload[3])*4);
+						qESC_SetOutput(MOTOR4,(255-msg.Payload[3])*4);
 
 						if (msg.Payload[8]&0x40!=0){
 							qLed_TurnOn(FRONT_LEFT_LED);
