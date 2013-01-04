@@ -49,15 +49,6 @@ void Init_Task(void * pvParameters){
 	}
 
 
-	// --------------------------------------------------
-	//	ESC Initialization
-	// --------------------------------------------------
-	qESC_Init();
-	qESC_InitChannel(MOTOR1);
-	qESC_InitChannel(MOTOR2);
-	qESC_InitChannel(MOTOR3);
-	qESC_InitChannel(MOTOR4);
-
 	/* Terminate and go to Idle */
 	state_name_t newState=STATE_IDLE;
 	qFSM_ChangeState(newState);
