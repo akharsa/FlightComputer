@@ -15,3 +15,4 @@ void qFSM_registerState(uint8_t state_ID, const char * name, void (*onEntry)(voi
 	strcpy(sysStates[state_ID].stateName,name);
 }
 
+

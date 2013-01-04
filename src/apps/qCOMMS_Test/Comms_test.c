@@ -21,13 +21,24 @@
 
 void AppMain(void) {
 
+	// --------------------------------------------------
+	//	ESC Initialization
+	// --------------------------------------------------
+
 	qESC_Init();
 	qESC_InitChannel(MOTOR1);
 	qESC_InitChannel(MOTOR2);
 	qESC_InitChannel(MOTOR3);
 	qESC_InitChannel(MOTOR4);
-	qLed_Init(FRONT_LEFT_LED);
-	qLed_Init(STATUS_LED);
+
+	// --------------------------------------------------
+	//	Leds Initialization
+	// --------------------------------------------------
+
+	for (i=0;i<TOTAL_LEDS;i++){
+		qLed_Init(leds[i]);
+		qLed_TurnOff(leds[i]);
+	}
 
 
 	xTaskCreate( Communications, ( signed char * ) "COMMS", configMINIMAL_STACK_SIZE, ( void * ) NULL, 2, NULL );

@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-#define MAX_STATES 20
+#define MAX_STATES 5
 
 #define TransitionValid(from,to,table) table[from-1][to-1]
 
@@ -28,7 +28,7 @@ typedef struct{
 State_t sysStates[MAX_STATES];
 uint8_t systemState;
 
-void qFSM_registerState(uint8_t state_ID, const char * name, void (*onEntry)(void *), void (*onExit)(void *));
-void qFSM_ChangeState(uint8_t state_ID);
+void qFSM_registerState(uint8_t state_t, const char * name, void (*onEntry)(void *), void (*onExit)(void *));
+void qFSM_ChangeState(uint8_t state_t);
 
 #endif /* QFSM_H_ */
