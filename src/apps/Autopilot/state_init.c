@@ -9,6 +9,7 @@
 #include "DebugConsole.h"
 
 #include "board.h"
+#include "taskList.h"
 
 /* ================================ */
 /* Prototypes	 					*/
@@ -48,6 +49,12 @@ void Init_Task(void * pvParameters){
 		vTaskDelay(100/portTICK_RATE_MS);
 	}
 
+	vTaskDelay(3000/portTICK_RATE_MS);
+
+	ConsolePuts_("===================================\r\n",BLUE);
+	ConsolePuts_("SYSTEM RESET!\r\n",BLUE);
+
+	xTaskCreate( Communications, ( signed char * ) "COMMS", 300, ( void * ) NULL, 2, NULL);
 
 	/* Terminate and go to Idle */
 	state_name_t newState=STATE_IDLE;

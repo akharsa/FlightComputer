@@ -310,8 +310,8 @@ void UARTx_IRQHandler(uint8_t id){
 void UART_IntErr(uint8_t id, uint8_t bLSErrType)
 {
 //	qLed_TurnOn(FRONT_LEFT_LED);
-	while (1){
+//	while (1){
 		//TODO: Handle the errors. For example Overrun.
-	}
+//	}
 
 }

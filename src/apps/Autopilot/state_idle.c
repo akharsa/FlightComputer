@@ -14,6 +14,7 @@
 #include "qWDT.h"
 
 #include "board.h"
+#include "DebugConsole.h"
 
 /* ================================ */
 /* Prototypes	 					*/
@@ -30,15 +31,18 @@ static xTaskHandle hnd;
 
 void Idle_onEntry(void * p){
 	xTaskCreate(Idle_Task, ( signed char * ) "IDLE", 200, ( void * ) NULL, 1, &hnd );
-	qWDT_Start(1000000);
 }
 
 void Idle_onExit(void * p){
 	vTaskDelete(hnd);
 }
 
+extern uint16_t inputs[4];
+
 void Idle_Task(void * pvParameters){
 	int i,j;
+
+	//qWDT_Start(1000000);
 
 	for (;;)
 	{
@@ -57,6 +61,16 @@ void Idle_Task(void * pvParameters){
 		qLed_TurnOff(REAR_RIGHT_LED);
 
 		vTaskDelay(50/portTICK_RATE_MS);
+
+		ConsolePutNumber_(inputs[0],10,BLUE);
+		ConsolePuts("\t\t");
+		ConsolePutNumber_(inputs[1],10,BLUE);
+		ConsolePuts("\t\t");
+		ConsolePutNumber_(inputs[2],10,BLUE);
+		ConsolePuts("\t\t");
+		ConsolePutNumber_(inputs[3],10,BLUE);
+		ConsolePuts("\r\n");
+
 	}
 }
 

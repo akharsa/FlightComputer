@@ -72,10 +72,10 @@ void ConsolePuts(char * buff){
 
 void ConsolePuts_(char * buff,int color ){
 
-	uint8_t * msgs[] = {(uint8_t *)(colorArray[color]),(uint8_t *)buff};
+//	uint8_t * msgs[] = {(uint8_t *)(colorArray[color]),(uint8_t *)buff};
 
-	qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_DEBUG,(uint8_t)strlen((char*)msgs[0]),msgs[0]);
-	qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_DEBUG,(uint8_t)strlen((char*)msgs[1]),msgs[1]);
+//	qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_DEBUG,(uint8_t)strlen((char*)msgs[0]),msgs[0]);
+//	qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_DEBUG,(uint8_t)strlen((char*)msgs[1]),msgs[1]);
 
 }
 

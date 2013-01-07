@@ -29,7 +29,28 @@ void ControlDataHandle(void * pvParameters);
 static Msg_t msg;
 static uint8_t msgBuff[255];
 
+
+float control[4]={0.0};
+uint16_t inputs[4]={0};
+
+#define Z_C	0
+#define PHI_C	1
+#define THETA_C	2
+#define PSI_C	3
+
+
+#define K_Z		800
+#define K_PHI	200
+#define K_THETA	200
+#define K_PSI	200
 xSemaphoreHandle DataSmphr;
+
+
+float map(long x, long in_min, long in_max, float out_min, float out_max)
+{
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 
 void Communications(void * pvParameters){
 	ret_t ret;
@@ -58,10 +79,23 @@ void Communications(void * pvParameters){
 					case RET_MSG_OK:
 						switch (msg.Type){
 							case MSG_TYPE_CONTROL:
-								qESC_SetOutput(MOTOR1,255-msg.Payload[3]);
-								qESC_SetOutput(MOTOR2,255-msg.Payload[3]);
-								qESC_SetOutput(MOTOR3,255-msg.Payload[3]);
-								qESC_SetOutput(MOTOR4,255-msg.Payload[3]);
+
+
+
+								control[Z_C] = map(255-msg.Payload[1]-128,0,128,0.0,1.0);
+								control[PHI_C] = map(255-msg.Payload[3],0,255,1.0,-1.0);
+								control[THETA_C] = map(255-msg.Payload[2],0,255,-1.0,1.0);
+								control[PSI_C] = map(255-msg.Payload[0],0,255,-1.0,1.0);
+
+								inputs[0] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI - control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
+								inputs[1] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI + control[THETA_C]*K_THETA + control[PSI_C]*K_PSI	);
+								inputs[2] = (	control[Z_C]*K_Z + control[PHI_C]*K_PHI + control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
+								inputs[3] = (	control[Z_C]*K_Z + control[PHI_C]*K_PHI - control[THETA_C]*K_THETA + control[PSI_C]*K_PSI	);
+
+								qESC_SetOutput(MOTOR1,inputs[0]);
+								qESC_SetOutput(MOTOR2,inputs[1]);
+								qESC_SetOutput(MOTOR3,inputs[2]);
+								qESC_SetOutput(MOTOR4,inputs[3]);
 
 								if ((msg.Payload[9]&0x03)!=0) {
 									qLed_TurnOn(STATUS_LED);

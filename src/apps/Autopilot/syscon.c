@@ -34,12 +34,11 @@ void SystemController(void * pvParams){
 	state_name_t InitialState = (state_name_t) pvParams;
 	systemState = STATE_RESET;
 
-	vTaskDelay(3000/portTICK_RATE_MS);
+
 
 	if (qUART_Init(UART_GROUNDCOMM,57600,8,QUART_PARITY_NONE,1)==RET_ERROR){
 		while(1);
 	}
-
 
 	qFSM_registerState(STATE_INIT,"INIT",Init_onEntry,Init_onExit);
 	qFSM_registerState(STATE_IDLE,"IDLE",Idle_onEntry,Idle_onExit);
@@ -59,9 +58,6 @@ void SystemController(void * pvParams){
 
 		if (systemState == STATE_RESET){
 			// The first entry is different, there is no onExit
-			ConsolePuts_("===================================\r\n",BLUE);
-			ConsolePuts_("SYSTEM RESET!\r\n",BLUE);
-
 			systemState = newState;
 			sysStates[systemState].onEntry(NULL);
 
