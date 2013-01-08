@@ -32,8 +32,8 @@ __IO uint32_t Channel1_Err;
 __IO uint8_t selectedRxBuff = 0;
 __IO uint8_t selectedTxBuff = 0;
 
-GPDMA_Channel_CFG_Type GPDMACfg_rx[2];
-GPDMA_Channel_CFG_Type GPDMACfg_tx[2];
+GPDMA_Channel_CFG_Type GPDMACfg_rx;
+GPDMA_Channel_CFG_Type GPDMACfg_tx;
 
 //===========================================================
 // Variables
@@ -112,47 +112,27 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
 
     // Estrucutura de configuración para PING PONG
        //-----------------------------------------------------------------------
-   	GPDMACfg_tx[0].ChannelNum = DMA_CHANNEL_TX;
-   	GPDMACfg_tx[0].SrcMemAddr = (uint32_t) txBuff[0];
-   	GPDMACfg_tx[0].DstMemAddr = 0;
-   	GPDMACfg_tx[0].TransferSize = BUFF_SIZE;
-   	GPDMACfg_tx[0].TransferWidth = 0;
-   	GPDMACfg_tx[0].TransferType = GPDMA_TRANSFERTYPE_M2P;
-   	GPDMACfg_tx[0].SrcConn = 0;
-   	GPDMACfg_tx[0].DstConn = GPDMA_CONN_UART0_Tx; //FIXME: Hardcoded
-   	GPDMACfg_tx[0].DMALLI = 0;
+   	GPDMACfg_tx.ChannelNum = DMA_CHANNEL_TX;
+   	GPDMACfg_tx.SrcMemAddr = (uint32_t) txBuff[0];
+   	GPDMACfg_tx.DstMemAddr = 0;
+   	GPDMACfg_tx.TransferSize = BUFF_SIZE;
+   	GPDMACfg_tx.TransferWidth = 0;
+   	GPDMACfg_tx.TransferType = GPDMA_TRANSFERTYPE_M2P;
+   	GPDMACfg_tx.SrcConn = 0;
+   	GPDMACfg_tx.DstConn = GPDMA_CONN_UART0_Tx; //FIXME: Hardcoded
+   	GPDMACfg_tx.DMALLI = 0;
 
-   	GPDMACfg_tx[1].ChannelNum = DMA_CHANNEL_TX;
-   	GPDMACfg_tx[1].SrcMemAddr = (uint32_t) txBuff[1];
-   	GPDMACfg_tx[1].DstMemAddr = 0;
-   	GPDMACfg_tx[1].TransferSize = BUFF_SIZE;
-   	GPDMACfg_tx[1].TransferWidth = 0;
-   	GPDMACfg_tx[1].TransferType = GPDMA_TRANSFERTYPE_M2P;
-   	GPDMACfg_tx[1].SrcConn = 0;
-   	GPDMACfg_tx[1].DstConn = GPDMA_CONN_UART0_Tx;//FIXME: Hardcoded
-   	GPDMACfg_tx[1].DMALLI = 0;
+   	GPDMACfg_rx.ChannelNum = DMA_CHANNEL_RX;
+   	GPDMACfg_rx.SrcMemAddr = 0;
+   	GPDMACfg_rx.DstMemAddr = (uint32_t) rxBuff[0];
+   	GPDMACfg_rx.TransferSize = BUFF_SIZE;
+   	GPDMACfg_rx.TransferWidth = 0;
+   	GPDMACfg_rx.TransferType = GPDMA_TRANSFERTYPE_P2M;
+   	GPDMACfg_rx.SrcConn = GPDMA_CONN_UART0_Rx;//FIXME: Hardcoded
+   	GPDMACfg_rx.DstConn = 0;
+   	GPDMACfg_rx.DMALLI = 0;
 
-   	GPDMACfg_rx[0].ChannelNum = DMA_CHANNEL_RX;
-   	GPDMACfg_rx[0].SrcMemAddr = 0;
-   	GPDMACfg_rx[0].DstMemAddr = (uint32_t) rxBuff[0];
-   	GPDMACfg_rx[0].TransferSize = BUFF_SIZE;
-   	GPDMACfg_rx[0].TransferWidth = 0;
-   	GPDMACfg_rx[0].TransferType = GPDMA_TRANSFERTYPE_P2M;
-   	GPDMACfg_rx[0].SrcConn = GPDMA_CONN_UART0_Rx;//FIXME: Hardcoded
-   	GPDMACfg_rx[0].DstConn = 0;
-   	GPDMACfg_rx[0].DMALLI = 0;
-
-   	GPDMACfg_rx[1].ChannelNum = DMA_CHANNEL_RX;
-   	GPDMACfg_rx[1].SrcMemAddr = 0;
-   	GPDMACfg_rx[1].DstMemAddr = (uint32_t) rxBuff[1];
-   	GPDMACfg_rx[1].TransferSize = BUFF_SIZE;
-   	GPDMACfg_rx[1].TransferWidth = 0;
-   	GPDMACfg_rx[1].TransferType = GPDMA_TRANSFERTYPE_P2M;
-   	GPDMACfg_rx[1].SrcConn = GPDMA_CONN_UART0_Rx;//FIXME: Hardcoded
-   	GPDMACfg_rx[1].DstConn = 0;
-   	GPDMACfg_rx[1].DMALLI = 0;
    	//-----------------------------------------------------------------------
-
 
 	Channel0_TC = 0;
 	Channel0_Err = 0;
@@ -163,8 +143,8 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
     NVIC_EnableIRQ (DMA_IRQn);
 
 	// Selecciono los buffers
-	GPDMA_Setup(&GPDMACfg_rx[0]);
-	GPDMA_Setup(&GPDMACfg_tx[0]);
+	GPDMA_Setup(&GPDMACfg_rx);
+	GPDMA_Setup(&GPDMACfg_tx);
 
     // Enable GPDMA channel 0 para transmisión (todavía no hay nada)
 	GPDMA_ChannelCmd(0, DISABLE);
@@ -194,12 +174,15 @@ uint32_t qUART_Send(uint8_t id, uint8_t * buff, size_t size){
 
 	memcpy(&(txBuff[selectedTxBuff][0]),buff,size);
 
-	GPDMA_Setup(&GPDMACfg_tx[selectedTxBuff]);
+	GPDMACfg_tx.SrcMemAddr = (uint32_t) &txBuff[selectedTxBuff];
+
+	GPDMA_Setup(&GPDMACfg_tx);
 
 	GPDMA_ChannelCmd(DMA_CHANNEL_TX, ENABLE);
 
-	if (selectedTxBuff==0){
-		selectedTxBuff = 1;
+	//XXX: NO hay chequeo de over run aca
+	if (selectedTxBuff<MAX_BUFFERS){
+		selectedTxBuff++;
 	}else{
 		selectedTxBuff = 0;
 	}
