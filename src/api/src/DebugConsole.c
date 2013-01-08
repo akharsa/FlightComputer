@@ -70,12 +70,19 @@ void ConsolePuts(char * buff){
 	ConsolePuts_(buff,BLACK);
 }
 
+uint8_t msgBuffer[300];
+
 void ConsolePuts_(char * buff,int color ){
 
-//	uint8_t * msgs[] = {(uint8_t *)(colorArray[color]),(uint8_t *)buff};
+	uint8_t * msgs[] = {(uint8_t *)(colorArray[color]),(uint8_t *)buff};
+	uint32_t pos = 0;
+	memcpy(&msgBuffer[pos],msgs[0],strlen((char*)msgs[0]));
+	pos += strlen((char*)msgs[0]);
+	memcpy(&msgBuffer[pos],msgs[1],strlen((char*)msgs[1]));
+	pos += strlen((char*)msgs[1]);
 
-//	qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_DEBUG,(uint8_t)strlen((char*)msgs[0]),msgs[0]);
-//	qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_DEBUG,(uint8_t)strlen((char*)msgs[1]),msgs[1]);
+	//qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_DEBUG,(uint8_t)strlen((char*)msgs[0]),msgs[0]);
+	qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_DEBUG,pos,msgBuffer);
 
 }
 

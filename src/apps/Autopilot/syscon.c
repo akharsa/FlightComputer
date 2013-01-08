@@ -23,6 +23,8 @@
 state_name_t systemState;
 xQueueHandle StatesQueue;
 
+uint8_t buffer[]={"Hello world!\r\n"};
+
 void qFSM_ChangeState(state_name_t nextState){
 	xQueueSend(StatesQueue,&nextState,portMAX_DELAY);
 }
@@ -39,6 +41,8 @@ void SystemController(void * pvParams){
 	if (qUART_Init(UART_GROUNDCOMM,57600,8,QUART_PARITY_NONE,1)==RET_ERROR){
 		while(1);
 	}
+
+	qUART_Send(UART_GROUNDCOMM,buffer,strlen(buffer));
 
 	qFSM_registerState(STATE_INIT,"INIT",Init_onEntry,Init_onExit);
 	qFSM_registerState(STATE_IDLE,"IDLE",Idle_onEntry,Idle_onExit);
