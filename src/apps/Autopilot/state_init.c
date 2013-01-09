@@ -54,7 +54,7 @@ void Init_Task(void * pvParameters){
 	ConsolePuts_("===================================\r\n",BLUE);
 	ConsolePuts_("SYSTEM RESET!\r\n",BLUE);
 
-	xTaskCreate( Communications, ( signed char * ) "COMMS", 300, ( void * ) NULL, 2, NULL);
+	xTaskCreate( Communications, ( signed char * ) "COMMS", 500, ( void * ) NULL, 3, NULL);
 
 	/* Terminate and go to Idle */
 	state_name_t newState=STATE_IDLE;

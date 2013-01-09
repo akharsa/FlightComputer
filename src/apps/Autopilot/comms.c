@@ -58,7 +58,9 @@ void Communications(void * pvParameters){
 
 	msg.Payload = msgBuff;
 
-	DataSmphr = xSemaphoreCreateCounting(UINT32_MAX,0);
+	//DataSmphr = xSemaphoreCreateCounting(UINT32_MAX,0);
+	vSemaphoreCreateBinary(DataSmphr);
+
     if (DataSmphr==NULL){
     	while(1);
     }
@@ -67,70 +69,74 @@ void Communications(void * pvParameters){
 
 	for (;;){
 		xSemaphoreTake(DataSmphr,portMAX_DELAY);
-		qUART_ReadByte(UART_GROUNDCOMM,&ch);
 
-		ret=qComms_ParseByte(&msg,ch);
-				switch (ret){
-					case RET_MSG_BYTES_REMAINING:
-						break;
-					case RET_MSG_ERROR:
-						qUART_SendByte(2,'E');
-						break;
-					case RET_MSG_OK:
-						switch (msg.Type){
-							case MSG_TYPE_CONTROL:
+		switch (msg.Type){
+			case MSG_TYPE_CONTROL:
 
+				control[Z_C] = map(255-msg.Payload[1]-128,0,128,0.0,1.0);
+				control[PHI_C] = map(255-msg.Payload[3],0,255,1.0,-1.0);
+				control[THETA_C] = map(255-msg.Payload[2],0,255,-1.0,1.0);
+				control[PSI_C] = map(255-msg.Payload[0],0,255,-1.0,1.0);
 
+				inputs[0] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI - control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
+				inputs[1] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI + control[THETA_C]*K_THETA + control[PSI_C]*K_PSI	);
+				inputs[2] = (	control[Z_C]*K_Z + control[PHI_C]*K_PHI + control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
+				inputs[3] = (	control[Z_C]*K_Z + control[PHI_C]*K_PHI - control[THETA_C]*K_THETA + control[PSI_C]*K_PSI	);
 
-								control[Z_C] = map(255-msg.Payload[1]-128,0,128,0.0,1.0);
-								control[PHI_C] = map(255-msg.Payload[3],0,255,1.0,-1.0);
-								control[THETA_C] = map(255-msg.Payload[2],0,255,-1.0,1.0);
-								control[PSI_C] = map(255-msg.Payload[0],0,255,-1.0,1.0);
+				qESC_SetOutput(MOTOR1,inputs[0]);
+				qESC_SetOutput(MOTOR2,inputs[1]);
+				qESC_SetOutput(MOTOR3,inputs[2]);
+				qESC_SetOutput(MOTOR4,inputs[3]);
 
-								inputs[0] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI - control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
-								inputs[1] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI + control[THETA_C]*K_THETA + control[PSI_C]*K_PSI	);
-								inputs[2] = (	control[Z_C]*K_Z + control[PHI_C]*K_PHI + control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
-								inputs[3] = (	control[Z_C]*K_Z + control[PHI_C]*K_PHI - control[THETA_C]*K_THETA + control[PSI_C]*K_PSI	);
-
-								qESC_SetOutput(MOTOR1,inputs[0]);
-								qESC_SetOutput(MOTOR2,inputs[1]);
-								qESC_SetOutput(MOTOR3,inputs[2]);
-								qESC_SetOutput(MOTOR4,inputs[3]);
-
-								if ((msg.Payload[9]&0x03)!=0) {
-									qLed_TurnOn(STATUS_LED);
-									qWDT_Feed();
-								}else{
-									qLed_TurnOff(STATUS_LED);
-								}
-								break;
-
-							case MSG_TYPE_DEBUG:
-								ConsolePuts("ECHO: ");
-								ConsolePuts(msg.Payload);
-								ConsolePuts("\r\n");
-								break;
-							default:
-								break;
-						}
-						break;
-					case RET_ERROR:
-						// Problem with memory
-						break;
-					case RET_OK:
-						// Never
-						break;
+				if ((msg.Payload[9]&0x03)!=0) {
+					qLed_TurnOn(STATUS_LED);
+					qWDT_Feed();
+				}else{
+					qLed_TurnOff(STATUS_LED);
 				}
+				break;
 
+			case MSG_TYPE_DEBUG:
+				ConsolePuts("ECHO: ");
+				ConsolePuts(msg.Payload);
+				ConsolePuts("\r\n");
+				break;
+			default:
+				break;
+		}
 	}
 }
 
 void UART_Rx_Handler(uint8_t * buff, size_t sz){
+	uint32_t i;
+	uint8_t buffer;
+	ret_t ret;
 	static portBASE_TYPE xHigherPriorityTaskWoken;
+
 	xHigherPriorityTaskWoken = pdFALSE;
-	while (sz){
-		xSemaphoreGiveFromISR(DataSmphr,&xHigherPriorityTaskWoken);
-		sz--;
+
+	for (i=0;i<sz;i++){
+
+		qUART_ReadByte(UART_GROUNDCOMM,&buffer);
+		ret=qComms_ParseByte(&msg,buffer);
+
+		switch (ret){
+			case RET_MSG_BYTES_REMAINING:
+				break;
+			case RET_MSG_ERROR:
+				//qUART_SendByte(2,'E');
+				break;
+			case RET_MSG_OK:
+				xSemaphoreGiveFromISR(DataSmphr,&xHigherPriorityTaskWoken);
+				break;
+			case RET_ERROR:
+				// Problem with memory
+				break;
+			case RET_OK:
+				// Never
+				break;
+		}
+
 	}
 
 	portEND_SWITCHING_ISR( xHigherPriorityTaskWoken);

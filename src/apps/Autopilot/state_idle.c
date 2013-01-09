@@ -30,10 +30,10 @@ void Idle_onExit(void * pvParameters);
 static xTaskHandle hnd;
 
 void Idle_onEntry(void * p){
-	xTaskCreate(Idle_Task, ( signed char * ) "IDLE", 200, ( void * ) NULL, 1, &hnd );
+	xTaskCreate(Idle_Task, ( signed char * ) "IDLE", 200, ( void * ) NULL, 2, &hnd );
 }
 
-void Idle_onExit(void * p){
+void Idle_onExit(void *s p){
 	vTaskDelete(hnd);
 }
 
@@ -42,11 +42,11 @@ extern uint16_t inputs[4];
 void Idle_Task(void * pvParameters){
 	int i,j;
 
-	//qWDT_Start(1000000);
+//	qWDT_Start(500000);
 
 	for (;;)
 	{
-		vTaskDelay(500/portTICK_RATE_MS);
+		vTaskDelay(100/portTICK_RATE_MS);
 
 		qLed_TurnOn(FRONT_LEFT_LED);
 		qLed_TurnOn(FRONT_RIGHT_LED);

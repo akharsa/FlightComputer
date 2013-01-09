@@ -271,7 +271,7 @@ void UARTx_IRQHandler(uint8_t id){
 		 * be FIFO_TRIGGER_LEVEL. If the IRQ was caused by CTI, then rLen is important
 		 */
 
-		qLed_TurnOn(STATUS_LED);
+		//qLed_TurnOn(STATUS_LED);
 		rLen = UART_Receive(uarts[id], (uint8_t *)&RxBuff[id], FIFO_TRIGGER_LEVEL, NONE_BLOCKING);
 
 		for (i=0;i<rLen;i++){
@@ -285,7 +285,7 @@ void UARTx_IRQHandler(uint8_t id){
 		if (RBR_Handler[id]!=NULL){
 			(*RBR_Handler[id])((uint8_t *)RxBuff,(size_t)rLen);
 		}
-		qLed_TurnOff(STATUS_LED);
+		//qLed_TurnOff(STATUS_LED);
 	}
 
 	/* Transmit Holding Empty */
