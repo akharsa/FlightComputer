@@ -11,6 +11,7 @@
 #include "board.h"
 #include "taskList.h"
 
+#include "MPU6050.h"
 /* ================================ */
 /* Prototypes	 					*/
 /* ================================ */
@@ -49,10 +50,27 @@ void Init_Task(void * pvParameters){
 		vTaskDelay(100/portTICK_RATE_MS);
 	}
 
-	vTaskDelay(3000/portTICK_RATE_MS);
+	vTaskDelay(10000/portTICK_RATE_MS);
 
 	ConsolePuts_("===================================\r\n",BLUE);
-	ConsolePuts_("SYSTEM RESET!\r\n",BLUE);
+	ConsolePuts("\x1B[2J\x1B[0;0f");
+	ConsolePuts("FLC V2.0 Initialized...\r\n");
+	ConsolePuts("Initializing I2C driver...\t\t\t\t");
+
+
+	if (qI2C_Init()==SUCCESS){
+		ConsolePuts_("[OK]\r\n",GREEN);
+	}else{
+		ConsolePuts_("[ERROR]\r\n",RED);
+	}
+
+
+	if (MPU6050_testConnection()==TRUE){
+		ConsolePuts_("MPU6050 Init OK\r\n",GREEN);
+		MPU6050_initialize();
+	}else{
+		ConsolePuts_("MPU6050 Init ERROR\r\n",RED);
+	}
 
 	xTaskCreate( Communications, ( signed char * ) "COMMS", 500, ( void * ) NULL, 3, NULL);
 

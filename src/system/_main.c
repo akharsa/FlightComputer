@@ -9,6 +9,6 @@
 void AppMain(void);
 
 int main(void){
-	AppMain();
+ 	AppMain();
 	return 0;
 }

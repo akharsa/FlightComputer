@@ -28,9 +28,10 @@ Status qESC_SetOutput(qPWM_Channel * q, uint16_t duty){
 	if (duty<=INPUT_MAX){
 		uint32_t buffer = (duty*(ESC_MAX_VALUE-ESC_MIN_VALUE));
 		buffer = buffer / INPUT_MAX;
-
 		qPWM_SetDuty(q,ESC_MIN_VALUE+buffer);
 		return SUCCESS;
+	}else if (duty<0){
+		qPWM_SetDuty(q,ESC_MIN_VALUE);
 	}else{
 		return ERROR;
 	}

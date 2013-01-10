@@ -29,7 +29,7 @@ void ControlDataHandle(void * pvParameters);
 static Msg_t msg;
 static uint8_t msgBuff[255];
 
-
+/*
 float control[4]={0.0};
 uint16_t inputs[4]={0};
 
@@ -43,6 +43,7 @@ uint16_t inputs[4]={0};
 #define K_PHI	200
 #define K_THETA	200
 #define K_PSI	200
+*/
 xSemaphoreHandle DataSmphr;
 
 
@@ -51,6 +52,7 @@ float map(long x, long in_min, long in_max, float out_min, float out_max)
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
+float yaw_control=0.0;
 
 void Communications(void * pvParameters){
 	ret_t ret;
@@ -72,6 +74,8 @@ void Communications(void * pvParameters){
 
 		switch (msg.Type){
 			case MSG_TYPE_CONTROL:
+				/*
+				yaw_control = map(255-msg.Payload[0],0,255,-720.0,720.0);
 
 				control[Z_C] = map(255-msg.Payload[1]-128,0,128,0.0,1.0);
 				control[PHI_C] = map(255-msg.Payload[3],0,255,1.0,-1.0);
@@ -95,7 +99,7 @@ void Communications(void * pvParameters){
 					qLed_TurnOff(STATUS_LED);
 				}
 				break;
-
+*/
 			case MSG_TYPE_DEBUG:
 				ConsolePuts("ECHO: ");
 				ConsolePuts(msg.Payload);
