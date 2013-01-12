@@ -12,5 +12,10 @@
 void SystemController(void * pvParams);
 void Communications(void * pvParams);
 
+#define SYSCON_PRIORITY	3
+#define COMMS_PRIORITY	1
+#define INIT_PRIORITY	2
+#define IDLE_PRIORITY	2
+
 
 #endif /* TASKLIST_H_ */

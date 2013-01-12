@@ -7,6 +7,7 @@
 #include "States.h"
 #include "leds.h"
 #include "DebugConsole.h"
+#include "qUART.h"
 
 #include "board.h"
 #include "taskList.h"
@@ -27,7 +28,7 @@ void Init_onExit(void * pvParameters);
 static xTaskHandle hnd;
 
 void Init_onEntry(void * p){
-	xTaskCreate(Init_Task, ( signed char * ) "INIT", 200, ( void * ) NULL, 1, &hnd );
+	xTaskCreate(Init_Task, ( signed char * ) "INIT", 200, ( void * ) NULL, INIT_PRIORITY, &hnd );
 }
 
 void Init_onExit(void * p){
@@ -79,12 +80,16 @@ void Init_Task(void * pvParameters){
 
 	vTaskDelay(9000/portTICK_RATE_MS);
 
+	if (qUART_Init(UART_GROUNDCOMM,57600,8,QUART_PARITY_NONE,1)==RET_ERROR){
+		while(1);
+	}
+
 	ConsolePuts_("===================================\r\n",BLUE);
 	ConsolePuts("\x1B[2J\x1B[0;0f");
 	ConsolePuts("FLC V2.0 Initialized...\r\n");
 	ConsolePuts("Initializing I2C driver...\t\t\t\t");
 
-	xTaskCreate( Communications, ( signed char * ) "COMMS", 500, ( void * ) NULL, 3, NULL);
+	xTaskCreate( Communications, ( signed char * ) "COMMS", 500, ( void * ) NULL, COMMS_PRIORITY, NULL);
 
 	/* Terminate and go to Idle */
 	state_name_t newState=STATE_IDLE;

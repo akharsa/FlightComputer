@@ -20,6 +20,7 @@
 
 #include "qPIDs.h"
 #include "quadrotor.h"
+#include "taskList.h"
 
 /* ================================ */
 /* Prototypes	 					*/
@@ -33,14 +34,6 @@ void Idle_onExit(void * pvParameters);
 /* Private globals 					*/
 /* ================================ */
 static xTaskHandle hnd;
-
-void Idle_onEntry(void * p){
-	xTaskCreate(Idle_Task, ( signed char * ) "IDLE", 200, ( void * ) NULL, 2, &hnd );
-}
-
-void Idle_onExit(void * p){
-	vTaskDelete(hnd);
-}
 
 uint32_t signal_t=0;
 //uint32_t signal_time[]={0,200,600,1000,1400};
@@ -75,6 +68,15 @@ extern float yaw_control;
 //#define TODEGSEC(x) (x/16.4f)
 #define TODEGSEC(x) x
 
+
+void Idle_onEntry(void * p){
+	xTaskCreate(Idle_Task, ( signed char * ) "IDLE", 300, ( void * ) NULL, IDLE_PRIORITY, &hnd );
+}
+
+void Idle_onExit(void * p){
+	vTaskDelete(hnd);
+}
+
 void Idle_Task(void * pvParameters){
 	int i,j;
 
@@ -106,6 +108,10 @@ void Idle_Task(void * pvParameters){
 //	qWDT_Start(500000);
 
     MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+
+    for(;;){
+    	vTaskDelayUntil( &xLastWakeTime, 10/portTICK_RATE_MS );
+    }
 
 	for (;;)
 	{

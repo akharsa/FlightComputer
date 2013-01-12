@@ -34,12 +34,6 @@ void SystemController(void * pvParams){
 	state_name_t InitialState = (state_name_t) pvParams;
 	systemState = STATE_RESET;
 
-
-
-	if (qUART_Init(UART_GROUNDCOMM,57600,8,QUART_PARITY_NONE,1)==RET_ERROR){
-		while(1);
-	}
-
 	qFSM_registerState(STATE_INIT,"INIT",Init_onEntry,Init_onExit);
 	qFSM_registerState(STATE_IDLE,"IDLE",Idle_onEntry,Idle_onExit);
 	//qFSM_registerState(STATE_FLYNG,"FLY",Fligth_Manual_onEntry,Fligth_Manual_onExit);
@@ -63,33 +57,37 @@ void SystemController(void * pvParams){
 
 		}else{
 			if (TransitionValid(systemState,newState,transitionTable)==YES){
+#if DEBUG_SYSCON
 				ConsolePuts_("STATE TRANSISTION ",YELLOW);
 				ConsolePuts_(sysStates[systemState].stateName,YELLOW);
 				ConsolePuts_(" -> ",YELLOW);
 				ConsolePuts_(sysStates[newState].stateName,YELLOW);
 				ConsolePuts_(" [OK]\r\n",GREEN);
-
+#endif
 				if (sysStates[systemState].onExit!=NULL){
 					sysStates[systemState].onExit(NULL);
 				}
 				systemState = newState;
 				if (sysStates[systemState].onEntry==NULL){
+#if DEBUG_SYSCON
 					ConsolePuts_("STATE TRANSISTION ",RED);
 					ConsolePuts_(sysStates[systemState].stateName,RED);
 					ConsolePuts_(" -> ",RED);
 					ConsolePuts_(sysStates[newState].stateName,RED);
 					ConsolePuts_("[ERROR] DEAD END\r\n",RED);
+#endif
 				}else{
 					sysStates[systemState].onEntry(NULL);
 				}
 
 			}else{
-
+#if DEBUG_SYSCON
 				ConsolePuts_("STATE TRANSISTION ",RED);
 				ConsolePuts_(sysStates[systemState].stateName,RED);
 				ConsolePuts_(" -> ",RED);
 				ConsolePuts_(sysStates[newState].stateName,RED);
 				ConsolePuts_(" [ERROR]\r\n",RED);
+#endif
 			}
 		}
 

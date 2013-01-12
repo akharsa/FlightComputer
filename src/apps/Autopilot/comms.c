@@ -101,15 +101,19 @@ void Communications(void * pvParameters){
 				break;
 */
 			case MSG_TYPE_DEBUG:
+				/*
 				ConsolePuts("ECHO: ");
 				ConsolePuts(msg.Payload);
 				ConsolePuts("\r\n");
+				*/
 				break;
 			default:
 				break;
 		}
 	}
 }
+
+uint8_t led = 0;
 
 void UART_Rx_Handler(uint8_t * buff, size_t sz){
 	uint32_t i;
@@ -132,6 +136,14 @@ void UART_Rx_Handler(uint8_t * buff, size_t sz){
 				break;
 			case RET_MSG_OK:
 				xSemaphoreGiveFromISR(DataSmphr,&xHigherPriorityTaskWoken);
+				if (led==0){
+					qLed_TurnOn(STATUS_LED);
+					led = 1;
+				}else{
+					qLed_TurnOff(STATUS_LED);
+					led = 0;
+				}
+
 				break;
 			case RET_ERROR:
 				// Problem with memory

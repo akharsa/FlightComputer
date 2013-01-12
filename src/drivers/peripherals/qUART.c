@@ -24,7 +24,7 @@ status_t qUARTStatus[qUART_TOTAL] = {0}; /* DEVICE_NOT_READY */
 //===========================================================
 // Defines
 //===========================================================
-#define FIFO_TRIGGER_LEVEL 12
+#define FIFO_TRIGGER_LEVEL 8
 
 //===========================================================
 // Variables
@@ -105,7 +105,7 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
 
 	UART_FIFOConfigStructInit(&UARTFIFOConfigStruct);
 	UARTFIFOConfigStruct.FIFO_DMAMode = DISABLE;
-	UARTFIFOConfigStruct.FIFO_Level = UART_FIFO_TRGLEV3;
+	UARTFIFOConfigStruct.FIFO_Level = UART_FIFO_TRGLEV2;
 	UART_FIFOConfig(uarts[id], &UARTFIFOConfigStruct);
 
 	UART_TxCmd(uarts[id], ENABLE);
