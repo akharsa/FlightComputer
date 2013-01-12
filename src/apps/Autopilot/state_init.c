@@ -12,6 +12,8 @@
 #include "taskList.h"
 
 #include "MPU6050.h"
+#include "quadrotor.h"
+
 /* ================================ */
 /* Prototypes	 					*/
 /* ================================ */
@@ -34,7 +36,8 @@ void Init_onExit(void * p){
 
 void Init_Task(void * pvParameters){
 	uint8_t i,j;
-
+	int16_t buffer[3];
+	int32_t sum[3];
 	// --------------------------------------------------
 	//	Leds Initialization
 	// --------------------------------------------------
@@ -50,27 +53,36 @@ void Init_Task(void * pvParameters){
 		vTaskDelay(100/portTICK_RATE_MS);
 	}
 
-	vTaskDelay(10000/portTICK_RATE_MS);
+	if (qI2C_Init()!=SUCCESS) halt("I2C INIT ERROR");
+
+	if (MPU6050_testConnection()==TRUE){
+		MPU6050_initialize();
+	}else{
+		halt("MPU6050 Init ERROR\r\n");
+	}
+
+	sum[0] = 0;
+	sum[1] = 0;
+	sum[2] = 0;
+
+	for (i=0;i<128;i++){
+		MPU6050_getRotation(&buffer[0],&buffer[1],&buffer[2]);
+		sum[0] += buffer[0];
+		sum[1] += buffer[1];
+		sum[2] += buffer[2];
+		vTaskDelay(10/portTICK_RATE_MS);
+	}
+
+	settings.gyroBias[0] = (int16_t)sum[0]/128;
+	settings.gyroBias[1] = (int16_t)sum[1]/128;
+	settings.gyroBias[2] = (int16_t)sum[2]/128;
+
+	vTaskDelay(9000/portTICK_RATE_MS);
 
 	ConsolePuts_("===================================\r\n",BLUE);
 	ConsolePuts("\x1B[2J\x1B[0;0f");
 	ConsolePuts("FLC V2.0 Initialized...\r\n");
 	ConsolePuts("Initializing I2C driver...\t\t\t\t");
-
-
-	if (qI2C_Init()==SUCCESS){
-		ConsolePuts_("[OK]\r\n",GREEN);
-	}else{
-		ConsolePuts_("[ERROR]\r\n",RED);
-	}
-
-
-	if (MPU6050_testConnection()==TRUE){
-		ConsolePuts_("MPU6050 Init OK\r\n",GREEN);
-		MPU6050_initialize();
-	}else{
-		ConsolePuts_("MPU6050 Init ERROR\r\n",RED);
-	}
 
 	xTaskCreate( Communications, ( signed char * ) "COMMS", 500, ( void * ) NULL, 3, NULL);
 

@@ -95,3 +95,8 @@ void ConsolePutNumber_(int value, uint8_t base, int color){
 	ConsolePuts_((char*)buffer,color);
 }
 
+void halt(const char * msg){
+	ConsolePuts_(msg,RED);
+	vTaskEndScheduler();
+	while(1);
+}

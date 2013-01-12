@@ -15,6 +15,7 @@ void ConsolePuts(char * buff);
 void ConsolePuts_(char * buff,int color );
 void ConsolePutNumber(int value, uint8_t base);
 void ConsolePutNumber_(int value, uint8_t base, int color);
+void halt(const char *);
 
 #define BLACK 		0
 #define RED			1

@@ -40,7 +40,7 @@ THE SOFTWARE.
 
 #include "types.h"
 uint8_t devAddr = MPU6050_DEFAULT_ADDRESS;
-uint8_t buffer[14];
+static uint8_t buffer[14];
 
 
 /** Power on and prepare for general usage.
@@ -52,7 +52,7 @@ uint8_t buffer[14];
  */
 void MPU6050_initialize() {
 	MPU6050_setClockSource(MPU6050_CLOCK_PLL_XGYRO);
-	MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_250);
+	MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000); //FIXME: The changes doesn't take effect here, I don't know why yet.
 	MPU6050_setFullScaleAccelRange(MPU6050_ACCEL_FS_2);
 	MPU6050_setSleepEnabled(FALSE); // thanks to Jack Elston for pointing this one out!
 }
