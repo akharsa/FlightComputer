@@ -21,6 +21,7 @@
 #include "leds.h"
 #include "qWDT.h"
 
+#include "quadrotor.h"
 extern xSemaphoreHandle TelemetrySmphr;
 
 void UART_Rx_Handler(uint8_t * buff, size_t sz);
@@ -29,23 +30,7 @@ void ControlDataHandle(void * pvParameters);
 static Msg_t msg;
 static uint8_t msgBuff[255];
 
-/*
-float control[4]={0.0};
-uint16_t inputs[4]={0};
-
-#define Z_C	0
-#define PHI_C	1
-#define THETA_C	2
-#define PSI_C	3
-
-
-#define K_Z		800
-#define K_PHI	200
-#define K_THETA	200
-#define K_PSI	200
-*/
 xSemaphoreHandle DataSmphr;
-
 
 float map(long x, long in_min, long in_max, float out_min, float out_max)
 {
@@ -74,6 +59,8 @@ void Communications(void * pvParameters){
 
 		switch (msg.Type){
 			case MSG_TYPE_CONTROL:
+				memcpy(&Joystick,msg.Payload,10);
+				break;
 				/*
 				yaw_control = map(255-msg.Payload[0],0,255,-720.0,720.0);
 
@@ -93,20 +80,9 @@ void Communications(void * pvParameters){
 				qESC_SetOutput(MOTOR4,inputs[3]);
 
 				if ((msg.Payload[9]&0x03)!=0) {
-					qLed_TurnOn(STATUS_LED);
 					qWDT_Feed();
-				}else{
-					qLed_TurnOff(STATUS_LED);
 				}
-				break;
-*/
-			case MSG_TYPE_DEBUG:
-				/*
-				ConsolePuts("ECHO: ");
-				ConsolePuts(msg.Payload);
-				ConsolePuts("\r\n");
 				*/
-				break;
 			default:
 				break;
 		}

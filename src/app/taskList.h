@@ -18,6 +18,7 @@ void Communications(void * pvParams);
 #define COMMS_PRIORITY	1
 #define INIT_PRIORITY	2
 #define IDLE_PRIORITY	2
+#define FLIGHT_PRIORITY	2
 
 
 

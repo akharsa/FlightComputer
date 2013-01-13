@@ -36,7 +36,7 @@ void SystemController(void * pvParams){
 
 	qFSM_registerState(STATE_INIT,"INIT",Init_onEntry,Init_onExit);
 	qFSM_registerState(STATE_IDLE,"IDLE",Idle_onEntry,Idle_onExit);
-	//qFSM_registerState(STATE_FLYNG,"FLY",Fligth_Manual_onEntry,Fligth_Manual_onExit);
+	qFSM_registerState(STATE_FLIGHT,"FLIGHT",Flight_onEntry,Flight_onExit);
 
 	// Create the system queue
 	StatesQueue = xQueueCreate(1,sizeof(state_name_t));

@@ -9,3 +9,4 @@
 
 SV_t sv;
 settings_t settings;
+groundControl_t Joystick;

@@ -27,6 +27,22 @@ typedef struct {
 	float gyroBias[3];
 } settings_t;
 
+typedef struct{
+	uint8_t x;
+	uint8_t y;
+}pad_t;
+
+typedef struct{
+	pad_t		left_pad;
+	pad_t		right_pad;
+	uint8_t 	L1;
+	uint8_t 	L2;
+	uint8_t 	R1;
+	uint8_t 	R2;
+	uint16_t 	buttons;
+}groundControl_t;
+
+extern groundControl_t Joystick;
 extern SV_t sv;
 extern settings_t settings;
 

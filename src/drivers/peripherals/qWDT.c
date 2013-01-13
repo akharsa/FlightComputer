@@ -20,15 +20,18 @@ qWDT_ResetSource qWDT_GetResetSource(){
 }
 
 void qWDT_Start(uint32_t timeout){
+	NVIC_EnableIRQ(WDT_IRQn);
+
 	// Initialize WDT, IRC OSC, interrupt mode, timeout = 5000000us = 5s
-	WDT_Init(WDT_CLKSRC_IRC, WDT_MODE_RESET);
+	WDT_Init(WDT_CLKSRC_IRC, WDT_MODE_INT_ONLY);
 	// Start watchdog with timeout given
 	WDT_Start(timeout);
-	//infinite loop to wait chip reset from WDT
+
+
 }
 
 void qWDT_Stop(){
-	while(1);
+	//while(1);
 	//WDT_UpdateTimeOut(0);
 	//LPC_WDT->WDMOD &= !WDT_WDMOD_WDEN;
 }

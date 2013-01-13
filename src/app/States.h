@@ -20,7 +20,7 @@ typedef enum{
 	STATE_RESET=0,
 	STATE_INIT,
 	STATE_IDLE,
-	STATE_FLYNG,
+	STATE_FLIGHT,
 } state_name_t;
 
 
@@ -30,11 +30,7 @@ void Init_onEntry(void *);
 void Init_onExit(void *);
 void Idle_onEntry(void *);
 void Idle_onExit(void *);
-void Fligth_Manual_onEntry(void *);
-void Fligth_Manual_onExit(void *);
-void Fligth_Tunning_onEntry(void *);
-void Fligth_Tunning_onExit(void *);
-void Fligth_Running_onEntry(void *);
-void Fligth_Running_onExit(void *);
+void Flight_onEntry(void *);
+void Flight_onExit(void *);
 
 #endif /* STATES_H_ */
