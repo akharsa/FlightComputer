@@ -109,9 +109,7 @@ void Idle_Task(void * pvParameters){
 
     MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
 
-    for(;;){
-    	vTaskDelayUntil( &xLastWakeTime, 10/portTICK_RATE_MS );
-    }
+    ConsolePuts_("Starting TEST...\r\n",BLUE);
 
 	for (;;)
 	{
@@ -128,6 +126,7 @@ void Idle_Task(void * pvParameters){
 		sv.omega[1] = sv.omega[1]/16.4;
 		sv.omega[2] = sv.omega[2]/16.4;
 
+
 		for (j=0;j<(sizeof(signal_time)/4);j++){
 			if (signal_t>=signal_time[j]){
 				sv.setpoint[PSI_C] = signal_values[j];
@@ -135,6 +134,7 @@ void Idle_Task(void * pvParameters){
 		}
 
 		sv.CO[PSI_C] = qPID_Process(&ctrl,sv.setpoint[PSI_C],-sv.omega[2],NULL);
+		sv.CO[PHI_C] = signal_t;
 
 		control[Z_C] = 0.2;
 		control[PHI_C] = 0;
@@ -178,6 +178,7 @@ void Idle_Task(void * pvParameters){
 			qLed_TurnOn(REAR_LEFT_LED);
 			qLed_TurnOn(REAR_RIGHT_LED);
 
+			ConsolePuts_("Finished!\r\n",GREEN);
 			vTaskDelete(NULL);
 		}
 

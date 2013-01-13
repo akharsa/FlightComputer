@@ -39,6 +39,14 @@ void Init_Task(void * pvParameters){
 	uint8_t i,j;
 	int16_t buffer[3];
 	int32_t sum[3];
+
+	vTaskDelay(10000/portTICK_RATE_MS);
+
+	if (qUART_Init(UART_GROUNDCOMM,57600,8,QUART_PARITY_NONE,1)==RET_ERROR){
+		while(1);
+	}
+
+
 	// --------------------------------------------------
 	//	Leds Initialization
 	// --------------------------------------------------
@@ -53,6 +61,12 @@ void Init_Task(void * pvParameters){
 		for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOff(leds[i]);
 		vTaskDelay(100/portTICK_RATE_MS);
 	}
+
+	ConsolePuts_("===================================\r\n",BLUE);
+	ConsolePuts("\x1B[2J\x1B[0;0f");
+	ConsolePuts_("FLC V2.0 Initialized...\r\n",BLUE);
+
+	ConsolePuts_("Calibrating sensors...\t\t\t\t",BLUE);
 
 	if (qI2C_Init()!=SUCCESS) halt("I2C INIT ERROR");
 
@@ -78,16 +92,7 @@ void Init_Task(void * pvParameters){
 	settings.gyroBias[1] = (int16_t)sum[1]/128;
 	settings.gyroBias[2] = (int16_t)sum[2]/128;
 
-	vTaskDelay(9000/portTICK_RATE_MS);
-
-	if (qUART_Init(UART_GROUNDCOMM,57600,8,QUART_PARITY_NONE,1)==RET_ERROR){
-		while(1);
-	}
-
-	ConsolePuts_("===================================\r\n",BLUE);
-	ConsolePuts("\x1B[2J\x1B[0;0f");
-	ConsolePuts("FLC V2.0 Initialized...\r\n");
-	ConsolePuts("Initializing I2C driver...\t\t\t\t");
+	ConsolePuts_("[OK]\r\n",GREEN);
 
 	xTaskCreate( Communications, ( signed char * ) "COMMS", 500, ( void * ) NULL, COMMS_PRIORITY, NULL);
 
