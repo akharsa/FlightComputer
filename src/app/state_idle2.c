@@ -32,43 +32,8 @@ void Idle_onExit(void * pvParameters);
 /* ================================ */
 static xTaskHandle hnd;
 
-uint32_t signal_t=0;
-//uint32_t signal_time[]={0,200,600,1000,1400};
-//float signal_values[]={0.0,360.0,0.0,-360.0,0.0};
-
-uint32_t signal_time[]={0};
-float signal_values[]={0.0};
-
-float control_input;
-
-float control[4]={0.0};
-uint16_t inputs[4]={0};
-
-int16_t buffer[3];
-int16_t temperature;
-
-qPID ctrl;
-
-
-#define Z_C	0
-#define PHI_C	1
-#define THETA_C	2
-#define PSI_C	3
-
-#define K_Z		800
-#define K_PHI	200
-#define K_THETA	200
-#define K_PSI	200
-
-extern float yaw_control;
-
-//#define TODEGSEC(x) (x/16.4f)
-#define TODEGSEC(x) x
-
-
 void Idle_onEntry(void * p){
 	int i;
-
 	for (i=0;i<10;i++){
 		qESC_SetOutput(MOTOR1,1);
 		qESC_SetOutput(MOTOR2,1);

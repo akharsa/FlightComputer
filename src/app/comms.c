@@ -32,13 +32,14 @@ static uint8_t msgBuff[255];
 
 xSemaphoreHandle DataSmphr;
 
+/*
 float map(long x, long in_min, long in_max, float out_min, float out_max)
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
 float yaw_control=0.0;
-
+*/
 void Communications(void * pvParameters){
 	ret_t ret;
 	uint8_t ch;
