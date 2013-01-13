@@ -105,9 +105,9 @@ void Flight_Task(void * pvParameters){
     ctrl.b = 1.0;
     ctrl.c = 1.0;
 
-    ctrl.K = 0.003;
-    ctrl.Ti = 0.003/0.005; //conversion de paralelo a ideal
-    ctrl.Td = 0.001;
+    ctrl.K = 0.008;
+    ctrl.Ti = ctrl.K/0.007; //conversion de paralelo a ideal
+    ctrl.Td = 0.005;
     ctrl.Nd = 5;
 
     qPID_Init(&ctrl);
@@ -120,7 +120,7 @@ void Flight_Task(void * pvParameters){
 			qFSM_ChangeState(newState);
 		}
 
-		sv.setpoint[PSI_C] = map(255-Joystick.left_pad.x,0,255,-360.0,360.0);
+		sv.setpoint[PSI_C] = map(Joystick.left_pad.x,0,255,-360.0,360.0);
 
 		MPU6050_getRotation(&buffer[0],&buffer[1],&buffer[2]);
 
@@ -134,7 +134,7 @@ void Flight_Task(void * pvParameters){
 
 		sv.CO[PSI_C] = qPID_Process(&ctrl,sv.setpoint[PSI_C],sv.omega[2],NULL);
 
-		control[Z_C] = 0.2;
+		control[Z_C] = 0.3;
 		control[PHI_C] = 0;
 		control[THETA_C] = 0;
 		control[PSI_C] = sv.CO[PSI_C];
