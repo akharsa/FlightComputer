@@ -8,18 +8,19 @@
 #ifndef QUADROTOR_H_
 #define QUADROTOR_H_
 
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "task.h"
+#include "semphr.h"
+
+#include "qCOMMS.h"
+#include "board.h"
+
 typedef struct {
 	float omega[3];
 	float setpoint[4];
 	float CO[4];
-	float angle[3];
-	float omega_bias[3];
-	//float vb[3];
-	//float xb[3];
-
-	//float temperature[3];
-	//float height;
-	//float batteryVoltage;
+	uint32_t time;
 } SV_t;
 
 typedef struct {

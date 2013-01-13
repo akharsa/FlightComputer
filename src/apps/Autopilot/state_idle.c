@@ -22,6 +22,8 @@
 #include "quadrotor.h"
 #include "taskList.h"
 
+#include "telemetry.h"
+
 /* ================================ */
 /* Prototypes	 					*/
 /* ================================ */
@@ -70,7 +72,8 @@ extern float yaw_control;
 
 
 void Idle_onEntry(void * p){
-	xTaskCreate(Idle_Task, ( signed char * ) "IDLE", 300, ( void * ) NULL, IDLE_PRIORITY, &hnd );
+	xTaskCreate( Idle_Task, ( signed char * ) "IDLE", 300, ( void * ) NULL, IDLE_PRIORITY, &hnd );
+	xTaskCreate( Communications, ( signed char * ) "COMMS", 500, ( void * ) NULL, COMMS_PRIORITY, NULL);
 }
 
 void Idle_onExit(void * p){
@@ -110,7 +113,7 @@ void Idle_Task(void * pvParameters){
     MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
 
     ConsolePuts_("Starting TEST...\r\n",BLUE);
-
+    StartTelemetry(50);
 	for (;;)
 	{
 
@@ -118,9 +121,9 @@ void Idle_Task(void * pvParameters){
 
 		MPU6050_getRotation(&buffer[0],&buffer[1],&buffer[2]);
 
-		sv.omega[0] = TODEGSEC(buffer[0]-settings.gyroBias[0]);
+		sv.omega[0] = -TODEGSEC(buffer[0]-settings.gyroBias[0]);
 		sv.omega[1] = TODEGSEC(buffer[1]-settings.gyroBias[1]);
-		sv.omega[2] = TODEGSEC(buffer[2]-settings.gyroBias[2]);
+		sv.omega[2] = -TODEGSEC(buffer[2]-settings.gyroBias[2]);
 
 		sv.omega[0] = sv.omega[0]/16.4;
 		sv.omega[1] = sv.omega[1]/16.4;
@@ -133,8 +136,7 @@ void Idle_Task(void * pvParameters){
 			}
 		}
 
-		sv.CO[PSI_C] = qPID_Process(&ctrl,sv.setpoint[PSI_C],-sv.omega[2],NULL);
-		sv.CO[PHI_C] = signal_t;
+		sv.CO[PSI_C] = qPID_Process(&ctrl,sv.setpoint[PSI_C],sv.omega[2],NULL);
 
 		control[Z_C] = 0.2;
 		control[PHI_C] = 0;
@@ -146,24 +148,13 @@ void Idle_Task(void * pvParameters){
 		inputs[2] = (	control[Z_C]*K_Z + control[PHI_C]*K_PHI + control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
 		inputs[3] = (	control[Z_C]*K_Z + control[PHI_C]*K_PHI - control[THETA_C]*K_THETA + control[PSI_C]*K_PSI	);
 
-
 		qESC_SetOutput(MOTOR1,inputs[0]);
 		qESC_SetOutput(MOTOR2,inputs[1]);
 		qESC_SetOutput(MOTOR3,inputs[2]);
 		qESC_SetOutput(MOTOR4,inputs[3]);
 
-/*
-		if (signal_t>500 && signal_t<1000 ){
-			MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_500);
-		}else if (signal_t>1000 && signal_t<1500 ){
-			MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_1000);
-		}else if (signal_t>1500){
-			MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
-		}
-*/
 		if (signal_t<2000){
 			signal_t++;
-			qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_TELEMETRY,sizeof(float)*11,(uint8_t*)&sv);
 		}else{
 			for (i=0;i<10;i++){
 				qESC_SetOutput(MOTOR1,1);
@@ -177,7 +168,7 @@ void Idle_Task(void * pvParameters){
 			qLed_TurnOn(FRONT_RIGHT_LED);
 			qLed_TurnOn(REAR_LEFT_LED);
 			qLed_TurnOn(REAR_RIGHT_LED);
-
+			StopTelemetry();
 			ConsolePuts_("Finished!\r\n",GREEN);
 			vTaskDelete(NULL);
 		}
