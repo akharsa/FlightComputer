@@ -81,6 +81,10 @@ void Init_Task(void * pvParameters){
 	sum[1] = 0;
 	sum[2] = 0;
 
+	MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+	MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+	MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+
 	for (i=0;i<128;i++){
 		MPU6050_getRotation(&buffer[0],&buffer[1],&buffer[2]);
 		sum[0] += buffer[0];

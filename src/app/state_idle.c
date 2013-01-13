@@ -59,11 +59,14 @@ void Idle_Task(void * pvParameters){
 
 	for (;;)
 	{
+		state_name_t newState=STATE_FLIGHT;
+		qFSM_ChangeState(newState);
+		/*
 		if ((Joystick.buttons & (BTN_RIGHT2 | BTN_LEFT2)) != 0){
-			/* Terminate and go to Idle */
 			state_name_t newState=STATE_FLIGHT;
 			qFSM_ChangeState(newState);
 		}
+		*/
 		vTaskDelayUntil( &xLastWakeTime, 10/portTICK_RATE_MS );
 	}
 }

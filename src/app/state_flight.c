@@ -42,12 +42,19 @@ static xTaskHandle BeaconHnd;
 #define K_Z		800
 #define K_PHI	200
 #define K_THETA	200
-#define K_PSI	200
+#define K_PSI	300
 
 float control[4]={0.0};
 uint16_t inputs[4]={0};
 
 qPID ctrl;
+
+//=======================================================
+uint32_t signal_time[]={0,2*1000/5,6*1000/5,10*1000/5,14*1000/5};
+float signal_values[]={0.0,180.0,0.0,-180.0,0.0};
+int j;
+uint32_t signal_t=0;
+//=======================================================
 
 float map(long x, long in_min, long in_max, float out_min, float out_max)
 {
@@ -78,14 +85,14 @@ void Flight_onEntry(void *p){
 	ConsolePuts_("FLIGHT State: onEntry\r\n",BLUE);
 	xTaskCreate( Flight_Task, ( signed char * ) "IDLE", 500, ( void * ) NULL, FLIGHT_PRIORITY, &hnd );
 	xTaskCreate( beacon, ( signed char * ) "BEACON", 100, ( void * ) NULL, 1, &BeaconHnd );
-	//StartTelemetry(20);
+	StartTelemetry(20);
 }
 
 void Flight_onExit(void *p){
 	ConsolePuts_("FLIGHT State: onExit\r\n",BLUE);
 	vTaskDelete(hnd);
 	vTaskDelete(BeaconHnd);
-	//StopTelemetry();
+	StopTelemetry();
 }
 
 void Flight_Task(void * pvParameters){
@@ -100,27 +107,35 @@ void Flight_Task(void * pvParameters){
     ctrl.OutputMax = 1.0;
     ctrl.OutputMin = -1.0;
 
-    ctrl.Ts = 0.01;
+    ctrl.Ts = 0.005;
 
     ctrl.b = 1.0;
     ctrl.c = 1.0;
 
-    ctrl.K = 0.008;
-    ctrl.Ti = ctrl.K/0.007; //conversion de paralelo a ideal
-    ctrl.Td = 0.005;
+    ctrl.K = 0.1;
+    ctrl.Ti = 1/0.2;//ctrl.K/0.007; //conversion de paralelo a ideal
+    ctrl.Td = 0.000;
     ctrl.Nd = 5;
 
     qPID_Init(&ctrl);
 
-    MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+
+    uint32_t signal_t=0;
 
 	for(;;){
 		if ((Joystick.buttons & (BTN_RIGHT2 | BTN_LEFT2)) == 0){
-			state_name_t newState=STATE_IDLE;
-			qFSM_ChangeState(newState);
+			//state_name_t newState=STATE_IDLE;
+			//qFSM_ChangeState(newState);
 		}
 
-		sv.setpoint[PSI_C] = map(Joystick.left_pad.x,0,255,-360.0,360.0);
+		//sv.setpoint[PSI_C] = map(Joystick.left_pad.x,0,255,-360.0,360.0);
+
+		for (j=0;j<(sizeof(signal_time)/4);j++){
+			if (signal_t>=signal_time[j]){
+				sv.setpoint[PSI_C] = signal_values[j];
+			}
+		}
+
 
 		MPU6050_getRotation(&buffer[0],&buffer[1],&buffer[2]);
 
@@ -148,6 +163,18 @@ void Flight_Task(void * pvParameters){
 		qESC_SetOutput(MOTOR2,inputs[1]);
 		qESC_SetOutput(MOTOR3,inputs[2]);
 		qESC_SetOutput(MOTOR4,inputs[3]);
+
+		if (signal_t<(20*1000/5)){
+			signal_t++;
+		}else{
+			for(j=0;j<10;j++){
+				qESC_SetOutput(MOTOR1,1);
+				qESC_SetOutput(MOTOR2,1);
+				qESC_SetOutput(MOTOR3,1);
+				qESC_SetOutput(MOTOR4,1);
+			}
+			vTaskDelete(NULL);
+		}
 
 		vTaskDelayUntil( &xLastWakeTime, 5/portTICK_RATE_MS );
 	}
