@@ -25,21 +25,12 @@
 extern xSemaphoreHandle TelemetrySmphr;
 
 void UART_Rx_Handler(uint8_t * buff, size_t sz);
-void ControlDataHandle(void * pvParameters);
 
 static Msg_t msg;
 static uint8_t msgBuff[255];
 
 xSemaphoreHandle DataSmphr;
 
-/*
-float map(long x, long in_min, long in_max, float out_min, float out_max)
-{
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
-float yaw_control=0.0;
-*/
 void Communications(void * pvParameters){
 	ret_t ret;
 	uint8_t ch;
@@ -56,36 +47,16 @@ void Communications(void * pvParameters){
     qUART_Register_RBR_Callback(UART_GROUNDCOMM, UART_Rx_Handler);
 
 	for (;;){
-		xSemaphoreTake(DataSmphr,portMAX_DELAY);
-
-		switch (msg.Type){
-			case MSG_TYPE_CONTROL:
-				memcpy(&Joystick,msg.Payload,10);
-				break;
-				/*
-				yaw_control = map(255-msg.Payload[0],0,255,-720.0,720.0);
-
-				control[Z_C] = map(255-msg.Payload[1]-128,0,128,0.0,1.0);
-				control[PHI_C] = map(255-msg.Payload[3],0,255,1.0,-1.0);
-				control[THETA_C] = map(255-msg.Payload[2],0,255,-1.0,1.0);
-				control[PSI_C] = map(255-msg.Payload[0],0,255,-1.0,1.0);
-
-				inputs[0] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI - control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
-				inputs[1] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI + control[THETA_C]*K_THETA + control[PSI_C]*K_PSI	);
-				inputs[2] = (	control[Z_C]*K_Z + control[PHI_C]*K_PHI + control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
-				inputs[3] = (	control[Z_C]*K_Z + control[PHI_C]*K_PHI - control[THETA_C]*K_THETA + control[PSI_C]*K_PSI	);
-
-				qESC_SetOutput(MOTOR1,inputs[0]);
-				qESC_SetOutput(MOTOR2,inputs[1]);
-				qESC_SetOutput(MOTOR3,inputs[2]);
-				qESC_SetOutput(MOTOR4,inputs[3]);
-
-				if ((msg.Payload[9]&0x03)!=0) {
-					qWDT_Feed();
-				}
-				*/
-			default:
-				break;
+		if (pdTRUE == xSemaphoreTake(DataSmphr,500/portTICK_RATE_MS)){
+			switch (msg.Type){
+				case MSG_TYPE_CONTROL:
+					memcpy(&Joystick,msg.Payload,10);
+					break;
+				default:
+					break;
+			}
+		}else{
+			memset(&Joystick,0,sizeof(Joystick));
 		}
 	}
 }
