@@ -85,14 +85,14 @@ void Flight_onEntry(void *p){
 	ConsolePuts_("FLIGHT State: onEntry\r\n",BLUE);
 	xTaskCreate( Flight_Task, ( signed char * ) "IDLE", 500, ( void * ) NULL, FLIGHT_PRIORITY, &hnd );
 	xTaskCreate( beacon, ( signed char * ) "BEACON", 100, ( void * ) NULL, 1, &BeaconHnd );
-	StartTelemetry(20);
+	//StartTelemetry(20);
 }
 
 void Flight_onExit(void *p){
 	ConsolePuts_("FLIGHT State: onExit\r\n",BLUE);
 	vTaskDelete(hnd);
 	vTaskDelete(BeaconHnd);
-	StopTelemetry();
+	//StopTelemetry();
 }
 
 void Flight_Task(void * pvParameters){
@@ -124,18 +124,18 @@ void Flight_Task(void * pvParameters){
 
 	for(;;){
 		if ((Joystick.buttons & (BTN_RIGHT2 | BTN_LEFT2)) == 0){
-			//state_name_t newState=STATE_IDLE;
-			//qFSM_ChangeState(newState);
+			state_name_t newState=STATE_IDLE;
+			qFSM_ChangeState(newState);
 		}
 
-		//sv.setpoint[PSI_C] = map(Joystick.left_pad.x,0,255,-360.0,360.0);
-
+		sv.setpoint[PSI_C] = map(Joystick.left_pad.x,0,255,-180.0,180.0);
+/*
 		for (j=0;j<(sizeof(signal_time)/4);j++){
 			if (signal_t>=signal_time[j]){
 				sv.setpoint[PSI_C] = signal_values[j];
 			}
 		}
-
+*/
 
 		MPU6050_getRotation(&buffer[0],&buffer[1],&buffer[2]);
 
@@ -163,7 +163,7 @@ void Flight_Task(void * pvParameters){
 		qESC_SetOutput(MOTOR2,inputs[1]);
 		qESC_SetOutput(MOTOR3,inputs[2]);
 		qESC_SetOutput(MOTOR4,inputs[3]);
-
+/*
 		if (signal_t<(20*1000/5)){
 			signal_t++;
 		}else{
@@ -175,7 +175,7 @@ void Flight_Task(void * pvParameters){
 			}
 			vTaskDelete(NULL);
 		}
-
+*/
 		vTaskDelayUntil( &xLastWakeTime, 5/portTICK_RATE_MS );
 	}
 }

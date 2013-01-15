@@ -56,6 +56,7 @@ void Communications(void * pvParameters){
 					break;
 			}
 		}else{
+			// Timeout to get a new joystick commands, values to 0
 			memset(&Joystick,0,sizeof(Joystick));
 		}
 	}

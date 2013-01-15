@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FlashMagic>
+  <Project>
+    <AbsolutePaths>false</AbsolutePaths>
+  </Project>
+  <Preferences>
+    <HighSpeedCommunications>false</HighSpeedCommunications>
+    <ShortTimeout>4000</ShortTimeout>
+    <LongTimeout>60000</LongTimeout>
+    <GenerateDebugFile>true</GenerateDebugFile>
+    <DebugFilePath>/Users/alan/Dropbox/Tesis/workspace/FLC_v2p0_Autopilot/Debug/programmingDebug.txt</DebugFilePath>
+    <HardwareConfiguration>BOOTEXEC</HardwareConfiguration>
+    <T1>500</T1>
+    <T2>500</T2>
+    <ProductionTasks>
+      <ProductionTask>
+        <Type>Disabled</Type>
+        <StartAddress>0</StartAddress>
+        <Path />
+        <DataLength>0</DataLength>
+        <Data />
+      </ProductionTask>
+      <ProductionTask>
+        <Type>Disabled</Type>
+        <StartAddress>0</StartAddress>
+        <Path />
+        <DataLength>0</DataLength>
+        <Data />
+      </ProductionTask>
+      <ProductionTask>
+        <Type>Disabled</Type>
+        <StartAddress>0</StartAddress>
+        <Path />
+        <DataLength>0</DataLength>
+        <Data />
+      </ProductionTask>
+    </ProductionTasks>
+  </Preferences>
+  <MainWindow>
+    <Baudrate>57600</Baudrate>
+    <SerialPort>usbserial-A800f8C2</SerialPort>
+    <Device>LPC1769</Device>
+    <XtalFrequency>12.000</XtalFrequency>
+    <Erase>EraseAllFlash</Erase>
+    <SectorsToErase />
+    <FirmwareFile>/Users/alan/Dropbox/Tesis/workspace/FLC_v2p0_Autopilot/Debug/1_Blinky_SysTick.hex</FirmwareFile>
+    <ProgramFirmware>On</ProgramFirmware>
+    <Verify>On</Verify>
+    <SetCRP>Off</SetCRP>
+    <CRP>No JTAG, limited ISP (CRP1)</CRP>
+  </MainWindow>
+</FlashMagic>
