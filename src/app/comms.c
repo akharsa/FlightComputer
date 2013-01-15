@@ -44,7 +44,7 @@ void Communications(void * pvParameters){
     	while(1);
     }
 
-    qUART_Register_RBR_Callback(UART_GROUNDCOMM, UART_Rx_Handler);
+    //qUART_Register_RBR_Callback(UART_GROUNDCOMM, UART_Rx_Handler);
 
 	for (;;){
 		if (pdTRUE == xSemaphoreTake(DataSmphr,500/portTICK_RATE_MS)){

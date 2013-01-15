@@ -56,7 +56,9 @@ void Init_Task(void * pvParameters){
 		//vTaskDelay(1000/portTICK_RATE_MS);
 	}
 
-	vTaskDelay(10000/portTICK_RATE_MS);
+
+	// VOLVER A PONEEEEEEEEEEEEEEER!!
+	//vTaskDelay(10000/portTICK_RATE_MS);
 
 	// --------------------------------------------------
 
