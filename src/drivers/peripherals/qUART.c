@@ -106,6 +106,7 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
 	//UART_IntConfig(uarts[id], UART_INTCFG_RLS, ENABLE);
 	//UART_IntConfig(uarts[id], UART_INTCFG_THRE, ENABLE);
 
+
 	if (uarts[id]==LPC_UART0){
 		NVIC_SetPriority(UART0_IRQn, 6);
 		NVIC_EnableIRQ (UART0_IRQn);
@@ -134,9 +135,9 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
 	GPDMA_Init();
 
     // Disable interrupt for DMA
- //   NVIC_DisableIRQ (DMA_IRQn);
+    //NVIC_DisableIRQ (DMA_IRQn);
     /* preemption = 1, sub-priority = 1 */
-  //  NVIC_SetPriority(DMA_IRQn, 1);
+    //NVIC_SetPriority(DMA_IRQn, 1);
 
 
     // Estrucutura de configuración para PING PONG
@@ -173,10 +174,10 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
 
 	// Selecciono los buffers
 	GPDMA_Setup(&GPDMACfg_rx);
-	GPDMA_Setup(&GPDMACfg_tx);
+	//GPDMA_Setup(&GPDMACfg_tx);
 
     // Enable GPDMA channel 0 para transmisión (todavía no hay nada)
-	GPDMA_ChannelCmd(DMA_CHANNEL_TX, DISABLE);
+//	GPDMA_ChannelCmd(DMA_CHANNEL_TX, DISABLE);
 	// Enable GPDMA channel 1 para recepción
 	GPDMA_ChannelCmd(DMA_CHANNEL_RX, ENABLE);
 
@@ -194,15 +195,15 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
 	TIM_MatchConfigStruct.ResetOnMatch = TRUE;
 	TIM_MatchConfigStruct.StopOnMatch  = TRUE;
 	TIM_MatchConfigStruct.ExtMatchOutputType =TIM_EXTMATCH_NOTHING;
-	// Set Match value, count value of 10000 (10000 * 100uS = 1000000us = 1s --> 1 Hz)
-	TIM_MatchConfigStruct.MatchValue   = 10000;
+
+	TIM_MatchConfigStruct.MatchValue   = 10009;
 
 	// Set configuration for Tim_config and Tim_MatchConfig
 	TIM_Init(LPC_TIM0, TIM_TIMER_MODE,&TIM_ConfigStruct);
 	TIM_ConfigMatch(LPC_TIM0,&TIM_MatchConfigStruct);
 
 	/* preemption = 1, sub-priority = 1 */
-	NVIC_SetPriority(TIMER0_IRQn, 3);
+	NVIC_SetPriority(TIMER0_IRQn, 6);
 
 	/* Enable interrupt for timer 0 */
 	NVIC_EnableIRQ(TIMER0_IRQn);
@@ -235,23 +236,26 @@ ret_t qUART_Register_RBR_Callback(uint8_t id, void (*pf)(uint8_t *, size_t sz)){
 
 
 void flushBuffer(){
-	/*
+
 	GPDMACfg_tx.SrcMemAddr = (uint32_t) &txBuff[selectedTxBuff];
+	GPDMACfg_tx.TransferSize = txBufferCount;
 	GPDMA_Setup(&GPDMACfg_tx);
 	GPDMA_ChannelCmd(DMA_CHANNEL_TX, ENABLE);
 	//XXX: NO hay chequeo de over run aca
-	if (selectedTxBuff<(MAX_BUFFERS-1)){
-		selectedTxBuff++;
-	}else{
+	if (selectedTxBuff==1){
 		selectedTxBuff = 0;
+	}else{
+		selectedTxBuff = 1;
 	}
-	*/
+
 }
 
 uint32_t qUART_Send(uint8_t id, uint8_t * buff, size_t size){
-/*
+
+	TIM_Cmd(LPC_TIM0,DISABLE);
+
 	// Chequeo si hay lugar en el buffer de transmision
-	if ((txBufferCount+size)<BUFFER_SIZE){
+	if ((txBufferCount+size)<BUFF_SIZE){
 		// Si hay lugar lo meto adentro
 		memcpy(&(txBuff[selectedTxBuff][txBufferCount]),buff,size);
 		txBufferCount += size;
@@ -263,18 +267,21 @@ uint32_t qUART_Send(uint8_t id, uint8_t * buff, size_t size){
 		txBufferCount += size;
 	}
 
-	if (txBufferCount == (BUFFER_SIZE-1)){
+	if (txBufferCount == (BUFF_SIZE-1)){
 		flushBuffer();
 		txBufferCount = 0;
 	}else{
-		if (timerRunning == 0){
-			timerRunning = 1;
-			TIM_Cmd(LPC_TIM0,ENABLE);
-		}else{
+		if (timerRunning == 1){
 			TIM_ResetCounter(LPC_TIM0);
+		}else{
+			timerRunning = 1;
+			TIM_ResetCounter(LPC_TIM0);
+			TIM_Cmd(LPC_TIM0,ENABLE);
 		}
 	}
-*/
+
+
+
 	return RET_OK;
 }
 
@@ -428,7 +435,9 @@ void TIMER0_IRQHandler(void)
 {
 	if (TIM_GetIntStatus(LPC_TIM0, TIM_MR0_INT)== SET)
 	{
-
+		// ESTA PARADO SOLO POR QUE ASI ESTA CONFIGURADO
+		flushBuffer();
+		timerRunning = 0;
 	}
 	TIM_ClearIntPending(LPC_TIM0, TIM_MR0_INT);
 }
