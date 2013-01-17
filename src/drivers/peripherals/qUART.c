@@ -5,6 +5,7 @@
 #include "lpc17xx_uart.h"
 #include "lpc17xx_pinsel.h"
 #include "lpc17xx_gpdma.h"
+#include "lpc17xx_timer.h"
 
 #include "LightweightRingBuff.h"
 #include "leds.h"
@@ -21,8 +22,12 @@ status_t qUARTStatus[qUART_TOTAL] = {0}; /* DEVICE_NOT_READY */
 
 #define BUFF_SIZE	300
 #define MAX_BUFFERS 2
-uint8_t rxBuff[MAX_BUFFERS][BUFF_SIZE];
-uint8_t txBuff[MAX_BUFFERS][BUFF_SIZE];
+__IO uint8_t rxBuff[MAX_BUFFERS][BUFF_SIZE];
+__IO uint8_t txBuff[MAX_BUFFERS][BUFF_SIZE];
+volatile uint32_t txBufferCount = 0;
+volatile uint8_t timerRunning = 0;
+
+void (*RBR_Handler[qUART_TOTAL])(uint8_t *,size_t sz) = {NULL};
 
 __IO uint32_t Channel0_TC;
 __IO uint32_t Channel0_Err;
@@ -45,7 +50,8 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
 	PINSEL_CFG_Type PinCfg;
 	UART_CFG_Type UARTConfigStruct;
 	UART_FIFO_CFG_Type UARTFIFOConfigStruct;
-
+	TIM_TIMERCFG_Type TIM_ConfigStruct;
+	TIM_MATCHCFG_Type TIM_MatchConfigStruct ;
 
 	uint8_t rxPin,txPin,rxPort,txPort,pinFunc;
 
@@ -94,26 +100,49 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
 
 	UART_Init(uarts[id], &UARTConfigStruct);
 
+	// Agregue las interucopiones
+	UART_TxCmd(uarts[id], ENABLE);
+	UART_IntConfig(uarts[id], UART_INTCFG_RBR, ENABLE);
+	//UART_IntConfig(uarts[id], UART_INTCFG_RLS, ENABLE);
+	//UART_IntConfig(uarts[id], UART_INTCFG_THRE, ENABLE);
+
+	if (uarts[id]==LPC_UART0){
+		NVIC_SetPriority(UART0_IRQn, 6);
+		NVIC_EnableIRQ (UART0_IRQn);
+
+	}else if (uarts[id]==LPC_UART2){
+		NVIC_SetPriority(UART2_IRQn, 6);
+		NVIC_EnableIRQ (UART2_IRQn);
+
+	}else if (uarts[id]==LPC_UART3){
+		NVIC_SetPriority(UART3_IRQn, 6);
+		NVIC_EnableIRQ (UART3_IRQn);
+
+	}else{
+		return RET_ERROR;
+	}
+
 	// -------------------------------------------------------
 	// UART FIFOS
 
 	UART_FIFOConfigStructInit(&UARTFIFOConfigStruct);
-	//UARTFIFOConfigStruct.FIFO_Level = UART_FIFO_TRGLEV3;
+	UARTFIFOConfigStruct.FIFO_Level = UART_FIFO_TRGLEV3;
 	UARTFIFOConfigStruct.FIFO_DMAMode = ENABLE;
 	UART_FIFOConfig(uarts[id], &UARTFIFOConfigStruct);
 	UART_TxCmd(uarts[id], ENABLE);
 
 	GPDMA_Init();
+
     // Disable interrupt for DMA
-    NVIC_DisableIRQ (DMA_IRQn);
+ //   NVIC_DisableIRQ (DMA_IRQn);
     /* preemption = 1, sub-priority = 1 */
-    NVIC_SetPriority(DMA_IRQn, ((0x01<<3)|0x01));
+  //  NVIC_SetPriority(DMA_IRQn, 1);
 
 
     // Estrucutura de configuración para PING PONG
        //-----------------------------------------------------------------------
    	GPDMACfg_tx.ChannelNum = DMA_CHANNEL_TX;
-   	GPDMACfg_tx.SrcMemAddr = (uint32_t) txBuff[0];
+   	GPDMACfg_tx.SrcMemAddr = (uint32_t) txBuff[selectedTxBuff];
    	GPDMACfg_tx.DstMemAddr = 0;
    	GPDMACfg_tx.TransferSize = BUFF_SIZE;
    	GPDMACfg_tx.TransferWidth = 0;
@@ -124,7 +153,7 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
 
    	GPDMACfg_rx.ChannelNum = DMA_CHANNEL_RX;
    	GPDMACfg_rx.SrcMemAddr = 0;
-   	GPDMACfg_rx.DstMemAddr = (uint32_t) rxBuff[0];
+   	GPDMACfg_rx.DstMemAddr = (uint32_t) rxBuff[selectedRxBuff];
    	GPDMACfg_rx.TransferSize = BUFF_SIZE;
    	GPDMACfg_rx.TransferWidth = 0;
    	GPDMACfg_rx.TransferType = GPDMA_TRANSFERTYPE_P2M;
@@ -140,19 +169,45 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
 	Channel1_Err = 0;
 
     // Enable interrupt for DMA
-    NVIC_EnableIRQ (DMA_IRQn);
+    //NVIC_EnableIRQ (DMA_IRQn);
 
 	// Selecciono los buffers
 	GPDMA_Setup(&GPDMACfg_rx);
 	GPDMA_Setup(&GPDMACfg_tx);
 
     // Enable GPDMA channel 0 para transmisión (todavía no hay nada)
-	GPDMA_ChannelCmd(0, DISABLE);
+	GPDMA_ChannelCmd(DMA_CHANNEL_TX, DISABLE);
 	// Enable GPDMA channel 1 para recepción
-	GPDMA_ChannelCmd(1, ENABLE);
+	GPDMA_ChannelCmd(DMA_CHANNEL_RX, ENABLE);
 
 	selectedRxBuff = 0;
 	selectedTxBuff = 0;
+
+
+	// Initialize timer 0, prescale count time of 100uS
+	TIM_ConfigStruct.PrescaleOption = TIM_PRESCALE_USVAL;
+	TIM_ConfigStruct.PrescaleValue	= 1;
+
+	// use channel 0, MR0
+	TIM_MatchConfigStruct.MatchChannel = 0;
+	TIM_MatchConfigStruct.IntOnMatch   = TRUE;
+	TIM_MatchConfigStruct.ResetOnMatch = TRUE;
+	TIM_MatchConfigStruct.StopOnMatch  = TRUE;
+	TIM_MatchConfigStruct.ExtMatchOutputType =TIM_EXTMATCH_NOTHING;
+	// Set Match value, count value of 10000 (10000 * 100uS = 1000000us = 1s --> 1 Hz)
+	TIM_MatchConfigStruct.MatchValue   = 10000;
+
+	// Set configuration for Tim_config and Tim_MatchConfig
+	TIM_Init(LPC_TIM0, TIM_TIMER_MODE,&TIM_ConfigStruct);
+	TIM_ConfigMatch(LPC_TIM0,&TIM_MatchConfigStruct);
+
+	/* preemption = 1, sub-priority = 1 */
+	NVIC_SetPriority(TIMER0_IRQn, 3);
+
+	/* Enable interrupt for timer 0 */
+	NVIC_EnableIRQ(TIMER0_IRQn);
+
+
 
 	qUARTStatus[id] = DEVICE_READY;
 	return RET_OK;
@@ -169,24 +224,57 @@ ret_t qUART_DeInit(uint8_t id){
 	}
 }
 
+ret_t qUART_Register_RBR_Callback(uint8_t id, void (*pf)(uint8_t *, size_t sz)){
+	if (pf == NULL){
+		return RET_ERROR;
+	}
+	RBR_Handler[id] = pf;
 
-uint32_t qUART_Send(uint8_t id, uint8_t * buff, size_t size){
+	return RET_OK;
+}
 
-	memcpy(&(txBuff[selectedTxBuff][0]),buff,size);
 
+void flushBuffer(){
+	/*
 	GPDMACfg_tx.SrcMemAddr = (uint32_t) &txBuff[selectedTxBuff];
-
 	GPDMA_Setup(&GPDMACfg_tx);
-
 	GPDMA_ChannelCmd(DMA_CHANNEL_TX, ENABLE);
-
 	//XXX: NO hay chequeo de over run aca
 	if (selectedTxBuff<(MAX_BUFFERS-1)){
 		selectedTxBuff++;
 	}else{
 		selectedTxBuff = 0;
 	}
+	*/
+}
 
+uint32_t qUART_Send(uint8_t id, uint8_t * buff, size_t size){
+/*
+	// Chequeo si hay lugar en el buffer de transmision
+	if ((txBufferCount+size)<BUFFER_SIZE){
+		// Si hay lugar lo meto adentro
+		memcpy(&(txBuff[selectedTxBuff][txBufferCount]),buff,size);
+		txBufferCount += size;
+	}else{
+		// Si no hay lugar, mando el buffer viejo swapeo y lo meto en el nuevo
+		flushBuffer();
+		txBufferCount = 0;
+		memcpy(&(txBuff[selectedTxBuff][txBufferCount]),buff,size);
+		txBufferCount += size;
+	}
+
+	if (txBufferCount == (BUFFER_SIZE-1)){
+		flushBuffer();
+		txBufferCount = 0;
+	}else{
+		if (timerRunning == 0){
+			timerRunning = 1;
+			TIM_Cmd(LPC_TIM0,ENABLE);
+		}else{
+			TIM_ResetCounter(LPC_TIM0);
+		}
+	}
+*/
 	return RET_OK;
 }
 
@@ -198,9 +286,7 @@ ret_t qUART_ReadByte(uint8_t id, uint8_t * buffer){
 }
 
 
-// =========================================================================
-// IRQ Handlers
-// =========================================================================
+
 
 void DMA_IRQHandler (void)
 {
@@ -246,4 +332,119 @@ void DMA_IRQHandler (void)
 		}
 	}
 }
+
+
+//===========================================================
+// Handlers
+//===========================================================
+
+void UARTx_IRQHandler(uint8_t id);
+void UART_IntErr(uint8_t id, uint8_t bLSErrType);
+
+void UART0_IRQHandler(void)
+{
+	UARTx_IRQHandler(0);
+}
+void UART2_IRQHandler(void)
+{
+	UARTx_IRQHandler(1);
+}
+void UART3_IRQHandler(void)
+{
+	UARTx_IRQHandler(2);
+}
+
+
+void UARTx_IRQHandler(uint8_t id){
+	uint32_t buffsize;
+	uint32_t i=0;
+
+	for (i=0;i<256;i++){
+		// ESTE delay hace que todo funcione,
+		// sino parece que no terminaba el transer y le
+		// cambiaba el banco antes de terminar y se rompia todo
+		// 1000 no es mucho?
+	}
+
+	GPDMA_ChannelCmd(DMA_CHANNEL_RX, DISABLE);
+	// Desde aca hay solo una FIFO (16 bytes) de tiempo para encender el otro buffer
+
+	buffsize = (LPC_GPDMACH1->DMACCDestAddr) -  (uint32_t)&(rxBuff[selectedRxBuff]);
+	if (selectedRxBuff==0){
+		selectedRxBuff = 1;
+	}else{
+		selectedRxBuff = 0;
+	}
+
+	GPDMACfg_rx.DstMemAddr = (uint32_t) &rxBuff[selectedRxBuff];
+	GPDMA_Setup(&GPDMACfg_rx);
+
+	// Hasta aca!
+	GPDMA_ChannelCmd(DMA_CHANNEL_RX, ENABLE);
+
+	if (RBR_Handler[id]!=NULL){
+		if (selectedRxBuff==0){
+			(*RBR_Handler[id])((uint8_t *)&rxBuff[1],(size_t)buffsize);
+		}else{
+			(*RBR_Handler[id])((uint8_t *)&rxBuff[0],(size_t)buffsize);
+		}
+	}
+
+#if 0
+	uint32_t intsrc, tmp, tmp1;
+
+	/* Determine the interrupt source */
+	intsrc = UART_GetIntId(uarts[id]);
+	tmp = intsrc & UART_IIR_INTID_MASK;
+
+	/* Receive Line Status: error checking register */
+	if (tmp == UART_IIR_INTID_RLS){
+		// Check line status
+		tmp1 = UART_GetLineStatus(uarts[id]);
+		// Mask out the Receive Ready and Transmit Holding empty status
+		tmp1 &= (UART_LSR_OE | UART_LSR_PE | UART_LSR_FE \
+				| UART_LSR_BI | UART_LSR_RXFE);
+		// If any error exist
+		if (tmp1) {
+			UART_IntErr(id,tmp1);
+		}
+	}
+
+	/* Receive Data Available or Character time-out */
+	if ((tmp == UART_IIR_INTID_RDA) || (tmp == UART_IIR_INTID_CTI)){
+		qLed_TurnOn(STATUS_LED);
+	}
+
+	/* Transmit Holding Empty */
+	// XXX: http://www.embeddedrelated.com/groups/lpc2000/show/46607.php
+	if (tmp == UART_IIR_INTID_THRE){
+		qLed_TurnOn(STATUS_LED);
+	}
+#endif
+}
+
+
+void TIMER0_IRQHandler(void)
+{
+	if (TIM_GetIntStatus(LPC_TIM0, TIM_MR0_INT)== SET)
+	{
+
+	}
+	TIM_ClearIntPending(LPC_TIM0, TIM_MR0_INT);
+}
+
+/*********************************************************************//**
+ * @brief		UART Line Status Error
+ * @param[in]	bLSErrType	UART Line Status Error Type
+ * @return		None
+ **********************************************************************/
+void UART_IntErr(uint8_t id, uint8_t bLSErrType)
+{
+//	qLed_TurnOn(FRONT_LEFT_LED);
+//	while (1){
+		//TODO: Handle the errors. For example Overrun.
+//	}
+
+}
+
 

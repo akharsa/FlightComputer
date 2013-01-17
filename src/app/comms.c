@@ -44,7 +44,7 @@ void Communications(void * pvParameters){
     	while(1);
     }
 
-    //qUART_Register_RBR_Callback(UART_GROUNDCOMM, UART_Rx_Handler);
+    qUART_Register_RBR_Callback(UART_GROUNDCOMM, UART_Rx_Handler);
 
 	for (;;){
 		if (pdTRUE == xSemaphoreTake(DataSmphr,500/portTICK_RATE_MS)){
@@ -52,6 +52,9 @@ void Communications(void * pvParameters){
 				case MSG_TYPE_CONTROL:
 					memcpy(&Joystick,msg.Payload,10);
 					break;
+				case MSG_TYPE_DEBUG:
+					qUART_Send(1,0x000,10);
+					 break;
 				default:
 					break;
 			}
@@ -66,7 +69,6 @@ uint8_t led = 0;
 
 void UART_Rx_Handler(uint8_t * buff, size_t sz){
 	uint32_t i;
-	uint8_t buffer;
 	ret_t ret;
 	static portBASE_TYPE xHigherPriorityTaskWoken;
 
@@ -74,8 +76,8 @@ void UART_Rx_Handler(uint8_t * buff, size_t sz){
 
 	for (i=0;i<sz;i++){
 
-		qUART_ReadByte(UART_GROUNDCOMM,&buffer);
-		ret=qComms_ParseByte(&msg,buffer);
+		//qUART_ReadByte(UART_GROUNDCOMM,&buffer);
+		ret=qComms_ParseByte(&msg,*(buff+i));
 
 		switch (ret){
 			case RET_MSG_BYTES_REMAINING:

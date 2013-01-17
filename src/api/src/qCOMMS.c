@@ -147,8 +147,13 @@ ret_t qComms_ParseByte(Msg_t * msg, uint8_t b){
 			break;
 		case MSG_STATE_LENGTH:
 			msg->Length = b;
-			state = MSG_STATE_PAYLOAD;
-			return RET_MSG_BYTES_REMAINING;
+			if (msg->Length>0){
+				state = MSG_STATE_PAYLOAD;
+				return RET_MSG_BYTES_REMAINING;
+			}else{
+				state = MSG_STATE_CHECKSUM;
+				return RET_MSG_BYTES_REMAINING;
+			}
 			break;
 		case MSG_STATE_PAYLOAD:
 			*(msg->Payload+bytesReaded) = b;
