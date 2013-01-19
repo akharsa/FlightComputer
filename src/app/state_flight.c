@@ -128,7 +128,7 @@ void Flight_Task(void * pvParameters){
 			qFSM_ChangeState(newState);
 		}
 
-		sv.setpoint[PHI_C] = map(Joystick.right_pad.x,0,255,-90.0,90.0);
+		sv.setpoint[THETA_C] = map(Joystick.right_pad.y,0,255,-90.0,90.0);
 
 		//sv.setpoint[PHI_C] = 0.0;
 /*
@@ -149,11 +149,11 @@ void Flight_Task(void * pvParameters){
 		sv.omega[1] = sv.omega[1]/16.4;
 		sv.omega[2] = sv.omega[2]/16.4;
 
-		sv.CO[PHI_C] = qPID_Process(&ctrl,sv.setpoint[PHI_C],sv.omega[0],NULL);
+		sv.CO[THETA_C] = qPID_Process(&ctrl,sv.setpoint[THETA_C],sv.omega[1],NULL);
 
 		control[Z_C] = 0.3;
-		control[PHI_C] = sv.CO[PHI_C];
-		control[THETA_C] = 0.0;
+		control[PHI_C] = 0.0;
+		control[THETA_C] = sv.CO[THETA_C];
 		control[PSI_C] = 0.0;
 
 		inputs[0] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI - control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
