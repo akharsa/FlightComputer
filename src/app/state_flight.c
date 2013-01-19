@@ -47,7 +47,7 @@ static xTaskHandle BeaconHnd;
 float control[4]={0.0};
 uint16_t inputs[4]={0};
 
-qPID ctrl;
+qPID ctrl[4];
 
 //=======================================================
 uint32_t signal_time[]={0,2*1000/5,6*1000/5,10*1000/5,14*1000/5};
@@ -95,32 +95,49 @@ void Flight_onExit(void *p){
 	StopTelemetry();
 }
 
+
 void Flight_Task(void * pvParameters){
+	uint8_t i;
+
 	portTickType xLastWakeTime;
 	xLastWakeTime = xTaskGetTickCount();
 	int16_t buffer[3];
 
-    ctrl.AntiWindup = ENABLED;
-    ctrl.Bumpless = ENABLED;
+	for (i=1;i<4;i++){
+		ctrl[i].AntiWindup = ENABLED;
+		ctrl[i].Bumpless = ENABLED;
 
-    ctrl.Mode = AUTOMATIC;
-    ctrl.OutputMax = 1.0;
-    ctrl.OutputMin = -1.0;
+		ctrl[i].Mode = AUTOMATIC;
+		ctrl[i].OutputMax = 1.0;
+		ctrl[i].OutputMin = -1.0;
 
-    ctrl.Ts = 0.005;
+		ctrl[i].Ts = 0.005;
 
-    ctrl.b = 1.0;
-    ctrl.c = 1.0;
+		ctrl[i].b = 1.0;
+		ctrl[i].c = 1.0;
+	}
 
-    ctrl.K = 0.02;
-    ctrl.Ti = 1/0.03;
-    ctrl.Td = 0.000;
-    ctrl.Nd = 5;
+	ctrl[PHI_C].K = 0.02;
+	ctrl[PHI_C].Ti = 1/0.03;
+	ctrl[PHI_C].Td = 0.000;
+	ctrl[PHI_C].Nd = 5;
 
-    qPID_Init(&ctrl);
+    ctrl[THETA_C].K = 0.02;
+    ctrl[THETA_C].Ti = 1/0.03;
+    ctrl[THETA_C].Td = 0.000;
+    ctrl[THETA_C].Nd = 5;
+
+    ctrl[PSI_C].K = 0.1;
+    ctrl[PSI_C].Ti = 1/0.2;
+    ctrl[PSI_C].Td = 0.000;
+    ctrl[PSI_C].Nd = 5;
+
+    qPID_Init(&ctrl[PHI_C]);
+    qPID_Init(&ctrl[THETA_C]);
+    qPID_Init(&ctrl[PSI_C]);
 
 
-    uint32_t signal_t=0;
+    //uint32_t signal_t=0;
 
 	for(;;){
 		if ((Joystick.buttons & (BTN_RIGHT2 | BTN_LEFT2)) == 0){
@@ -128,7 +145,9 @@ void Flight_Task(void * pvParameters){
 			qFSM_ChangeState(newState);
 		}
 
+		sv.setpoint[PHI_C] = map(Joystick.right_pad.x,0,255,-90.0,90.0);
 		sv.setpoint[THETA_C] = map(Joystick.right_pad.y,0,255,-90.0,90.0);
+		sv.setpoint[PSI_C] = map(Joystick.left_pad.x,0,255,-180.0,180.0);
 
 		//sv.setpoint[PHI_C] = 0.0;
 /*
@@ -139,6 +158,7 @@ void Flight_Task(void * pvParameters){
 		}
 */
 
+		// DAQ
 		MPU6050_getRotation(&buffer[0],&buffer[1],&buffer[2]);
 
 		sv.omega[0] = -(buffer[0]-settings.gyroBias[0]);
@@ -149,13 +169,17 @@ void Flight_Task(void * pvParameters){
 		sv.omega[1] = sv.omega[1]/16.4;
 		sv.omega[2] = sv.omega[2]/16.4;
 
-		sv.CO[THETA_C] = qPID_Process(&ctrl,sv.setpoint[THETA_C],sv.omega[1],NULL);
+		// PID Process
+		sv.CO[PHI_C] = qPID_Process(&ctrl[PHI_C],sv.setpoint[PHI_C],sv.omega[0],NULL);
+		sv.CO[THETA_C] = qPID_Process(&ctrl[THETA_C],sv.setpoint[THETA_C],sv.omega[1],NULL);
+		sv.CO[PSI_C] = qPID_Process(&ctrl[PSI_C],sv.setpoint[PSI_C],sv.omega[2],NULL);
 
 		control[Z_C] = 0.3;
-		control[PHI_C] = 0.0;
+		control[PHI_C] = sv.CO[PHI_C];
 		control[THETA_C] = sv.CO[THETA_C];
 		control[PSI_C] = 0.0;
 
+		// Output stateg
 		inputs[0] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI - control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
 		inputs[1] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI + control[THETA_C]*K_THETA + control[PSI_C]*K_PSI	);
 		inputs[2] = (	control[Z_C]*K_Z + control[PHI_C]*K_PHI + control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
