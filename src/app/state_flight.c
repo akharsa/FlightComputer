@@ -39,7 +39,7 @@ static xTaskHandle BeaconHnd;
 #define THETA_C	2
 #define PSI_C	3
 
-#define K_Z		800
+#define K_Z		700
 #define K_PHI	200
 #define K_THETA	200
 #define K_PSI	300
@@ -98,6 +98,7 @@ void Flight_onExit(void *p){
 
 void Flight_Task(void * pvParameters){
 	uint8_t i;
+	uint8_t zc;
 
 	portTickType xLastWakeTime;
 	xLastWakeTime = xTaskGetTickCount();
@@ -145,9 +146,18 @@ void Flight_Task(void * pvParameters){
 			qFSM_ChangeState(newState);
 		}
 
+
+		if (Joystick.left_pad.y>127){
+			zc = 127;
+		}else{
+			zc = 255 - Joystick.left_pad.y;
+		}
+
+		sv.setpoint[Z_C] = map(zc,127,255,0.0,1.0);
+
 		sv.setpoint[PHI_C] = map(Joystick.right_pad.x,0,255,-90.0,90.0);
 		sv.setpoint[THETA_C] = map(Joystick.right_pad.y,0,255,-90.0,90.0);
-		sv.setpoint[PSI_C] = map(Joystick.left_pad.x,0,255,-180.0,180.0);
+		sv.setpoint[PSI_C] = 0.0; //map(Joystick.left_pad.x,0,255,-180.0,180.0);
 
 		//sv.setpoint[PHI_C] = 0.0;
 /*
@@ -163,7 +173,7 @@ void Flight_Task(void * pvParameters){
 
 		sv.omega[0] = -(buffer[0]-settings.gyroBias[0]);
 		sv.omega[1] = (buffer[1]-settings.gyroBias[1]);
-		sv.omega[2] = -(buffer[2]-settings.gyroBias[2]);
+		sv.omega[2] = (buffer[2]-settings.gyroBias[2]);
 
 		sv.omega[0] = sv.omega[0]/16.4;
 		sv.omega[1] = sv.omega[1]/16.4;
@@ -174,10 +184,10 @@ void Flight_Task(void * pvParameters){
 		sv.CO[THETA_C] = qPID_Process(&ctrl[THETA_C],sv.setpoint[THETA_C],sv.omega[1],NULL);
 		sv.CO[PSI_C] = qPID_Process(&ctrl[PSI_C],sv.setpoint[PSI_C],sv.omega[2],NULL);
 
-		control[Z_C] = 0.3;
+		control[Z_C] = sv.setpoint[Z_C];
 		control[PHI_C] = sv.CO[PHI_C];
 		control[THETA_C] = sv.CO[THETA_C];
-		control[PSI_C] = 0.0;
+		control[PSI_C] = sv.CO[PSI_C];
 
 		// Output stateg
 		inputs[0] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI - control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
