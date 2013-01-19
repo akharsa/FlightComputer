@@ -29,10 +29,10 @@
 #define TEMPERATURE_ANALOG			&analog[1]
 #define VOLTAGE_ANALOG				&analog[0]
 
-#define MOTOR1						&pwm[4]
-#define MOTOR2						&pwm[3]
-#define MOTOR3						&pwm[1]
-#define MOTOR4						&pwm[0]
+#define MOTOR1						&pwm[3]//4
+#define MOTOR2						&pwm[1]//3
+#define MOTOR3						&pwm[0]//1
+#define MOTOR4						&pwm[4]//0
 
 #define UART_GROUNDCOMM				0 //LPC_UART0
 

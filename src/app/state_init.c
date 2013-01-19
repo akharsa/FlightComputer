@@ -104,7 +104,19 @@ void Init_Task(void * pvParameters){
 	for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOff(leds[i]);
 	ConsolePuts_("[OK]\r\n",GREEN);
 	// --------------------------------------------------
+/*
+    qESC_SetOutput(MOTOR1,300);
+    qESC_SetOutput(MOTOR1,0);
 
+    qESC_SetOutput(MOTOR2,300);
+    qESC_SetOutput(MOTOR2,0);
+
+    qESC_SetOutput(MOTOR3,300);
+    qESC_SetOutput(MOTOR3,0);
+
+    qESC_SetOutput(MOTOR4,300);
+    qESC_SetOutput(MOTOR4,0);
+*/
 	xTaskCreate( Communications, ( signed char * ) "COMMS", 500, ( void * ) NULL, COMMS_PRIORITY, NULL);
 
 	/* Terminate and go to Idle */

@@ -112,8 +112,8 @@ void Flight_Task(void * pvParameters){
     ctrl.b = 1.0;
     ctrl.c = 1.0;
 
-    ctrl.K = 0.1;
-    ctrl.Ti = 1/0.2;//ctrl.K/0.007; //conversion de paralelo a ideal
+    ctrl.K = 0.02;
+    ctrl.Ti = 1/0.03;
     ctrl.Td = 0.000;
     ctrl.Nd = 5;
 
@@ -128,7 +128,9 @@ void Flight_Task(void * pvParameters){
 			qFSM_ChangeState(newState);
 		}
 
-		sv.setpoint[PSI_C] = map(Joystick.left_pad.x,0,255,-180.0,180.0);
+		sv.setpoint[PHI_C] = map(Joystick.right_pad.x,0,255,-90.0,90.0);
+
+		//sv.setpoint[PHI_C] = 0.0;
 /*
 		for (j=0;j<(sizeof(signal_time)/4);j++){
 			if (signal_t>=signal_time[j]){
@@ -147,12 +149,12 @@ void Flight_Task(void * pvParameters){
 		sv.omega[1] = sv.omega[1]/16.4;
 		sv.omega[2] = sv.omega[2]/16.4;
 
-		sv.CO[PSI_C] = qPID_Process(&ctrl,sv.setpoint[PSI_C],sv.omega[2],NULL);
+		sv.CO[PHI_C] = qPID_Process(&ctrl,sv.setpoint[PHI_C],sv.omega[0],NULL);
 
 		control[Z_C] = 0.3;
-		control[PHI_C] = 0;
-		control[THETA_C] = 0;
-		control[PSI_C] = sv.CO[PSI_C];
+		control[PHI_C] = sv.CO[PHI_C];
+		control[THETA_C] = 0.0;
+		control[PSI_C] = 0.0;
 
 		inputs[0] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI - control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
 		inputs[1] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI + control[THETA_C]*K_THETA + control[PSI_C]*K_PSI	);
