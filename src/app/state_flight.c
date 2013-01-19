@@ -85,14 +85,14 @@ void Flight_onEntry(void *p){
 	ConsolePuts_("FLIGHT State: onEntry\r\n",BLUE);
 	xTaskCreate( Flight_Task, ( signed char * ) "IDLE", 500, ( void * ) NULL, FLIGHT_PRIORITY, &hnd );
 	xTaskCreate( beacon, ( signed char * ) "BEACON", 100, ( void * ) NULL, 1, &BeaconHnd );
-	//StartTelemetry(20);
+	StartTelemetry(20);
 }
 
 void Flight_onExit(void *p){
 	ConsolePuts_("FLIGHT State: onExit\r\n",BLUE);
 	vTaskDelete(hnd);
 	vTaskDelete(BeaconHnd);
-	//StopTelemetry();
+	StopTelemetry();
 }
 
 void Flight_Task(void * pvParameters){

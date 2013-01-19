@@ -196,7 +196,7 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
 	TIM_MatchConfigStruct.StopOnMatch  = TRUE;
 	TIM_MatchConfigStruct.ExtMatchOutputType =TIM_EXTMATCH_NOTHING;
 
-	TIM_MatchConfigStruct.MatchValue   = 10009;
+	TIM_MatchConfigStruct.MatchValue   = 5000;
 
 	// Set configuration for Tim_config and Tim_MatchConfig
 	TIM_Init(LPC_TIM0, TIM_TIMER_MODE,&TIM_ConfigStruct);
@@ -248,11 +248,15 @@ void flushBuffer(){
 		selectedTxBuff = 1;
 	}
 
+	txBufferCount = 0;
 }
 
 uint32_t qUART_Send(uint8_t id, uint8_t * buff, size_t size){
 
-	TIM_Cmd(LPC_TIM0,DISABLE);
+	if (timerRunning == 1){
+		TIM_Cmd(LPC_TIM0,DISABLE);
+		timerRunning = 0;
+	}
 
 	// Chequeo si hay lugar en el buffer de transmision
 	if ((txBufferCount+size)<BUFF_SIZE){
@@ -262,20 +266,19 @@ uint32_t qUART_Send(uint8_t id, uint8_t * buff, size_t size){
 	}else{
 		// Si no hay lugar, mando el buffer viejo swapeo y lo meto en el nuevo
 		flushBuffer();
-		txBufferCount = 0;
 		memcpy(&(txBuff[selectedTxBuff][txBufferCount]),buff,size);
 		txBufferCount += size;
 	}
 
+	// Chequeo si ahora con la nueva info llene el buffer
 	if (txBufferCount == (BUFF_SIZE-1)){
 		flushBuffer();
-		txBufferCount = 0;
 	}else{
-		if (timerRunning == 1){
-			TIM_ResetCounter(LPC_TIM0);
-		}else{
+
+		TIM_ResetCounter(LPC_TIM0);
+
+		if (timerRunning == 0){
 			timerRunning = 1;
-			TIM_ResetCounter(LPC_TIM0);
 			TIM_Cmd(LPC_TIM0,ENABLE);
 		}
 	}
@@ -290,54 +293,6 @@ ret_t qUART_SendByte(uint8_t id, uint8_t ch){
 }
 
 ret_t qUART_ReadByte(uint8_t id, uint8_t * buffer){
-}
-
-
-
-
-void DMA_IRQHandler (void)
-{
-	uint32_t tmp;
-	// Scan interrupt pending
-	for (tmp = 0; tmp <= 7; tmp++) {
-		if (GPDMA_IntGetStatus(GPDMA_STAT_INT, tmp)){
-			// Check counter terminal status
-			if(GPDMA_IntGetStatus(GPDMA_STAT_INTTC, tmp)){
-				// Clear terminate counter Interrupt pending
-				GPDMA_ClearIntPending (GPDMA_STATCLR_INTTC, tmp);
-				switch (tmp){
-					case DMA_CHANNEL_TX:
-						Channel0_TC++;
-						GPDMA_ChannelCmd(0, DISABLE);
-						break;
-					case DMA_CHANNEL_RX:
-						Channel1_TC++;
-						GPDMA_ChannelCmd(1, DISABLE);
-						break;
-					default:
-						break;
-				}
-
-			}
-				// Check error terminal status
-			if (GPDMA_IntGetStatus(GPDMA_STAT_INTERR, tmp)){
-				// Clear error counter Interrupt pending
-				GPDMA_ClearIntPending (GPDMA_STATCLR_INTERR, tmp);
-				switch (tmp){
-					case 0:
-						Channel0_Err++;
-						GPDMA_ChannelCmd(0, DISABLE);
-						break;
-					case 1:
-						Channel1_Err++;
-						GPDMA_ChannelCmd(1, DISABLE);
-						break;
-					default:
-						break;
-				}
-			}
-		}
-	}
 }
 
 
@@ -397,37 +352,6 @@ void UARTx_IRQHandler(uint8_t id){
 		}
 	}
 
-#if 0
-	uint32_t intsrc, tmp, tmp1;
-
-	/* Determine the interrupt source */
-	intsrc = UART_GetIntId(uarts[id]);
-	tmp = intsrc & UART_IIR_INTID_MASK;
-
-	/* Receive Line Status: error checking register */
-	if (tmp == UART_IIR_INTID_RLS){
-		// Check line status
-		tmp1 = UART_GetLineStatus(uarts[id]);
-		// Mask out the Receive Ready and Transmit Holding empty status
-		tmp1 &= (UART_LSR_OE | UART_LSR_PE | UART_LSR_FE \
-				| UART_LSR_BI | UART_LSR_RXFE);
-		// If any error exist
-		if (tmp1) {
-			UART_IntErr(id,tmp1);
-		}
-	}
-
-	/* Receive Data Available or Character time-out */
-	if ((tmp == UART_IIR_INTID_RDA) || (tmp == UART_IIR_INTID_CTI)){
-		qLed_TurnOn(STATUS_LED);
-	}
-
-	/* Transmit Holding Empty */
-	// XXX: http://www.embeddedrelated.com/groups/lpc2000/show/46607.php
-	if (tmp == UART_IIR_INTID_THRE){
-		qLed_TurnOn(STATUS_LED);
-	}
-#endif
 }
 
 
@@ -442,18 +366,5 @@ void TIMER0_IRQHandler(void)
 	TIM_ClearIntPending(LPC_TIM0, TIM_MR0_INT);
 }
 
-/*********************************************************************//**
- * @brief		UART Line Status Error
- * @param[in]	bLSErrType	UART Line Status Error Type
- * @return		None
- **********************************************************************/
-void UART_IntErr(uint8_t id, uint8_t bLSErrType)
-{
-//	qLed_TurnOn(FRONT_LEFT_LED);
-//	while (1){
-		//TODO: Handle the errors. For example Overrun.
-//	}
-
-}
 
 
