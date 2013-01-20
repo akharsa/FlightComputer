@@ -47,16 +47,13 @@ void Init_Task(void * pvParameters){
 		qLed_Init(leds[i]);
 		qLed_TurnOff(leds[i]);
 	}
-/*
+
 	for (j=0;j<100;j++){
 		for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOn(leds[i]);
 		vTaskDelay(50/portTICK_RATE_MS);
 		for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOff(leds[i]);
 		vTaskDelay(50/portTICK_RATE_MS);
 	}
-*/
-
-	//vTaskDelay(10000/portTICK_RATE_MS);
 
 	// --------------------------------------------------
 

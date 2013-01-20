@@ -62,6 +62,10 @@ uint16_t fifoCount;     // count of all bytes currently in FIFO
 uint8_t fifoBuffer[64]; // FIFO storage buffer
 uint8_t teapotPacket[14] = { '$', 0x02, 0,0, 0,0, 0,0, 0,0, 0x00, 0x00, '\r', '\n' };
 
+xSemaphoreHandle mpuSempahore;
+
+uint8_t counter = 4;
+
 void Idle_Task(void * pvParameters){
 
 	uint8_t i;
@@ -69,7 +73,9 @@ void Idle_Task(void * pvParameters){
 	portTickType xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
 
-    GPIO_SetDir(1,(1<<8),0);
+    GPIO_SetDir(0,(1<<4),0);
+    GPIO_IntCmd(0,(1<<4),1);
+    NVIC_EnableIRQ(EINT3_IRQn);
 
 
     // load and configure the DMP
@@ -96,15 +102,8 @@ void Idle_Task(void * pvParameters){
     	//Serial.println(F(")"));
     }
 
-
-
-    for (;;){
-    	if ((GPIO_ReadValue(1)&(1<<8))==0){
-    	    qLed_TurnOff(STATUS_LED);
-    	}else{
-    	    qLed_TurnOn(STATUS_LED);
-    	}
-    }
+    vSemaphoreCreateBinary(mpuSempahore);
+    xSemaphoreTake(mpuSempahore,0);
 
 
 	for (;;)
@@ -119,8 +118,9 @@ void Idle_Task(void * pvParameters){
 		// ==================================================================
 #endif
 
+		xSemaphoreTake(mpuSempahore,portMAX_DELAY); //FIXME: instead of portMAX it would be nice to hae a time out for errors
 
-
+/*
 	    // wait for MPU interrupt or extra packet(s) available
 	    while ((GPIO_ReadValue(1)&(1<<8)==0) && fifoCount < packetSize) {
 	    	vTaskDelay( 1/portTICK_RATE_MS);
@@ -129,7 +129,7 @@ void Idle_Task(void * pvParameters){
 	    while ((GPIO_ReadValue(1)&(1<<8)!=0)) {
 	    	vTaskDelay( 1/portTICK_RATE_MS);
 	    }
-
+*/
 	    qLed_TurnOn(STATUS_LED);
 
 	    // reset interrupt flag and get INT_STATUS byte
@@ -165,7 +165,13 @@ void Idle_Task(void * pvParameters){
             teapotPacket[7] = fifoBuffer[9];
             teapotPacket[8] = fifoBuffer[12];
             teapotPacket[9] = fifoBuffer[13];
-            qUART_Send(UART_GROUNDCOMM,teapotPacket,14);
+
+            counter--;
+            if (counter==0){
+            	qUART_Send(UART_GROUNDCOMM,teapotPacket,14);
+            	counter = 4;
+            }
+
             //Serial.write(teapotPacket, 14);
             teapotPacket[11]++; // packetCount, loops at 0xFF on purpose
 	    }
@@ -174,3 +180,20 @@ void Idle_Task(void * pvParameters){
 	    //vTaskDelayUntil( &xLastWakeTime, 10/portTICK_RATE_MS );
 	}
 }
+
+
+void EINT3_IRQHandler(void)
+{
+	static signed portBASE_TYPE xHigherPriorityTaskWoken;
+    xHigherPriorityTaskWoken = pdFALSE;
+
+	if(GPIO_GetIntStatus(0, 4, 1))
+	{
+		GPIO_ClearInt(0,(1<<4));
+		if (mpuSempahore!=NULL){
+			xSemaphoreGiveFromISR(mpuSempahore,&xHigherPriorityTaskWoken);
+		}
+	}
+	portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );
+}
+
