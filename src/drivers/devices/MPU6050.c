@@ -38,10 +38,21 @@ THE SOFTWARE.
 #include "MPU6050_registers.h"
 #include "qI2C.h"
 
+#include <stdlib.h> // FOR MALLOC
+#include <string.h> // for memcmp
+
 #include "types.h"
 uint8_t devAddr = MPU6050_DEFAULT_ADDRESS;
 static uint8_t buffer[14];
 
+
+Status MPU6050_ByteWrite(uint8_t devAddr, uint8_t regAddr, uint8_t buffer){
+	return qI2C_Write(devAddr,&buffer,regAddr,1);
+}
+
+Status MPU6050_ByteWrites(uint8_t devAddr, uint8_t regAddr,uint8_t size, uint8_t * buffer){
+	return qI2C_Write(devAddr,buffer,regAddr,size);
+}
 
 /** Power on and prepare for general usage.
  * This will activate the device and take it out of sleep mode (which must be done
@@ -2922,10 +2933,13 @@ uint8_t MPU6050_readMemoryByte() {
 void MPU6050_writeMemoryByte(uint8_t data) {
     MPU6050_ByteWrite(devAddr, MPU6050_RA_MEM_R_W, data);
 }
+//===================================================================
+// DMP
+//===================================================================
 
-#if 0
+
 void MPU6050_readMemoryBlock(uint8_t *data, uint16_t dataSize, uint8_t bank, uint8_t address) {
-	MPU6050_setMemoryBank(bank);
+	MPU6050_setMemoryBank(bank,FALSE,FALSE);
 	MPU6050_setMemoryStartAddress(address);
     uint8_t chunkSize;
     uint16_t i;
@@ -2951,14 +2965,15 @@ void MPU6050_readMemoryBlock(uint8_t *data, uint16_t dataSize, uint8_t bank, uin
         // if we aren't done, update bank (if necessary) and address
         if (i < dataSize) {
             if (address == 0) bank++;
-            setMemoryBank(bank);
-            setMemoryStartAddress(address);
+            MPU6050_setMemoryBank(bank,FALSE,FALSE);
+            MPU6050_setMemoryStartAddress(address);
         }
     }
 }
 bool MPU6050_writeMemoryBlock(const uint8_t *data, uint16_t dataSize, uint8_t bank, uint8_t address, bool verify, bool useProgMem) {
-    setMemoryBank(bank);
-    setMemoryStartAddress(address);
+	//bool MPU6050_writeMemoryBlock(const uint8_t *data, uint16_t dataSize, uint8_t bank=0, uint8_t address=0, bool verify=TRUE, bool useProgMem=FALSE);
+	MPU6050_setMemoryBank(bank,FALSE,FALSE);
+	MPU6050_setMemoryStartAddress(address);
     uint8_t chunkSize;
     uint8_t *verifyBuffer;
     uint8_t *progBuffer;
@@ -2978,7 +2993,8 @@ bool MPU6050_writeMemoryBlock(const uint8_t *data, uint16_t dataSize, uint8_t ba
         
         if (useProgMem) {
             // write the chunk of data as specified
-            for (j = 0; j < chunkSize; j++) progBuffer[j] = pgm_read_byte(data + i + j);
+            //for (j = 0; j < chunkSize; j++) progBuffer[j] = pgm_read_byte(data + i + j);
+        	for (j = 0; j < chunkSize; j++) progBuffer[j] = *(data + i + j);
         } else {
             // write the chunk of data as specified
             progBuffer = (uint8_t *)data + i;
@@ -2988,8 +3004,8 @@ bool MPU6050_writeMemoryBlock(const uint8_t *data, uint16_t dataSize, uint8_t ba
 
         // verify data if needed
         if (verify && verifyBuffer) {
-            setMemoryBank(bank);
-            setMemoryStartAddress(address);
+        	MPU6050_setMemoryBank(bank,FALSE,FALSE);
+        	MPU6050_setMemoryStartAddress(address);
             MPU6050_ByteReads(devAddr, MPU6050_RA_MEM_R_W, chunkSize, verifyBuffer);
             if (memcmp(progBuffer, verifyBuffer, chunkSize) != 0) {
                 /*Serial.print("Block write verification error, bank ");
@@ -3024,8 +3040,8 @@ bool MPU6050_writeMemoryBlock(const uint8_t *data, uint16_t dataSize, uint8_t ba
         // if we aren't done, update bank (if necessary) and address
         if (i < dataSize) {
             if (address == 0) bank++;
-            setMemoryBank(bank);
-            setMemoryStartAddress(address);
+            MPU6050_setMemoryBank(bank,FALSE,FALSE);
+            MPU6050_setMemoryStartAddress(address);
         }
     }
     if (verify) free(verifyBuffer);
@@ -3033,9 +3049,11 @@ bool MPU6050_writeMemoryBlock(const uint8_t *data, uint16_t dataSize, uint8_t ba
     return TRUE;
 }
 bool MPU6050_writeProgMemoryBlock(const uint8_t *data, uint16_t dataSize, uint8_t bank, uint8_t address, bool verify) {
-    return writeMemoryBlock(data, dataSize, bank, address, verify, TRUE);
+	//bool MPU6050_writeProgMemoryBlock(const uint8_t *data, uint16_t dataSize, uint8_t bank=0, uint8_t address=0, bool verify=TRUE);
+    return MPU6050_writeMemoryBlock(data, dataSize, bank, address, verify, TRUE);
 }
 bool MPU6050_writeDMPConfigurationSet(const uint8_t *data, uint16_t dataSize, bool useProgMem) {
+	//bool MPU6050_writeDMPConfigurationSet(const uint8_t *data, uint16_t dataSize, bool useProgMem=FALSE);
     uint8_t *progBuffer, success, special;
     uint16_t i, j;
     if (useProgMem) {
@@ -3047,9 +3065,9 @@ bool MPU6050_writeDMPConfigurationSet(const uint8_t *data, uint16_t dataSize, bo
     uint8_t bank, offset, length;
     for (i = 0; i < dataSize;) {
         if (useProgMem) {
-            bank = pgm_read_byte(data + i++);
-            offset = pgm_read_byte(data + i++);
-            length = pgm_read_byte(data + i++);
+            bank = *(data + i++);
+            offset = *(data + i++);
+            length = *(data + i++);
         } else {
             bank = data[i++];
             offset = data[i++];
@@ -3067,11 +3085,11 @@ bool MPU6050_writeDMPConfigurationSet(const uint8_t *data, uint16_t dataSize, bo
             Serial.println(length);*/
             if (useProgMem) {
                 if (sizeof(progBuffer) < length) progBuffer = (uint8_t *)realloc(progBuffer, length);
-                for (j = 0; j < length; j++) progBuffer[j] = pgm_read_byte(data + i + j);
+                for (j = 0; j < length; j++) progBuffer[j] = *(data + i + j);
             } else {
                 progBuffer = (uint8_t *)data + i;
             }
-            success = writeMemoryBlock(progBuffer, length, bank, offset, TRUE);
+            success = MPU6050_writeMemoryBlock(progBuffer, length, bank, offset, TRUE,FALSE);
             i += length;
         } else {
             // special instruction
@@ -3080,7 +3098,7 @@ bool MPU6050_writeDMPConfigurationSet(const uint8_t *data, uint16_t dataSize, bo
             // behavior only, and exactly why (or even whether) it has to be here
             // is anybody's guess for now.
             if (useProgMem) {
-                special = pgm_read_byte(data + i++);
+                special = *(data + i++);
             } else {
                 special = data[i++];
             }
@@ -3111,7 +3129,7 @@ bool MPU6050_writeDMPConfigurationSet(const uint8_t *data, uint16_t dataSize, bo
     return TRUE;
 }
 bool MPU6050_writeProgDMPConfigurationSet(const uint8_t *data, uint16_t dataSize) {
-    return writeDMPConfigurationSet(data, dataSize, TRUE);
+    return MPU6050_writeDMPConfigurationSet(data, dataSize, TRUE);
 }
 
 // DMP_CFG_1 register
@@ -3133,4 +3151,4 @@ uint8_t MPU6050_getDMPConfig2() {
 void MPU6050_setDMPConfig2(uint8_t config) {
     MPU6050_ByteWrite(devAddr, MPU6050_RA_DMP_CFG_2, config);
 }
-#endif
+

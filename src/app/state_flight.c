@@ -157,24 +157,17 @@ void Flight_Task(void * pvParameters){
 
 		sv.setpoint[PHI_C] = map(Joystick.right_pad.x,0,255,-90.0,90.0);
 		sv.setpoint[THETA_C] = map(Joystick.right_pad.y,0,255,-90.0,90.0);
-		sv.setpoint[PSI_C] = 0.0; //map(Joystick.left_pad.x,0,255,-180.0,180.0);
-
-		//sv.setpoint[PHI_C] = 0.0;
-/*
-		for (j=0;j<(sizeof(signal_time)/4);j++){
-			if (signal_t>=signal_time[j]){
-				sv.setpoint[PSI_C] = signal_values[j];
-			}
-		}
-*/
+		sv.setpoint[PSI_C] = 0.0; //map(Joystick.left_pad.x,0,255,-180.0,180.0); THIS IS FOR KILL ROT ON YAW
 
 		// DAQ
 		MPU6050_getRotation(&buffer[0],&buffer[1],&buffer[2]);
 
+		// MPU axes aligment to Quad body axes
 		sv.omega[0] = -(buffer[0]-settings.gyroBias[0]);
 		sv.omega[1] = (buffer[1]-settings.gyroBias[1]);
-		sv.omega[2] = (buffer[2]-settings.gyroBias[2]);
+		sv.omega[2] = -(buffer[2]-settings.gyroBias[2]);
 
+		// MPU gyro scale transformation
 		sv.omega[0] = sv.omega[0]/16.4;
 		sv.omega[1] = sv.omega[1]/16.4;
 		sv.omega[2] = sv.omega[2]/16.4;
@@ -187,31 +180,20 @@ void Flight_Task(void * pvParameters){
 		control[Z_C] = sv.setpoint[Z_C];
 		control[PHI_C] = sv.CO[PHI_C];
 		control[THETA_C] = sv.CO[THETA_C];
-		control[PSI_C] = sv.CO[PSI_C];
+		control[PSI_C] = -sv.CO[PSI_C];
 
-		// Output stateg
+		// Output state
 		inputs[0] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI - control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
 		inputs[1] = (	control[Z_C]*K_Z - control[PHI_C]*K_PHI + control[THETA_C]*K_THETA + control[PSI_C]*K_PSI	);
 		inputs[2] = (	control[Z_C]*K_Z + control[PHI_C]*K_PHI + control[THETA_C]*K_THETA - control[PSI_C]*K_PSI	);
 		inputs[3] = (	control[Z_C]*K_Z + control[PHI_C]*K_PHI - control[THETA_C]*K_THETA + control[PSI_C]*K_PSI	);
 
+		// Motor command
 		qESC_SetOutput(MOTOR1,inputs[0]);
 		qESC_SetOutput(MOTOR2,inputs[1]);
 		qESC_SetOutput(MOTOR3,inputs[2]);
 		qESC_SetOutput(MOTOR4,inputs[3]);
-/*
-		if (signal_t<(20*1000/5)){
-			signal_t++;
-		}else{
-			for(j=0;j<10;j++){
-				qESC_SetOutput(MOTOR1,1);
-				qESC_SetOutput(MOTOR2,1);
-				qESC_SetOutput(MOTOR3,1);
-				qESC_SetOutput(MOTOR4,1);
-			}
-			vTaskDelete(NULL);
-		}
-*/
+
 		vTaskDelayUntil( &xLastWakeTime, 5/portTICK_RATE_MS );
 	}
 }

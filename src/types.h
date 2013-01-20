@@ -25,4 +25,15 @@ typedef enum{
 	DEVICE_READY
 }status_t;
 
+#ifndef __SIZE_T_DEFINED
+#define __SIZE_T_DEFINED
+#if __SIZEOF_INT < __SIZEOF_VOID_P
+typedef unsigned long size_t;
+#else
+typedef unsigned int size_t;
+#endif
+#endif
+
+
+
 #endif /* TYPES_H_ */
