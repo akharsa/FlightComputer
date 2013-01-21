@@ -168,7 +168,8 @@ void Idle_Task(void * pvParameters){
 
             counter--;
             if (counter==0){
-            	qUART_Send(UART_GROUNDCOMM,teapotPacket,14);
+            	qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_TELEMETRY,sizeof(teapotPacket),(uint8_t*)&teapotPacket);
+            	//qUART_Send(UART_GROUNDCOMM,teapotPacket,14);
             	counter = 4;
             }
 
