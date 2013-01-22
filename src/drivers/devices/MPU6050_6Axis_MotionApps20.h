@@ -36,6 +36,8 @@ THE SOFTWARE.
 // MotionApps 2.0 DMP implementation, built using the MPU-6050EVB evaluation board
 #define MPU6050_INCLUDE_DMP_MOTIONAPPS20
 
+#include "math.h"
+
 #include "MPU6050.h"
 
 
@@ -560,7 +562,7 @@ uint8_t MPU6050_dmpGetAccel(VectorInt16 *v, const uint8_t* packet) {
     v -> z = (packet[36] << 8) + packet[37];
     return 0;
 }
-#endif
+
 uint8_t MPU6050_dmpGetQuaternion(int32_t *data, const uint8_t* packet) {
     // TODO: accommodate different arrangements of sent data (ONLY default supported now)
     if (packet == 0) packet = dmpPacketBuffer;
@@ -570,7 +572,12 @@ uint8_t MPU6050_dmpGetQuaternion(int32_t *data, const uint8_t* packet) {
     data[3] = ((packet[12] << 24) + (packet[13] << 16) + (packet[14] << 8) + packet[15]);
     return 0;
 }
-#if 0
+#endif
+
+
+
+
+
 uint8_t MPU6050_dmpGetQuaternion(int16_t *data, const uint8_t* packet) {
     // TODO: accommodate different arrangements of sent data (ONLY default supported now)
     if (packet == 0) packet = dmpPacketBuffer;
@@ -580,6 +587,31 @@ uint8_t MPU6050_dmpGetQuaternion(int16_t *data, const uint8_t* packet) {
     data[3] = ((packet[12] << 8) + packet[13]);
     return 0;
 }
+
+uint8_t MPU6050_dmpGetEuler(float *euler, const uint8_t* packet) {
+
+	int16_t q1[4];
+	float q[4];
+	MPU6050_dmpGetQuaternion(q1, packet);
+
+	q[0] = (float)q1[0] / 16384.0f;
+	q[1] = (float)q1[1] / 16384.0f;
+	q[2] = (float)q1[2] / 16384.0f;
+	q[3] = (float)q1[3] / 16384.0f;
+
+	/*
+	data[0] = atan2(2*q -> x*q -> y - 2*q -> w*q -> z, 2*q -> w*q -> w + 2*q -> x*q -> x - 1);   // psi
+	data[1] = -asin(2*q -> x*q -> z + 2*q -> w*q -> y);                              // theta
+	data[2] = atan2(2*q -> y*q -> z - 2*q -> w*q -> x, 2*q -> w*q -> w + 2*q -> z*q -> z - 1);   // phi
+	  */
+	euler[0] = atan2(2*q[1]*q[2] - 2*q[0]*q[3], 2*q[0]*q[0] + 2*q[1]*q[1] - 1);
+	euler[1] = -asin(2*q[1]*q[3] + 2*q[0]*q[2]);
+	euler[2] = atan2(2*q[2]*q[3] - 2*q[0]*q[1], 2*q[0]*q[0] + 2*q[3]*q[3] - 1);
+
+	return 0;
+}
+
+#if 0
 uint8_t MPU6050_dmpGetQuaternion(Quaternion *q, const uint8_t* packet) {
     // TODO: accommodate different arrangements of sent data (ONLY default supported now)
     int16_t qI[4];
@@ -648,11 +680,14 @@ uint8_t MPU6050_dmpGetGravity(VectorFloat *v, Quaternion *q) {
 // uint8_t MPU6050_dmpGetEIS(long *data, const uint8_t* packet);
 
 uint8_t MPU6050_dmpGetEuler(float *data, Quaternion *q) {
+
     data[0] = atan2(2*q -> x*q -> y - 2*q -> w*q -> z, 2*q -> w*q -> w + 2*q -> x*q -> x - 1);   // psi
     data[1] = -asin(2*q -> x*q -> z + 2*q -> w*q -> y);                              // theta
     data[2] = atan2(2*q -> y*q -> z - 2*q -> w*q -> x, 2*q -> w*q -> w + 2*q -> z*q -> z - 1);   // phi
     return 0;
 }
+
+
 uint8_t MPU6050_dmpGetYawPitchRoll(float *data, Quaternion *q, VectorFloat *gravity) {
     // yaw: (about Z axis)
     data[0] = atan2(2*q -> x*q -> y - 2*q -> w*q -> z, 2*q -> w*q -> w + 2*q -> x*q -> x - 1);
@@ -665,6 +700,7 @@ uint8_t MPU6050_dmpGetYawPitchRoll(float *data, Quaternion *q, VectorFloat *grav
 #endif
 // uint8_t MPU6050_dmpGetAccelFloat(float *data, const uint8_t* packet);
 // uint8_t MPU6050_dmpGetQuaternionFloat(float *data, const uint8_t* packet);
+
 
 uint8_t MPU6050_dmpProcessFIFOPacket(const unsigned char *dmpData) {
     /*for (uint8_t k = 0; k < dmpPacketSize; k++) {

@@ -21,6 +21,7 @@
 #include "States.h"
 
 #include "lpc17xx_gpio.h"
+#include "string.h"
 
 /* ================================ */
 /* Prototypes	 					*/
@@ -61,10 +62,13 @@ uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
 uint16_t fifoCount;     // count of all bytes currently in FIFO
 uint8_t fifoBuffer[64]; // FIFO storage buffer
 uint8_t teapotPacket[14] = { '$', 0x02, 0,0, 0,0, 0,0, 0,0, 0x00, 0x00, '\r', '\n' };
+uint8_t eulerPacket[18] = { '$', 0x02, 'H','O','L','A', 'Z','A',0,0, 0,0,0,0, 0x00, 0x00, '\r', '\n' };
 
 xSemaphoreHandle mpuSempahore;
 
 uint8_t counter = 4;
+
+float euler[3];
 
 void Idle_Task(void * pvParameters){
 
@@ -156,16 +160,30 @@ void Idle_Task(void * pvParameters){
 	        // (this lets us immediately read more without waiting for an interrupt)
 	        fifoCount -= packetSize;
 
+	        MPU6050_dmpGetEuler(euler, fifoBuffer);
+	        //memcpy(&eulerPacket[2],euler,sizeof(euler));
+	        memcpy(&eulerPacket[2],&euler[0],sizeof(euler));
+
+	        counter--;
+	        if (counter==0){
+	        	//qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_TELEMETRY,sizeof(eulerPacket),(uint8_t*)&eulerPacket[0]);
+	        	qUART_Send(UART_GROUNDCOMM,eulerPacket,sizeof(eulerPacket));
+	        	counter = 4;
+	        }
+
+
             // display quaternion values in InvenSense Teapot demo format:
             teapotPacket[2] = fifoBuffer[0];
             teapotPacket[3] = fifoBuffer[1];
+
             teapotPacket[4] = fifoBuffer[4];
             teapotPacket[5] = fifoBuffer[5];
+
             teapotPacket[6] = fifoBuffer[8];
             teapotPacket[7] = fifoBuffer[9];
             teapotPacket[8] = fifoBuffer[12];
             teapotPacket[9] = fifoBuffer[13];
-
+#if 0
             counter--;
             if (counter==0){
             	qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_TELEMETRY,sizeof(teapotPacket),(uint8_t*)&teapotPacket);
@@ -175,6 +193,7 @@ void Idle_Task(void * pvParameters){
 
             //Serial.write(teapotPacket, 14);
             teapotPacket[11]++; // packetCount, loops at 0xFF on purpose
+#endif
 	    }
 
 	    qLed_TurnOff(STATUS_LED);
