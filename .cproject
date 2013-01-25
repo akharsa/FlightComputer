@@ -62,12 +62,11 @@
 							<tool id="com.crt.advproject.link.exe.debug.1709343000" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug">
 								<option id="com.crt.advproject.link.arch.130748805" name="Architecture" superClass="com.crt.advproject.link.arch" value="com.crt.advproject.link.target.cm3" valueType="enumerated"/>
 								<option id="com.crt.advproject.link.thumb.1738517019" name="Thumb mode" superClass="com.crt.advproject.link.thumb" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.script.640891803" name="Linker script" superClass="com.crt.advproject.link.script" value="&quot;Blinky_basic_Debug.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.script.640891803" name="Linker script" superClass="com.crt.advproject.link.script" value="&quot;FLC_v2p0_Autopilot_Debug.ld&quot;" valueType="string"/>
 								<option id="com.crt.advproject.link.manage.1262062916" name="Manage linker script" superClass="com.crt.advproject.link.manage" value="true" valueType="boolean"/>
 								<option id="gnu.c.link.option.nostdlibs.318741245" name="No startup or default libs (-nostdlib)" superClass="gnu.c.link.option.nostdlibs" value="true" valueType="boolean"/>
 								<option id="gnu.c.link.option.other.209889269" name="Other options (-Xlinker [option])" superClass="gnu.c.link.option.other" valueType="stringList">
 									<listOptionValue builtIn="false" value="-Map=${BuildArtifactFileBaseName}.map"/>
-									<listOptionValue builtIn="false" value="--gc-sections"/>
 								</option>
 								<option id="com.crt.advproject.link.gcc.hdrlib.1626665559" name="Use C library" superClass="com.crt.advproject.link.gcc.hdrlib" value="com.crt.advproject.gcc.link.hdrlib.newlib.nohost" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.101320046" superClass="cdt.managedbuild.tool.gnu.c.linker.input">

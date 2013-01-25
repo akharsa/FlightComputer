@@ -29,6 +29,9 @@ void qFSM_ChangeState(state_name_t nextState){
 
 
 void SystemController(void * pvParams){
+	uint32_t uxHighWaterMark=0;
+
+	uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
 
 	state_name_t newState;
 	state_name_t InitialState = (state_name_t) pvParams;
@@ -43,6 +46,8 @@ void SystemController(void * pvParams){
 
 	// Inject the first State
 	qFSM_ChangeState(InitialState);
+
+    uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
 
 	// --------------------------------------------------
 	//	Main autopilot programm

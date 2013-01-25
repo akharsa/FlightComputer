@@ -18,6 +18,7 @@
 
 typedef struct {
 	float omega[3];
+	float attitude[3];
 	float setpoint[4];
 	float CO[4];
 	uint32_t time;

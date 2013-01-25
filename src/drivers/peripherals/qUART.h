@@ -93,6 +93,11 @@ ret_t qUART_SendByte(uint8_t qUART_ID, uint8_t ch);
 
 ret_t qUART_ReadByte(uint8_t id, uint8_t * buffer);
 
+ret_t qUART_EnableTx(uint8_t id);
+ret_t qUART_EnableRx(uint8_t id);
+ret_t qUART_DisableTx(uint8_t id);
+ret_t qUART_DisableRx(uint8_t id);
+
 #endif /* qUART_H_ */
 
 /*@}*/

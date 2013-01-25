@@ -28,6 +28,7 @@ void Telemetry(void * pvParameters){
 	for (;;)
 	{
 		sv.time = xTaskGetTickCount();
+		//TODO: Mutex here!
 		qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_TELEMETRY,sizeof(sv),(uint8_t*)&sv);
 		vTaskDelayUntil( &xLastWakeTime, ((portTickType) pvParameters) /portTICK_RATE_MS );
 	}

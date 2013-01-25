@@ -14,6 +14,7 @@
 
 #include "MPU6050.h"
 #include "quadrotor.h"
+#include "lpc17xx_gpio.h"
 
 /* ================================ */
 /* Prototypes	 					*/
@@ -26,6 +27,7 @@ void Init_onExit(void * pvParameters);
 /* Private globals 					*/
 /* ================================ */
 static xTaskHandle hnd;
+
 
 void Init_onEntry(void * p){
 	xTaskCreate(Init_Task, ( signed char * ) "INIT", 200, ( void * ) NULL, INIT_PRIORITY, &hnd );
@@ -56,18 +58,24 @@ void Init_Task(void * pvParameters){
 	}
 
 	// --------------------------------------------------
+	// UART init
+	// --------------------------------------------------
 
 	if (qUART_Init(UART_GROUNDCOMM,57600,8,QUART_PARITY_NONE,1)==RET_ERROR){
 		while(1);
 	}
 
-//	ConsolePuts_("===================================\r\n",BLUE);
-//	ConsolePuts("\x1B[2J\x1B[0;0f");
-//	ConsolePuts_("FLC V2.0 Initialized...\r\n",BLUE);
+	qUART_EnableTx(UART_GROUNDCOMM);
+	ConsolePuts_("===================================\r\n",BLUE);
+	ConsolePuts("\x1B[2J\x1B[0;0f");
+	ConsolePuts_("FLC V2.0 Initialized...\r\n",BLUE);
 
 	// --------------------------------------------------
+	// MPU initializationand calibration
+	// --------------------------------------------------
+
 	for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOn(leds[i]);
-//	ConsolePuts_("Calibrating sensors...\t\t\t\t",BLUE);
+	ConsolePuts_("Calibrating sensors...\t\t\t\t",BLUE);
 
 	if (qI2C_Init()!=SUCCESS) halt("I2C INIT ERROR");
 
@@ -98,21 +106,31 @@ void Init_Task(void * pvParameters){
 	settings.gyroBias[2] = (int16_t)sum[2]/128;
 
 	for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOff(leds[i]);
-	//ConsolePuts_("[OK]\r\n",GREEN);
+	ConsolePuts_("[OK]\r\n",GREEN);
+
 	// --------------------------------------------------
-/*
-    qESC_SetOutput(MOTOR1,300);
-    qESC_SetOutput(MOTOR1,0);
+	// DMP configuration
+	// --------------------------------------------------
 
-    qESC_SetOutput(MOTOR2,300);
-    qESC_SetOutput(MOTOR2,0);
+	ConsolePuts_("Initializing DMP...\t\t\t\t",BLUE);
 
-    qESC_SetOutput(MOTOR3,300);
-    qESC_SetOutput(MOTOR3,0);
+	// GPIO0.4 as input with interrupt
+	GPIO_SetDir(0,(1<<4),0);
+	GPIO_IntCmd(0,(1<<4),1);
+	NVIC_EnableIRQ(EINT3_IRQn);
 
-    qESC_SetOutput(MOTOR4,300);
-    qESC_SetOutput(MOTOR4,0);
-*/
+	// make sure it worked (returns 0 if so)
+	if (MPU6050_dmpInitialize() == 0) {
+		ConsolePuts_("[OK]\r\n",GREEN);
+	} else {
+		ConsolePuts_("[ERROR]\r\n",RED);
+		// ERROR!
+		// 1 = initial memory load failed
+		// 2 = DMP configuration updates failed
+		// (if it's going to break, usually the code will be 1)
+	}
+
+
 	xTaskCreate( Communications, ( signed char * ) "COMMS", 500, ( void * ) NULL, COMMS_PRIORITY, NULL);
 
 	/* Terminate and go to Idle */

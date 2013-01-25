@@ -20,9 +20,12 @@
 #include "qESC.h"
 #include "leds.h"
 #include "qWDT.h"
-
+#include "States.h"
+#include "qFSM.h"
+#include "joystick.h"
 #include "quadrotor.h"
 extern xSemaphoreHandle TelemetrySmphr;
+extern state_name_t systemState;
 
 void UART_Rx_Handler(uint8_t * buff, size_t sz);
 
@@ -51,22 +54,34 @@ void Communications(void * pvParameters){
 			switch (msg.Type){
 				case MSG_TYPE_CONTROL:
 					memcpy(&Joystick,msg.Payload,10);
+
+					if (systemState == STATE_FLIGHT){
+						if ((Joystick.buttons & (BTN_RIGHT2 | BTN_LEFT2)) == 0){
+							state_name_t newState=STATE_IDLE;
+							qFSM_ChangeState(newState);
+						}
+					}
 					break;
 				case MSG_TYPE_DEBUG:
-					qUART_Send(1,0x000,10);
 					 break;
 				default:
 					break;
 			}
 		}else{
-			// Timeout to get a new joystick commands, values to 0
-			memset(&Joystick,0,sizeof(Joystick));
+			if (systemState == STATE_FLIGHT){
+				state_name_t newState=STATE_IDLE;
+				qFSM_ChangeState(newState);
+				// Timeout to get a new joystick commands, values to 0
+				memset(&Joystick,0,sizeof(Joystick));
+			}
 		}
 	}
 }
 
 uint8_t led = 0;
-
+void error(uint8_t i){
+	__NOP();
+}
 void UART_Rx_Handler(uint8_t * buff, size_t sz){
 	uint32_t i;
 	ret_t ret;
@@ -83,21 +98,21 @@ void UART_Rx_Handler(uint8_t * buff, size_t sz){
 			case RET_MSG_BYTES_REMAINING:
 				break;
 			case RET_MSG_ERROR:
-				//qUART_SendByte(2,'E');
+				error(0);
 				break;
 			case RET_MSG_OK:
 				xSemaphoreGiveFromISR(DataSmphr,&xHigherPriorityTaskWoken);
 				if (led==0){
-					qLed_TurnOn(STATUS_LED);
+					//qLed_TurnOn(STATUS_LED);
 					led = 1;
 				}else{
-					qLed_TurnOff(STATUS_LED);
+					//qLed_TurnOff(STATUS_LED);
 					led = 0;
 				}
-
 				break;
 			case RET_ERROR:
 				// Problem with memory
+				error(1);
 				break;
 			case RET_OK:
 				// Never

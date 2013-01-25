@@ -34,3 +34,8 @@ void AppMain(void) {
 }
 
 
+void vApplicationStackOverflowHook( xTaskHandle xTask, signed portCHAR *pcTaskName ){
+	while(1);
+}
+
+

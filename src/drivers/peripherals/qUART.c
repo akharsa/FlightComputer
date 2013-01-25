@@ -6,6 +6,7 @@
 #include "lpc17xx_pinsel.h"
 #include "lpc17xx_gpdma.h"
 #include "lpc17xx_timer.h"
+#include "lpc17xx_gpio.h"
 
 #include "LightweightRingBuff.h"
 #include "leds.h"
@@ -45,20 +46,121 @@ GPDMA_Channel_CFG_Type GPDMACfg_tx;
 //===========================================================
 static LPC_UART_TypeDef * uarts[] = {qUART_0, qUART_1, qUART_2};
 
+
+typedef struct{
+	uint8_t rxPin;
+	uint8_t rxPort;
+	uint8_t	txPin;
+	uint8_t	txPort;
+	uint8_t	pinFunc;
+}pincfg_t;
+
+
+ret_t getPindata(uint8_t id, pincfg_t * p){
+	if (uarts[id]==LPC_UART0){
+		p->rxPin = PINSEL_PIN_3;
+		p->rxPort = PINSEL_PORT_0;
+		p->txPin = PINSEL_PIN_2;
+		p->txPort = PINSEL_PORT_0;
+		p->pinFunc = 1;
+	}else if (uarts[id]==LPC_UART2){
+		p->rxPin = PINSEL_PIN_10;
+		p->rxPort = PINSEL_PORT_0;
+		p->txPin = PINSEL_PIN_11;
+		p->txPort = PINSEL_PORT_0;
+		p->pinFunc = 1;
+	}else if (uarts[id]==LPC_UART3){
+		p->rxPin = PINSEL_PIN_0;
+		p->rxPort = PINSEL_PORT_0;
+		p->txPin = PINSEL_PIN_1;
+		p->txPort = PINSEL_PORT_0;
+		p->pinFunc = 2;
+	}else{
+		return RET_ERROR;
+	}
+	return RET_OK;
+}
+
+ret_t qUART_EnableTx(uint8_t id){
+	PINSEL_CFG_Type PinCfg;
+	pincfg_t p;
+
+	getPindata(id,&p);
+	GPIO_SetDir(p.txPort,(1<<p.txPin),1);
+	PinCfg.Funcnum = p.pinFunc;
+	PinCfg.OpenDrain = PINSEL_PINMODE_NORMAL;
+	PinCfg.Pinmode = PINSEL_PINMODE_TRISTATE;
+	PinCfg.Pinnum = p.txPin;
+	PinCfg.Portnum = p.txPort;
+	PINSEL_ConfigPin(&PinCfg);
+	return RET_OK;
+}
+
+ret_t qUART_DisableTx(uint8_t id){
+	PINSEL_CFG_Type PinCfg;
+	pincfg_t p;
+
+	getPindata(id,&p);
+	GPIO_SetDir(p.txPort,(1<<p.txPin),0);
+	PinCfg.Funcnum = 0;
+	PinCfg.OpenDrain = PINSEL_PINMODE_NORMAL;
+	PinCfg.Pinmode = PINSEL_PINMODE_TRISTATE;
+	PinCfg.Pinnum = p.txPin;
+	PinCfg.Portnum = p.txPort;
+	PINSEL_ConfigPin(&PinCfg);
+
+	return RET_OK;
+}
+
+ret_t qUART_EnableRx(uint8_t id){
+	PINSEL_CFG_Type PinCfg;
+	pincfg_t p;
+
+	getPindata(id,&p);
+	GPIO_SetDir(p.rxPort,(1<<p.rxPin),1);
+	PinCfg.Funcnum = p.pinFunc;
+	PinCfg.OpenDrain = PINSEL_PINMODE_NORMAL;
+	PinCfg.Pinmode = PINSEL_PINMODE_TRISTATE;
+	PinCfg.Pinnum = p.rxPin;
+	PinCfg.Portnum = p.rxPort;
+	PINSEL_ConfigPin(&PinCfg);
+
+	return RET_OK;
+}
+
+ret_t qUART_DisableRx(uint8_t id){
+	PINSEL_CFG_Type PinCfg;
+	pincfg_t p;
+
+	getPindata(id,&p);
+	GPIO_SetDir(p.rxPort,(1<<p.rxPin),1);
+	PinCfg.Funcnum = 0;
+	PinCfg.OpenDrain = PINSEL_PINMODE_NORMAL;
+	PinCfg.Pinmode = PINSEL_PINMODE_TRISTATE;
+	PinCfg.Pinnum = p.rxPin;
+	PinCfg.Portnum = p.rxPort;
+	PINSEL_ConfigPin(&PinCfg);
+
+	return RET_OK;
+}
+
 ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t Parity, uint8_t StopBits){
 
-	PINSEL_CFG_Type PinCfg;
+//	PINSEL_CFG_Type PinCfg;
 	UART_CFG_Type UARTConfigStruct;
 	UART_FIFO_CFG_Type UARTFIFOConfigStruct;
 	TIM_TIMERCFG_Type TIM_ConfigStruct;
 	TIM_MATCHCFG_Type TIM_MatchConfigStruct ;
 
-	uint8_t rxPin,txPin,rxPort,txPort,pinFunc;
+	//uint8_t rxPin,txPin,rxPort,txPort,pinFunc;
 
 	// Check if the device wasn't initialized first
 	if (qUARTStatus[id]==DEVICE_READY){
 		return RET_ALREADY_INIT;
 	}
+
+	/*
+		 * NOT ENABLED ANY MORE BY DEFAULT, this allow to leave the radio transmitting on ground without mesing with buffers when not needed.
 
 	// Config pins
 	if (uarts[id]==LPC_UART0){
@@ -83,6 +185,7 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
 		return RET_ERROR;
 	}
 
+
 	PinCfg.Funcnum = pinFunc;
 	PinCfg.OpenDrain = PINSEL_PINMODE_NORMAL;
 	PinCfg.Pinmode = PINSEL_PINMODE_TRISTATE;
@@ -92,7 +195,7 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
 	PinCfg.Pinnum = txPin;
 	PinCfg.Portnum = txPort;
 	PINSEL_ConfigPin(&PinCfg);
-
+*/
 	UARTConfigStruct.Baud_rate = BaudRate;
 	UARTConfigStruct.Databits = UART_DATABIT_8; 	//FIXME: remove hardcode
 	UARTConfigStruct.Parity = UART_PARITY_NONE;		//FIXME: remove hardcode
@@ -208,12 +311,11 @@ ret_t qUART_Init(uint8_t id, uint32_t BaudRate, uint8_t DataBits, qUART_Parity_t
 	/* Enable interrupt for timer 0 */
 	NVIC_EnableIRQ(TIMER0_IRQn);
 
-
-
 	qUARTStatus[id] = DEVICE_READY;
 	return RET_OK;
 
 }
+
 
 ret_t qUART_DeInit(uint8_t id){
 	if (qUARTStatus[id] == DEVICE_READY){

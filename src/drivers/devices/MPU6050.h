@@ -491,8 +491,8 @@ void MPU6050_setDMPConfig2(uint8_t config);
     uint8_t MPU6050_dmpGetRelativeQuaternion(int32_t *data, const uint8_t* packet);
     //uint8_t MPU6050_dmpGetRelativeQuaternion(int16_t *data, const uint8_t* packet);
     //uint8_t MPU6050_dmpGetRelativeQuaternion(Quaternion *data, const uint8_t* packet);
-    uint8_t MPU6050_dmpGetGyro(int32_t *data, const uint8_t* packet);
-    //uint8_t MPU6050_dmpGetGyro(int16_t *data, const uint8_t* packet);
+    //uint8_t MPU6050_dmpGetGyro(int32_t *data, const uint8_t* packet);
+    uint8_t MPU6050_dmpGetGyro(int16_t *data, const uint8_t* packet);
     //uint8_t MPU6050_dmpGetGyro(VectorInt16 *v, const uint8_t* packet);
     uint8_t MPU6050_dmpSetLinearAccelFilterCoefficient(float coef);
     uint8_t MPU6050_dmpGetLinearAccel(int32_t *data, const uint8_t* packet);
@@ -526,6 +526,7 @@ void MPU6050_setDMPConfig2(uint8_t config);
 
     //uint8_t MPU6050_dmpGetEuler(float *data, Quaternion *q);
     //uint8_t MPU6050_dmpGetYawPitchRoll(float *data, Quaternion *q, VectorFloat *gravity);
+    uint8_t MPU6050_dmpGetEuler(float *euler, const uint8_t* packet);
 
     // Get Floating Point data from FIFO
     uint8_t MPU6050_dmpGetAccelFloat(float *data, const uint8_t* packet);

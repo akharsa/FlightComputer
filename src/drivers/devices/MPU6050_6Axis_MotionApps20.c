@@ -369,7 +369,7 @@ uint8_t MPU6050_dmpInitialize() {
             MPU6050_setExternalFrameSync(MPU6050_EXT_SYNC_TEMP_OUT_L);
 
             DEBUG_PRINTLN(F("Setting DLPF bandwidth to 42Hz..."));
-            MPU6050_setDLPFMode(MPU6050_DLPF_BW_42);
+            MPU6050_setDLPFMode(MPU6050_DLPF_BW_188);
 
             DEBUG_PRINTLN(F("Setting gyro sensitivity to +/- 2000 deg/sec..."));
             MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
@@ -628,6 +628,7 @@ uint8_t MPU6050_dmpGetQuaternion(Quaternion *q, const uint8_t* packet) {
 #endif
 // uint8_t MPU6050_dmpGet6AxisQuaternion(long *data, const uint8_t* packet);
 // uint8_t MPU6050_dmpGetRelativeQuaternion(long *data, const uint8_t* packet);
+#if 0
 uint8_t MPU6050_dmpGetGyro(int32_t *data, const uint8_t* packet) {
     // TODO: accommodate different arrangements of sent data (ONLY default supported now)
     if (packet == 0) packet = dmpPacketBuffer;
@@ -636,7 +637,8 @@ uint8_t MPU6050_dmpGetGyro(int32_t *data, const uint8_t* packet) {
     data[2] = ((packet[24] << 24) + (packet[25] << 16) + (packet[26] << 8) + packet[27]);
     return 0;
 }
-#if 0
+#endif
+
 uint8_t MPU6050_dmpGetGyro(int16_t *data, const uint8_t* packet) {
     // TODO: accommodate different arrangements of sent data (ONLY default supported now)
     if (packet == 0) packet = dmpPacketBuffer;
@@ -645,6 +647,8 @@ uint8_t MPU6050_dmpGetGyro(int16_t *data, const uint8_t* packet) {
     data[2] = (packet[24] << 8) + packet[25];
     return 0;
 }
+
+#if 0
 // uint8_t MPU6050_dmpSetLinearAccelFilterCoefficient(float coef);
 // uint8_t MPU6050_dmpGetLinearAccel(long *data, const uint8_t* packet);
 uint8_t MPU6050_dmpGetLinearAccel(VectorInt16 *v, VectorInt16 *vRaw, VectorFloat *gravity) {
