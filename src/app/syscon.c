@@ -8,15 +8,10 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
-
 #include "board.h"
-#include "qESC.h"
 #include "leds.h"
 #include "taskList.h"
 #include "qFSM.h"
-#include "qUART.h"
-#include "qWDT.h"
-
 #include "States.h"
 #include "DebugConsole.h"
 
@@ -29,10 +24,6 @@ void qFSM_ChangeState(state_name_t nextState){
 
 
 void SystemController(void * pvParams){
-	uint32_t uxHighWaterMark=0;
-
-	uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
-
 	state_name_t newState;
 	state_name_t InitialState = (state_name_t) pvParams;
 	systemState = STATE_RESET;
@@ -46,8 +37,6 @@ void SystemController(void * pvParams){
 
 	// Inject the first State
 	qFSM_ChangeState(InitialState);
-
-    uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
 
 	// --------------------------------------------------
 	//	Main autopilot programm
@@ -95,8 +84,6 @@ void SystemController(void * pvParams){
 #endif
 			}
 		}
-
-
 	}
 
 }

@@ -38,7 +38,6 @@ THE SOFTWARE.
 #include "MPU6050_registers.h"
 #include "qI2C.h"
 
-#include <stdlib.h> // FOR MALLOC
 #include <string.h> // for memcmp
 
 #include "types.h"
@@ -2937,7 +2936,7 @@ void MPU6050_writeMemoryByte(uint8_t data) {
 // DMP
 //===================================================================
 
-
+#if 0
 void MPU6050_readMemoryBlock(uint8_t *data, uint16_t dataSize, uint8_t bank, uint8_t address) {
 	MPU6050_setMemoryBank(bank,FALSE,FALSE);
 	MPU6050_setMemoryStartAddress(address);
@@ -3152,3 +3151,4 @@ void MPU6050_setDMPConfig2(uint8_t config) {
     MPU6050_ByteWrite(devAddr, MPU6050_RA_DMP_CFG_2, config);
 }
 
+#endif

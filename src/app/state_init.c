@@ -30,7 +30,7 @@ static xTaskHandle hnd;
 
 
 void Init_onEntry(void * p){
-	xTaskCreate(Init_Task, ( signed char * ) "INIT", 200, ( void * ) NULL, INIT_PRIORITY, &hnd );
+	xTaskCreate(Init_Task, ( signed char * ) "INIT", configMINIMAL_STACK_SIZE, ( void * ) NULL, INIT_PRIORITY, &hnd );
 }
 
 void Init_onExit(void * p){
@@ -41,7 +41,8 @@ void Init_Task(void * pvParameters){
 	uint8_t i,j;
 	int16_t buffer[3];
 	int32_t sum[3];
-
+	uint32_t uxHighWaterMark;
+	uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
 	// --------------------------------------------------
 	//	Leds Initialization
 	// --------------------------------------------------
@@ -107,7 +108,7 @@ void Init_Task(void * pvParameters){
 
 	for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOff(leds[i]);
 	ConsolePuts_("[OK]\r\n",GREEN);
-
+#if 0
 	// --------------------------------------------------
 	// DMP configuration
 	// --------------------------------------------------
@@ -130,12 +131,13 @@ void Init_Task(void * pvParameters){
 		// (if it's going to break, usually the code will be 1)
 	}
 
-
+#endif
 	xTaskCreate( Communications, ( signed char * ) "COMMS", 500, ( void * ) NULL, COMMS_PRIORITY, NULL);
+
+	uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
 
 	/* Terminate and go to Idle */
 	state_name_t newState=STATE_IDLE;
 	qFSM_ChangeState(newState);
-
 }
 

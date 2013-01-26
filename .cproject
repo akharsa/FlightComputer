@@ -67,6 +67,7 @@
 								<option id="gnu.c.link.option.nostdlibs.318741245" name="No startup or default libs (-nostdlib)" superClass="gnu.c.link.option.nostdlibs" value="true" valueType="boolean"/>
 								<option id="gnu.c.link.option.other.209889269" name="Other options (-Xlinker [option])" superClass="gnu.c.link.option.other" valueType="stringList">
 									<listOptionValue builtIn="false" value="-Map=${BuildArtifactFileBaseName}.map"/>
+									<listOptionValue builtIn="false" value="--gc-sections"/>
 								</option>
 								<option id="com.crt.advproject.link.gcc.hdrlib.1626665559" name="Use C library" superClass="com.crt.advproject.link.gcc.hdrlib" value="com.crt.advproject.gcc.link.hdrlib.newlib.nohost" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.101320046" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
@@ -83,7 +84,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="apps/state_idle.c|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|apps/Autopilot/state_idle.c|apps/qCOMMS_Test|rtos/MemMang/heap_1.c|bsp/board_specific/qUART.c|apps/trash|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="drivers/devices/MPU6050_6Axis_MotionApps20.c|apps/state_idle.c|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|apps/Autopilot/state_idle.c|apps/qCOMMS_Test|rtos/MemMang/heap_1.c|bsp/board_specific/qUART.c|apps/trash|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -604,7 +605,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="apps/state_idle.c|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|apps/Autopilot/state_idle.c|apps/qCOMMS_Test|rtos/MemMang/heap_1.c|bsp/board_specific/qUART.c|apps/trash|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="drivers/devices/MPU6050_6Axis_MotionApps20.c|apps/state_idle.c|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|apps/Autopilot/state_idle.c|apps/qCOMMS_Test|rtos/MemMang/heap_1.c|bsp/board_specific/qUART.c|apps/trash|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

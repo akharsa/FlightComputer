@@ -94,15 +94,20 @@ void Flight_onEntry(void *p){
 
 void Flight_onExit(void *p){
 	ConsolePuts_("FLIGHT State: onExit\r\n",BLUE);
-
 	vTaskDelete(hnd);
 	vTaskDelete(BeaconHnd);
-	MPU6050_setDMPEnabled(FALSE);
+	//MPU6050_setDMPEnabled(FALSE);
 	qLed_TurnOff(STATUS_LED);
 	StopTelemetry();
 }
 
+void Flight_Task(void * pvParameters){
+	for (;;){
+		vTaskDelay(100/portTICK_RATE_MS);
+	}
+}
 
+#if 0
 void Flight_Task(void * pvParameters){
 	uint8_t i;
 	uint8_t zc;
@@ -307,3 +312,4 @@ void EINT3_IRQHandler(void)
 	portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );
 }
 
+#endif

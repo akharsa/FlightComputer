@@ -13,6 +13,15 @@
 
 static bmp085_t bmp;
 
+
+void delay (uint32_t t) {
+  unsigned int i;
+
+  for (i = 0; i < 0x100000; i++) {
+  }
+}
+
+
 static char read( unsigned char device_addr,unsigned char register_addr, unsigned char * register_data,  unsigned char read_length ){
 	qI2C_Read(device_addr,register_data,register_addr,read_length);
 	return 0;
