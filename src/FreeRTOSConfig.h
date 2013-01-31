@@ -55,6 +55,8 @@
 #define FREERTOS_CONFIG_H
 
 #include "LPC17xx.h"
+#include "trcHooks.h"
+
 
 /*-----------------------------------------------------------
  * Application specific definitions.

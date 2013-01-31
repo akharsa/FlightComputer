@@ -17,9 +17,10 @@
 
 #include "qESC.h"
 #include "board.h"
+#include "trcUser.h"
 
 void AppMain(void) {
-
+	uiTraceStart();
 	// Early init safety start
 	qESC_Init();
 	qESC_InitChannel(MOTOR1);
