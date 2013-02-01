@@ -9,6 +9,12 @@
 static const char * colorArray[]={COLOR_BLACK,COLOR_RED,COLOR_GREEN,COLOR_YELLOW,COLOR_BLUE,COLOR_MAGENTA,COLOR_MAGENTA,COLOR_CYAN,COLOR_WHITE};
 static uint8_t buffer[20];
 
+void halt(const char * msg){
+	debug(msg);
+	while(1);
+}
+
+
 void intToString(int value, uint8_t* pBuf, uint32_t len, uint8_t base)
 {
     static const char* pAscii = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -93,10 +99,4 @@ void ConsolePutNumber(int value, uint8_t base){
 void ConsolePutNumber_(int value, uint8_t base, int color){
 	intToString(value, buffer, sizeof(buffer), base);
 	ConsolePuts_((char*)buffer,color);
-}
-
-void halt(const char * msg){
-	ConsolePuts_(msg,RED);
-	vTaskEndScheduler();
-	while(1);
 }

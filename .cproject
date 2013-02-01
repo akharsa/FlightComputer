@@ -86,7 +86,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="apps/state_idle.c|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|apps/Autopilot/state_idle.c|apps/qCOMMS_Test|rtos/MemMang/heap_1.c|bsp/board_specific/qUART.c|apps/trash|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="app|apps/state_idle.c|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|apps/Autopilot/state_idle.c|apps/qCOMMS_Test|rtos/MemMang/heap_1.c|bsp/board_specific/qUART.c|apps/trash|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -156,7 +156,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="apps/state_idle.c|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|apps/Autopilot/state_idle.c|apps/qCOMMS_Test|rtos/MemMang/heap_1.c|bsp/board_specific/qUART.c|apps/trash|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="app|apps/state_idle.c|bsp/src/qPWM.c|bsp/src/qUART.c|bsp/board_specific/qWDT.c|bsp/board_specific/qTiming.c|apps/Autopilot/state_idle.c|apps/qCOMMS_Test|rtos/MemMang/heap_1.c|bsp/board_specific/qUART.c|apps/trash|main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
