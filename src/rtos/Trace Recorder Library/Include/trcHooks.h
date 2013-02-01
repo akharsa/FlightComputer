@@ -54,6 +54,7 @@
 #ifndef TRCHOOKS_H
 #define TRCHOOKS_H
 
+
 #if (configUSE_TRACE_FACILITY == 1)
 
     #include "trcUser.h"

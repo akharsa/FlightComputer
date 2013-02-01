@@ -55,7 +55,7 @@
 #define FREERTOS_CONFIG_H
 
 #include "LPC17xx.h"
-#include "trcHooks.h"
+
 
 
 /*-----------------------------------------------------------
@@ -75,8 +75,8 @@
 #define configCPU_CLOCK_HZ			( ( unsigned long ) 100000000 )
 #define configTICK_RATE_HZ			( ( portTickType ) 1000 )
 #define configMINIMAL_STACK_SIZE	( ( unsigned short ) 200 )
-#define configTOTAL_HEAP_SIZE		( ( size_t ) ( 20 * 1024 ) ) // 20 KB of heap
-#define configMAX_TASK_NAME_LEN		( 12 )
+#define configTOTAL_HEAP_SIZE		( ( size_t ) ( 10 * 1024 ) ) // 10 KB of heap
+#define configMAX_TASK_NAME_LEN		( 16 )
 #define configUSE_TRACE_FACILITY	1
 #define configUSE_16_BIT_TICKS		0
 #define configIDLE_SHOULD_YIELD		0
@@ -103,6 +103,7 @@ to exclude the API function. */
 #define INCLUDE_vTaskDelayUntil				1
 #define INCLUDE_vTaskDelay					1
 #define INCLUDE_uxTaskGetStackHighWaterMark	1
+#define INCLUDE_xTaskGetSchedulerState		1
 
 
 /* Use the system definition, if there is one */
@@ -134,5 +135,5 @@ numeric value the higher the interrupt priority). */
 //#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() vConfigureTimerForRunTimeStats()
 //#define portGET_RUN_TIME_COUNTER_VALUE() LPC_TIM0->TC
 
-
+#include "trcHooks.h"
 #endif /* FREERTOS_CONFIG_H */

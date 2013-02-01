@@ -19,17 +19,22 @@
 
 #include "States.h"
 #include "DebugConsole.h"
+#include "trcUser.h"
 
 state_name_t systemState;
 xQueueHandle StatesQueue;
 
+
 void qFSM_ChangeState(state_name_t nextState){
 	xQueueSend(StatesQueue,&nextState,portMAX_DELAY);
 }
-
+traceLabel Syscon_trclabel;
 
 void SystemController(void * pvParams){
 	uint32_t uxHighWaterMark=0;
+	Syscon_trclabel = xTraceOpenLabel("QUAD_SYSCON");
+
+	vTracePrintF(Syscon_trclabel,"Starting");
 
 	uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
 
@@ -43,6 +48,7 @@ void SystemController(void * pvParams){
 
 	// Create the system queue
 	StatesQueue = xQueueCreate(1,sizeof(state_name_t));
+	vTraceSetQueueName(StatesQueue, "SatetesQueue");
 
 	// Inject the first State
 	qFSM_ChangeState(InitialState);
@@ -56,12 +62,14 @@ void SystemController(void * pvParams){
 		xQueueReceive(StatesQueue,&newState,portMAX_DELAY);
 
 		if (systemState == STATE_RESET){
+			vTracePrintF(Syscon_trclabel,"Starting from reset");
 			// The first entry is different, there is no onExit
 			systemState = newState;
 			sysStates[systemState].onEntry(NULL);
 
 		}else{
 			if (TransitionValid(systemState,newState,transitionTable)==YES){
+				vTracePrintF(Syscon_trclabel,"STATE TRANSITION %s -> %s [OK]",sysStates[systemState].stateName,sysStates[newState].stateName);
 #if DEBUG_SYSCON
 				ConsolePuts_("STATE TRANSISTION ",YELLOW);
 				ConsolePuts_(sysStates[systemState].stateName,YELLOW);
@@ -74,6 +82,7 @@ void SystemController(void * pvParams){
 				}
 				systemState = newState;
 				if (sysStates[systemState].onEntry==NULL){
+					vTracePrintF(Syscon_trclabel,"STATE TRANSITION %s -> %s [ERROR NO ENTRY]",sysStates[systemState].stateName,sysStates[newState].stateName);
 #if DEBUG_SYSCON
 					ConsolePuts_("STATE TRANSISTION ",RED);
 					ConsolePuts_(sysStates[systemState].stateName,RED);
@@ -86,6 +95,7 @@ void SystemController(void * pvParams){
 				}
 
 			}else{
+				vTracePrintF(Syscon_trclabel,"STATE TRANSITION %s -> %s [INVALID]",sysStates[systemState].stateName,sysStates[newState].stateName);
 #if DEBUG_SYSCON
 				ConsolePuts_("STATE TRANSISTION ",RED);
 				ConsolePuts_(sysStates[systemState].stateName,RED);

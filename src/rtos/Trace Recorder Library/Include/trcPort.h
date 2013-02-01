@@ -118,6 +118,7 @@
 #define PORT_Renesas_RX600                     5
 #define PORT_Microchip_dsPIC_AND_PIC24         6
 
+
 /*** Unofficial ports, provided by external developers, not yet verified *****/
 #define PORT_TEXAS_INSTRUMENTS_TMS570          7
 #define PORT_TEXAS_INSTRUMENTS_MSP430          8
@@ -126,6 +127,7 @@
 #define PORT_XILINX_PPC440                    11
 #define PORT_XILINX_MICROBLAZE                12
 #define PORT_NXP_LPC210X                      13
+#define PORT_ARM_CortexM_LPC1769TIMER		  14
 
 /*** Select your port here! **************************************************/
 #define SELECTED_PORT PORT_ARM_CortexM
@@ -268,7 +270,7 @@
     #define HWTC_COUNT_DIRECTION DIRECTION_DECREMENTING
     #define HWTC_COUNT (*((uint32_t*)0xE000E018))
     #define HWTC_PERIOD ((*(uint32_t*)0xE000E014) + 1)
-    #define HWTC_DIVISOR 2
+    #define HWTC_DIVISOR 4
     
     #define IRQ_PRIORITY_ORDER 0  // lower irq priority values are more significant
 
@@ -385,6 +387,19 @@
     #define HWTC_DIVISOR 16
 
     #define IRQ_PRIORITY_ORDER 0  // lower irq priority values are more significant
+
+#elif (SELECTED_PORT == PORT_ARM_CortexM_LPC1769TIMER)
+
+	#include "LPC17xx.h"
+    /* For all chips using ARM Cortex M cores */
+
+    #define HWTC_COUNT_DIRECTION DIRECTION_INCREMENTING
+    #define HWTC_COUNT (LPC_TIM0->TC)
+    #define HWTC_PERIOD (1000)
+    #define HWTC_DIVISOR 1
+
+    #define IRQ_PRIORITY_ORDER 0  // lower irq priority values are more significant
+
 
 #elif (SELECTED_PORT != PORT_NOT_SET)
 

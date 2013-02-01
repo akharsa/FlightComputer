@@ -85,7 +85,6 @@
 
 #define USE_LINKER_PRAGMA 0
 
-
 /*******************************************************************************
  * SYMBOL_TABLE_SIZE
  *
@@ -97,7 +96,7 @@
  * Object Table. Thus, if you don't use User Events or delete any kernel 
  * objects you set this to zero (0) to minimize RAM usage.
  ******************************************************************************/
-#define SYMBOL_TABLE_SIZE 1000
+#define SYMBOL_TABLE_SIZE 10000
 
 /*******************************************************************************
  * NTask, NISR, NQueue, NSemaphore, NMutex
@@ -134,7 +133,7 @@
  * NOTE 3: The FreeRTOS timer task creates a Queue, that should be accounted 
  * for in NQueue.
  ******************************************************************************/
-#define NTask             5
+#define NTask             15
 #define NISR              4
 #define NQueue            4
 #define NSemaphore        4
@@ -157,7 +156,7 @@
  * internal error messages from the recorder, which if occurs overwrites the
  * value defined here. This may be maximum 256 chars.
  *****************************************************************************/
-#define TRACE_DESCRIPTION "FreeRTOS+Trace Demo"
+#define TRACE_DESCRIPTION "FLC v2p0 Autopilot software"
 
 /******************************************************************************
  * TRACE_DESCRIPTION_MAX_LENGTH
@@ -209,7 +208,7 @@
  * Note: vTracePrintF can still be used with integer and string arguments in
  * either case.
  *****************************************************************************/
-#define INCLUDE_FLOAT_SUPPORT 1
+#define INCLUDE_FLOAT_SUPPORT 0
 
 /******************************************************************************
  * INCLUDE_USER_EVENTS
@@ -306,12 +305,12 @@
  * system since the scheduler is blocked during the processing of vTracePortEnd.
  *****************************************************************************/
 //#ifndef WIN32
-//#define RECORDER_STORE_MODE STORE_MODE_RING_BUFFER
+#define RECORDER_STORE_MODE STORE_MODE_RING_BUFFER
 //#else
 /* Default in the Win32 demo */
-//#define RECORDER_STORE_MODE STORE_MODE_STOP_WHEN_FULL
+
 //#endif
-#define RECORDER_STORE_MODE STORE_MODE_STOP_WHEN_FULL
+//#define RECORDER_STORE_MODE STORE_MODE_STOP_WHEN_FULL
 /******************************************************************************
  * STOP_AFTER_N_EVENTS
  *

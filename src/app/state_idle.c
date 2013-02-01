@@ -45,7 +45,7 @@ void Idle_onEntry(void * p){
 	}
 
 	//ConsolePuts_("IDLE State: onEntry\r\n",BLUE);
-	xTaskCreate( Idle_Task, ( signed char * ) "IDLE", 300, ( void * ) NULL, IDLE_PRIORITY, &hnd );
+	xTaskCreate( Idle_Task, ( signed char * ) "QUAD_IDLE", 300, ( void * ) NULL, IDLE_PRIORITY, &hnd );
 }
 
 void Idle_onExit(void * p){

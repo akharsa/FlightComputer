@@ -18,6 +18,7 @@
 #include "qESC.h"
 #include "board.h"
 #include "trcUser.h"
+#include "timing.h"
 
 void AppMain(void) {
 	uiTraceStart();
@@ -29,7 +30,7 @@ void AppMain(void) {
 	qESC_InitChannel(MOTOR4);
 
 	// System tasks
-	xTaskCreate( SystemController, ( signed char * ) "SYSCON", 500, ( void * ) STATE_INIT, SYSCON_PRIORITY, NULL);
+	xTaskCreate( SystemController, ( signed char * ) "QUAD_SYSCON", 500, ( void * ) STATE_INIT, SYSCON_PRIORITY, NULL);
 	vTaskStartScheduler();
 	for(;;);
 }

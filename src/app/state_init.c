@@ -16,6 +16,8 @@
 #include "quadrotor.h"
 #include "lpc17xx_gpio.h"
 
+#include "trcUser.h"
+
 /* ================================ */
 /* Prototypes	 					*/
 /* ================================ */
@@ -28,13 +30,17 @@ void Init_onExit(void * pvParameters);
 /* ================================ */
 static xTaskHandle hnd;
 
+traceLabel Init_trcLabel;
 
 void Init_onEntry(void * p){
-	xTaskCreate(Init_Task, ( signed char * ) "INIT", 200, ( void * ) NULL, INIT_PRIORITY, &hnd );
+	xTaskCreate(Init_Task, ( signed char * ) "QUAD_INIT", 200, ( void * ) NULL, INIT_PRIORITY, &hnd );
+	Init_trcLabel = xTraceOpenLabel("QUAD_INIT tar");
+	vTracePrintF(Init_trcLabel,"onEntry");
 }
 
 void Init_onExit(void * p){
 	vTaskDelete(hnd);
+	vTracePrintF(Init_trcLabel,"onExit");
 }
 
 void Init_Task(void * pvParameters){
@@ -50,13 +56,16 @@ void Init_Task(void * pvParameters){
 		qLed_TurnOff(leds[i]);
 	}
 
+	vTracePrintF(Init_trcLabel,"Waiting 10 seconds..");
+	//vTraceStop();
 	for (j=0;j<100;j++){
 		for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOn(leds[i]);
 		vTaskDelay(50/portTICK_RATE_MS);
 		for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOff(leds[i]);
 		vTaskDelay(50/portTICK_RATE_MS);
 	}
-
+	//uiTraceStart();
+	vTracePrintF(Init_trcLabel,"Ready");
 	// --------------------------------------------------
 	// UART init
 	// --------------------------------------------------
@@ -66,6 +75,7 @@ void Init_Task(void * pvParameters){
 	}
 
 	qUART_EnableTx(UART_GROUNDCOMM);
+	vTracePrintF(Init_trcLabel,"UART Enabled");
 	ConsolePuts_("===================================\r\n",BLUE);
 	ConsolePuts("\x1B[2J\x1B[0;0f");
 	ConsolePuts_("FLC V2.0 Initialized...\r\n",BLUE);
@@ -74,6 +84,7 @@ void Init_Task(void * pvParameters){
 	// MPU initializationand calibration
 	// --------------------------------------------------
 
+	vTracePrintF(Init_trcLabel,"Calibrating sensors");
 	for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOn(leds[i]);
 	ConsolePuts_("Calibrating sensors...\t\t\t\t",BLUE);
 
@@ -108,12 +119,13 @@ void Init_Task(void * pvParameters){
 	for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOff(leds[i]);
 	ConsolePuts_("[OK]\r\n",GREEN);
 
+	vTracePrintF(Init_trcLabel,"OK");
 	// --------------------------------------------------
 	// DMP configuration
 	// --------------------------------------------------
 
 	ConsolePuts_("Initializing DMP...\t\t\t\t",BLUE);
-
+	vTracePrintF(Init_trcLabel,"Initializing DMP");
 	// GPIO0.4 as input with interrupt
 	GPIO_SetDir(0,(1<<4),0);
 	GPIO_IntCmd(0,(1<<4),1);
@@ -130,7 +142,7 @@ void Init_Task(void * pvParameters){
 		// (if it's going to break, usually the code will be 1)
 	}
 
-
+	vTracePrintF(Init_trcLabel,"Finished");
 	xTaskCreate( Communications, ( signed char * ) "COMMS", 500, ( void * ) NULL, COMMS_PRIORITY, NULL);
 
 	/* Terminate and go to Idle */
