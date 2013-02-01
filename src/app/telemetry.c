@@ -23,8 +23,6 @@ void Telemetry(void * pvParameters){
 	portTickType xLastWakeTime;
 	xLastWakeTime = xTaskGetTickCount();
 
-
-
 	for (;;)
 	{
 		sv.time = xTaskGetTickCount();

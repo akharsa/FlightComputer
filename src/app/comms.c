@@ -33,6 +33,7 @@ static Msg_t msg;
 static uint8_t msgBuff[255];
 
 xSemaphoreHandle DataSmphr;
+traceLabel comms_trcLabel;
 
 void Communications(void * pvParameters){
 	ret_t ret;
@@ -49,8 +50,11 @@ void Communications(void * pvParameters){
 
     qUART_Register_RBR_Callback(UART_GROUNDCOMM, UART_Rx_Handler);
 
+    comms_trcLabel = xTraceOpenLabel("Comms task");
+
 	for (;;){
 		if (pdTRUE == xSemaphoreTake(DataSmphr,500/portTICK_RATE_MS)){
+			vTracePrintF(comms_trcLabel,"Got joystick package");
 			switch (msg.Type){
 				case MSG_TYPE_CONTROL:
 					memcpy(&Joystick,msg.Payload,10);
@@ -60,19 +64,28 @@ void Communications(void * pvParameters){
 							state_name_t newState=STATE_IDLE;
 							qFSM_ChangeState(newState);
 						}
+					}else if (systemState == STATE_IDLE){
+						if ((Joystick.buttons & (BTN_RIGHT2 | BTN_LEFT2)) != 0){
+							state_name_t newState=STATE_FLIGHT;
+							qFSM_ChangeState(newState);
+						}
 					}
 					break;
+
 				case MSG_TYPE_DEBUG:
 					 break;
 				default:
 					break;
 			}
 		}else{
+			// Timeout to get a new joystick commands, values to 0
+			vTracePrintF(comms_trcLabel,"Joystick package timeout");
+			memset(&Joystick,0,sizeof(Joystick));
+			//qLed_TurnOff(STATUS_LED);
+
 			if (systemState == STATE_FLIGHT){
 				state_name_t newState=STATE_IDLE;
 				qFSM_ChangeState(newState);
-				// Timeout to get a new joystick commands, values to 0
-				memset(&Joystick,0,sizeof(Joystick));
 			}
 		}
 	}
@@ -102,13 +115,15 @@ void UART_Rx_Handler(uint8_t * buff, size_t sz){
 				break;
 			case RET_MSG_OK:
 				xSemaphoreGiveFromISR(DataSmphr,&xHigherPriorityTaskWoken);
+/*
 				if (led==0){
-					//qLed_TurnOn(STATUS_LED);
+					qLed_TurnOn(STATUS_LED);
 					led = 1;
 				}else{
-					//qLed_TurnOff(STATUS_LED);
+					qLed_TurnOff(STATUS_LED);
 					led = 0;
 				}
+*/
 				break;
 			case RET_ERROR:
 				// Problem with memory

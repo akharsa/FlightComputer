@@ -17,6 +17,7 @@
 #include "lpc17xx_gpio.h"
 
 #include "trcUser.h"
+#include "telemetry.h"
 
 /* ================================ */
 /* Prototypes	 					*/
@@ -144,7 +145,7 @@ void Init_Task(void * pvParameters){
 
 	vTracePrintF(Init_trcLabel,"Finished");
 	xTaskCreate( Communications, ( signed char * ) "COMMS", 500, ( void * ) NULL, COMMS_PRIORITY, NULL);
-
+	StartTelemetry(20);
 	/* Terminate and go to Idle */
 	state_name_t newState=STATE_IDLE;
 	qFSM_ChangeState(newState);

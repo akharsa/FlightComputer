@@ -61,11 +61,14 @@ void Idle_Task(void * pvParameters){
 
 	for (;;)
 	{
+		vTaskDelay(portMAX_DELAY);
+		/*
 		if ((Joystick.buttons & (BTN_RIGHT2 | BTN_LEFT2)) != 0){
 			state_name_t newState=STATE_FLIGHT;
 			qFSM_ChangeState(newState);
 		}
 
 	    vTaskDelayUntil( &xLastWakeTime, 10/portTICK_RATE_MS );
+	    */
 	}
 }

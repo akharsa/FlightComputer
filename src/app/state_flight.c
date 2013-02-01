@@ -15,7 +15,7 @@
 #include "quadrotor.h"
 #include "taskList.h"
 
-#include "telemetry.h"
+
 #include "joystick.h"
 #include "qFSM.h"
 #include "States.h"
@@ -60,6 +60,8 @@ uint32_t signal_t=0;
 static 	uint8_t fifoBuffer[64]; // FIFO storage buffer
 xSemaphoreHandle mpuSempahore;
 
+traceLabel flight_trcLabel;
+
 float map(long x, long in_min, long in_max, float out_min, float out_max)
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -86,20 +88,25 @@ void beacon(void * pvParameters){
 }
 
 void Flight_onEntry(void *p){
+	flight_trcLabel = xTraceOpenLabel("QUAD_FLIGHT");
+
 	ConsolePuts_("FLIGHT State: onEntry\r\n",BLUE);
-	xTaskCreate( Flight_Task, ( signed char * ) "IDLE", 2000, ( void * ) NULL, FLIGHT_PRIORITY, &hnd );
+	vTracePrintF(flight_trcLabel,"On Entry: creating tasks");
+	// ACA MUERE!!!!!!!!!!!!!
+	xTaskCreate( Flight_Task, ( signed char * ) "QUAD_FLIGHT", 500, ( void * ) NULL, FLIGHT_PRIORITY, &hnd );
 	xTaskCreate( beacon, ( signed char * ) "BEACON", 100, ( void * ) NULL, 1, &BeaconHnd );
-	StartTelemetry(20);
+	vTracePrintF(flight_trcLabel,"On Entry: finished creating tasks");
 }
 
 void Flight_onExit(void *p){
+	NVIC_DisableIRQ(EINT3_IRQn);
 	ConsolePuts_("FLIGHT State: onExit\r\n",BLUE);
-
+	vTracePrintF(flight_trcLabel,"On Exit");
+	qLed_TurnOff(STATUS_LED);
 	vTaskDelete(hnd);
 	vTaskDelete(BeaconHnd);
 	MPU6050_setDMPEnabled(FALSE);
-	qLed_TurnOff(STATUS_LED);
-	StopTelemetry();
+
 }
 
 
@@ -115,9 +122,6 @@ void Flight_Task(void * pvParameters){
 	uint8_t mpuIntStatus;   // holds actual interrupt status byte from MPU
 	uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
 	uint16_t fifoCount;     // count of all bytes currently in FIFO
-
-
-	//uint8_t counter = 4;
 
 
 	for (i=1;i<4;i++){
@@ -159,21 +163,26 @@ void Flight_Task(void * pvParameters){
 
 
 	MPU6050_setDMPEnabled(TRUE);
+	NVIC_EnableIRQ(EINT3_IRQn);
 	mpuIntStatus = MPU6050_getIntStatus();
 	// get expected DMP packet size for later comparison
 	packetSize = MPU6050_dmpGetFIFOPacketSize();
 
+	uint32_t uxHighWaterMark=0;
 
 	for(;;){
 
-		// Wait here for MPU DMP interrupt
+		// Wait here for MPU DMP interrupt at 200Hz
+		uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
 		xSemaphoreTake(mpuSempahore,portMAX_DELAY); //FIXME: instead of portMAX it would be nice to hae a time out for errors
+		vTracePrintF(flight_trcLabel,"Got DMP data!");
 		qLed_TurnOn(STATUS_LED);
 
 		//-----------------------------------------------------------------------
 		// Joystick mapping
 		//-----------------------------------------------------------------------
 
+		// Left Y saturation function to use only the upper half.
 		if (Joystick.left_pad.y>127){
 			zc = 127;
 		}else{
@@ -190,6 +199,7 @@ void Flight_Task(void * pvParameters){
 		// MPU Data adquisition
 		//-----------------------------------------------------------------------
 
+		vTracePrintF(flight_trcLabel,"Entering critical section for DMP");
 		portENTER_CRITICAL();
 
 		// reset interrupt flag and get INT_STATUS byte
@@ -219,10 +229,12 @@ void Flight_Task(void * pvParameters){
 		 }
 
 	    portEXIT_CRITICAL();
-
+	    vTracePrintF(flight_trcLabel,"Finished critical section");
 		//-----------------------------------------------------------------------
 		// Angular velocity data
 		//-----------------------------------------------------------------------
+
+#define USE_GYRO_RAW
 
 #ifndef USE_GYRO_RAW
 		    MPU6050_dmpGetGyro(&buffer[0],fifoBuffer);
@@ -254,10 +266,11 @@ void Flight_Task(void * pvParameters){
 		//-----------------------------------------------------------------------
 		// PID Process
 		//-----------------------------------------------------------------------
+		vTracePrintF(flight_trcLabel,"PID Controller start");
 		sv.CO[PHI_C] = qPID_Process(&ctrl[PHI_C],sv.setpoint[PHI_C],sv.omega[0],NULL);
 		sv.CO[THETA_C] = qPID_Process(&ctrl[THETA_C],sv.setpoint[THETA_C],sv.omega[1],NULL);
 		sv.CO[PSI_C] = qPID_Process(&ctrl[PSI_C],sv.setpoint[PSI_C],sv.omega[2],NULL);
-
+		vTracePrintF(flight_trcLabel,"PID Controller finish");
 
 		//-----------------------------------------------------------------------
 		// Output stage
@@ -268,7 +281,7 @@ void Flight_Task(void * pvParameters){
 		control[THETA_C] = sv.CO[THETA_C];
 		control[PSI_C] = -sv.CO[PSI_C];
 #else
-		control[Z_C] = 0.3;
+		control[Z_C] = sv.setpoint[Z_C];
 		control[PHI_C] = sv.CO[PHI_C];
 		control[THETA_C] = 0.0;
 		control[PSI_C] = 0.0;
@@ -287,6 +300,7 @@ void Flight_Task(void * pvParameters){
 		qESC_SetOutput(MOTOR3,inputs[2]);
 		qESC_SetOutput(MOTOR4,inputs[3]);
 #endif
+
 		qLed_TurnOff(STATUS_LED);
 		//vTaskDelayUntil( &xLastWakeTime, 5/portTICK_RATE_MS );
 	}

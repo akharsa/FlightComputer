@@ -30,7 +30,7 @@ void AppMain(void) {
 	qESC_InitChannel(MOTOR4);
 
 	// System tasks
-	xTaskCreate( SystemController, ( signed char * ) "QUAD_SYSCON", 500, ( void * ) STATE_INIT, SYSCON_PRIORITY, NULL);
+	xTaskCreate( SystemController, ( signed char * ) "QUAD_SYSCON", 200, ( void * ) STATE_INIT, SYSCON_PRIORITY, NULL);
 	vTaskStartScheduler();
 	for(;;);
 }

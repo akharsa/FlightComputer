@@ -66,6 +66,7 @@ extern "C" {
      void ResetISR(void);
 WEAK void NMI_Handler(void);
 WEAK void HardFault_Handler(void);
+WEAK void HardFault_HandlerAsm(void);
 WEAK void MemManage_Handler(void);
 WEAK void BusFault_Handler(void);
 WEAK void UsageFault_Handler(void);
@@ -159,7 +160,7 @@ void (* const g_pfnVectors[])(void) = {
 	&_vStackTop, // The initial stack pointer
 	ResetISR,								// The reset handler
 	NMI_Handler,							// The NMI handler
-	HardFault_Handler,						// The hard fault handler
+	HardFault_HandlerAsm,						// The hard fault handler
 	MemManage_Handler,						// The MPU fault handler
 	BusFault_Handler,						// The bus fault handler
 	UsageFault_Handler,						// The usage fault handler
