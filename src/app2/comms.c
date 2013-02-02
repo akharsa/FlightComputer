@@ -23,9 +23,6 @@
 #include "joystick.h"
 #include "quadrotor.h"
 
-//extern xSemaphoreHandle TelemetrySmphr;
-//extern state_name_t systemState;
-
 void UART_Rx_Handler(uint8_t * buff, size_t sz);
 
 static Msg_t msg;
@@ -47,7 +44,7 @@ void Communications(void * pvParameters){
     }
 
     qUART_Register_RBR_Callback(UART_GROUNDCOMM, UART_Rx_Handler);
-
+    qUART_EnableRx(UART_GROUNDCOMM);
     comms_trcLabel = xTraceOpenLabel("Comms task");
 
 	for (;;){
@@ -55,22 +52,7 @@ void Communications(void * pvParameters){
 			vTracePrintF(comms_trcLabel,"Got joystick package");
 			switch (msg.Type){
 				case MSG_TYPE_CONTROL:
-#if 0
 					memcpy(&Joystick,msg.Payload,10);
-
-					if (systemState == STATE_FLIGHT){
-						if ((Joystick.buttons & (BTN_RIGHT2 | BTN_LEFT2)) == 0){
-							state_name_t newState=STATE_IDLE;
-							qFSM_ChangeState(newState);
-						}
-					}else if (systemState == STATE_IDLE){
-						if ((Joystick.buttons & (BTN_RIGHT2 | BTN_LEFT2)) != 0){
-							state_name_t newState=STATE_FLIGHT;
-							qFSM_ChangeState(newState);
-						}
-					}
-					break;
-#endif
 				case MSG_TYPE_DEBUG:
 					 break;
 				default:
@@ -80,13 +62,6 @@ void Communications(void * pvParameters){
 			// Timeout to get a new joystick commands, values to 0
 			vTracePrintF(comms_trcLabel,"Joystick package timeout");
 			memset(&Joystick,0,sizeof(Joystick));
-			//qLed_TurnOff(STATUS_LED);
-#if 0
-			if (systemState == STATE_FLIGHT){
-				state_name_t newState=STATE_IDLE;
-				qFSM_ChangeState(newState);
-			}
-#endif
 		}
 	}
 }
@@ -95,6 +70,7 @@ uint8_t led = 0;
 void error(uint8_t i){
 	__NOP();
 }
+
 void UART_Rx_Handler(uint8_t * buff, size_t sz){
 	uint32_t i;
 	ret_t ret;
