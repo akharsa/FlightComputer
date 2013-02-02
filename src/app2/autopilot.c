@@ -120,11 +120,20 @@ void Flight_onEntry(void){
 }
 
 void Flight_onExit(void){
+	uint8_t i;
+
 	debug("FLIGHT: On exit");
+	for (i=0;i<10;i++){
+		qESC_SetOutput(MOTOR1,0);
+		qESC_SetOutput(MOTOR2,0);
+		qESC_SetOutput(MOTOR3,0);
+		qESC_SetOutput(MOTOR4,0);
+	}
 	vTaskSuspend(BeaconHnd);
 	MPU6050_setDMPEnabled(FALSE);
 	NVIC_DisableIRQ(EINT3_IRQn);
 	qLed_TurnOff(STATUS_LED);
+
 }
 
 uint8_t systemArmed = 0;
@@ -153,6 +162,10 @@ void Flight_Task(void){
 		}
 
 		if (systemArmed == 0){
+			qESC_SetOutput(MOTOR1,0);
+			qESC_SetOutput(MOTOR2,0);
+			qESC_SetOutput(MOTOR3,0);
+			qESC_SetOutput(MOTOR4,0);
 			vTaskDelay(10/portTICK_RATE_MS);
 			debug("Idleing...");
 		}else{
@@ -269,7 +282,7 @@ void Flight_Task(void){
 			control[THETA_C] = sv.CO[THETA_C];
 			control[PSI_C] = -sv.CO[PSI_C];
 #else
-			control[Z_C] = sv.setpoint[Z_C];
+			control[Z_C] = 0.3;
 			control[PHI_C] = sv.CO[PHI_C];
 			control[THETA_C] = 0.0;
 			control[PSI_C] = 0.0;
