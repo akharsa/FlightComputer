@@ -46,6 +46,8 @@ extern xTaskHandle BeaconHnd;
 float control[4]={0.0};
 uint16_t inputs[4]={0};
 
+float atti_buffer[3];
+
 qPID ctrl[4];
 
 static 	uint8_t fifoBuffer[64]; // FIFO storage buffer
@@ -262,8 +264,10 @@ void Flight_Task(void){
 			//-----------------------------------------------------------------------
 			// Attitude data
 			//-----------------------------------------------------------------------
-			MPU6050_dmpGetEuler(&sv.attitude[0], fifoBuffer);
-
+			MPU6050_dmpGetEuler(&atti_buffer[0], fifoBuffer);
+			sv.attitude[0] = atti_buffer[2];
+			sv.attitude[1] = -atti_buffer[1];
+			sv.attitude[2] = atti_buffer[0];
 			//-----------------------------------------------------------------------
 			// PID Process
 			//-----------------------------------------------------------------------
