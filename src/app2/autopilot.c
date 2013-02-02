@@ -102,6 +102,7 @@ void Flight_onTimeStartup(void){
 	qPID_Init(&ctrl[THETA_C]);
 	qPID_Init(&ctrl[PSI_C]);
 
+	NVIC_SetPriority(EINT3_IRQn, 6);
 
 	vSemaphoreCreateBinary(mpuSempahore);
 	debug("Flight one time startup donde");
@@ -155,16 +156,15 @@ void Flight_Task(void){
 			vTaskDelay(10/portTICK_RATE_MS);
 			debug("Idleing...");
 		}else{
-			vTaskDelay(100/portTICK_RATE_MS);
 			debug("Flying...");
-#if 0
+#if 1
 
-			uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+			//uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
 
 			// Wait here for MPU DMP interrupt at 200Hz
 			xSemaphoreTake(mpuSempahore,portMAX_DELAY); //FIXME: instead of portMAX it would be nice to hae a time out for errors
 
-			vTracePrintF(flight_trcLabel,"Got DMP data!");
+			debug("Got DMP data!");
 			qLed_TurnOn(STATUS_LED);
 
 			//-----------------------------------------------------------------------
@@ -188,7 +188,7 @@ void Flight_Task(void){
 			// MPU Data adquisition
 			//-----------------------------------------------------------------------
 
-			vTracePrintF(flight_trcLabel,"Entering critical section for DMP");
+			debug("Entering critical section for DMP");
 			portENTER_CRITICAL();
 
 			// reset interrupt flag and get INT_STATUS byte
@@ -201,7 +201,7 @@ void Flight_Task(void){
 			if ((mpuIntStatus & 0x10) || fifoCount == 1024) {
 				// reset so we can continue cleanly
 				MPU6050_resetFIFO();
-				ConsolePuts_("DMP FIFO OVERFLOW!\r\n",RED);
+				debug("DMP FIFO OVERFLOW!\r\n");
 
 				// otherwise, check for DMP data ready interrupt (this should happen frequently)
 			} else if (mpuIntStatus & 0x02) {
@@ -218,7 +218,7 @@ void Flight_Task(void){
 			}
 
 			portEXIT_CRITICAL();
-			vTracePrintF(flight_trcLabel,"Finished critical section");
+			debug("Finished critical section");
 			//-----------------------------------------------------------------------
 			// Angular velocity data
 			//-----------------------------------------------------------------------
@@ -254,11 +254,11 @@ void Flight_Task(void){
 			//-----------------------------------------------------------------------
 			// PID Process
 			//-----------------------------------------------------------------------
-			vTracePrintF(flight_trcLabel,"PID Controller start");
+			debug("PID Controller start");
 			sv.CO[PHI_C] = qPID_Process(&ctrl[PHI_C],sv.setpoint[PHI_C],sv.omega[0],NULL);
 			sv.CO[THETA_C] = qPID_Process(&ctrl[THETA_C],sv.setpoint[THETA_C],sv.omega[1],NULL);
 			sv.CO[PSI_C] = qPID_Process(&ctrl[PSI_C],sv.setpoint[PSI_C],sv.omega[2],NULL);
-			vTracePrintF(flight_trcLabel,"PID Controller finish");
+			debug("PID Controller finish");
 
 			//-----------------------------------------------------------------------
 			// Output stage
