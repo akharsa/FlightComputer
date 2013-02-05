@@ -33,10 +33,11 @@ void Fligth_onExit();
 static xTaskHandle hnd;
 extern xTaskHandle BeaconHnd;
 
-#define Z_C		0
-#define PHI_C	1
-#define THETA_C	2
-#define PSI_C	3
+#define Z_C			0
+#define PHI_C		1
+#define THETA_C		2
+#define PSI_C		3
+#define PHI_ATTI	4
 
 #define K_Z		700
 #define K_PHI	200
@@ -48,7 +49,7 @@ uint16_t inputs[4]={0};
 
 float atti_buffer[3];
 
-qPID ctrl[4];
+qPID ctrl[5];
 
 static 	uint8_t fifoBuffer[64]; // FIFO storage buffer
 xSemaphoreHandle mpuSempahore;
@@ -71,7 +72,7 @@ void Flight_onTimeStartup(void){
 
 	uint8_t i;
 	debug("Configuring PIDS");
-	for (i=1;i<4;i++){
+	for (i=0;i<5;i++){
 		ctrl[i].AntiWindup = ENABLED;
 		ctrl[i].Bumpless = ENABLED;
 
@@ -100,11 +101,17 @@ void Flight_onTimeStartup(void){
 	ctrl[PSI_C].Td = 0.000;
 	ctrl[PSI_C].Nd = 5;
 
+	ctrl[PHI_ATTI].K = 10.0;
+	ctrl[PHI_ATTI].Ti = 1/5.0;
+	ctrl[PHI_ATTI].Td = 0.000;
+	ctrl[PHI_ATTI].Nd = 5;
+	ctrl[PHI_ATTI].OutputMax = 90.0;
+	ctrl[PHI_ATTI].OutputMin = -90.0;
+
 	qPID_Init(&ctrl[PHI_C]);
 	qPID_Init(&ctrl[THETA_C]);
 	qPID_Init(&ctrl[PSI_C]);
-
-	NVIC_SetPriority(EINT3_IRQn, 6);
+	qPID_Init(&ctrl[PHI_ATTI]);
 
 	vSemaphoreCreateBinary(mpuSempahore);
 	debug("Flight one time startup donde");
@@ -140,6 +147,8 @@ void Flight_onExit(void){
 
 uint8_t systemArmed = 0;
 uint8_t systemArmedOld = 0;
+
+float phi_atti;
 
 void Flight_Task(void){
 	uint8_t i;
@@ -194,7 +203,7 @@ void Flight_Task(void){
 			}
 
 			sv.setpoint[Z_C] = map(zc,127,255,0.0,1.0);
-			sv.setpoint[PHI_C] = map(Joystick.right_pad.x,0,255,-90.0,90.0);
+			sv.setpoint[PHI_C] = map(Joystick.right_pad.x,0,255,-45.0,45.0);
 			sv.setpoint[THETA_C] = map(Joystick.right_pad.y,0,255,-90.0,90.0);
 			sv.setpoint[PSI_C] = 0.0; //map(Joystick.left_pad.x,0,255,-180.0,180.0); THIS IS FOR KILL-ROT ON YAW
 
@@ -265,18 +274,26 @@ void Flight_Task(void){
 			// Attitude data
 			//-----------------------------------------------------------------------
 			MPU6050_dmpGetEuler(&atti_buffer[0], fifoBuffer);
-			sv.attitude[0] = atti_buffer[2];
-			sv.attitude[1] = -atti_buffer[1];
-			sv.attitude[2] = atti_buffer[0];
+			sv.attitude[0] = atti_buffer[2]*180/3.141519;
+			sv.attitude[1] = -atti_buffer[1]*180/3.141519;;
+			sv.attitude[2] = atti_buffer[0]*180/3.141519;;
+
+
 			//-----------------------------------------------------------------------
 			// PID Process
 			//-----------------------------------------------------------------------
 			debug("PID Controller start");
-			sv.CO[PHI_C] = qPID_Process(&ctrl[PHI_C],sv.setpoint[PHI_C],sv.omega[0],NULL);
+
+			// ATTI
+			phi_atti = qPID_Process(&ctrl[PHI_ATTI],sv.setpoint[PHI_C],sv.attitude[0],NULL);
+
+			// RATE
+			sv.CO[PHI_C] = qPID_Process(&ctrl[PHI_C],phi_atti,sv.omega[0],NULL);
 			sv.CO[THETA_C] = qPID_Process(&ctrl[THETA_C],sv.setpoint[THETA_C],sv.omega[1],NULL);
 			sv.CO[PSI_C] = qPID_Process(&ctrl[PSI_C],sv.setpoint[PSI_C],sv.omega[2],NULL);
 			debug("PID Controller finish");
 
+			sv.CO[Z_C] = phi_atti;
 			//-----------------------------------------------------------------------
 			// Output stage
 			//-----------------------------------------------------------------------

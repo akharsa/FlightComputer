@@ -90,6 +90,7 @@ void hardwareInit(void){
 	GPIO_SetDir(0,(1<<4),0);
 	GPIO_IntCmd(0,(1<<4),1);
 	GPIO_ClearInt(0,(1<<4));
+	NVIC_SetPriority(EINT3_IRQn, 6);
 	NVIC_EnableIRQ(EINT3_IRQn);
 
 	// make sure it worked (returns 0 if so)
