@@ -1,12 +1,13 @@
 /*
  * quadrotor.c
  *
- *  Created on: 11/01/2013
+ *  Created on: 05/02/2013
  *      Author: alan
  */
 
+
 #include "quadrotor.h"
 
-SV_t sv;
-settings_t settings;
-groundControl_t Joystick;
+quadrotor_t quadrotor;
+
+

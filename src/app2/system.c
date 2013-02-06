@@ -51,7 +51,3 @@ void AppMain(void) {
 void vApplicationStackOverflowHook( xTaskHandle xTask, signed portCHAR *pcTaskName ){
 	while(1);
 }
-
-//traceLabel stack = xTraceOpenLabel("STACK");
-	//vTraceUserEvent(stack);
-	//vTracePrintF(stack, "STACK: %d",uxTaskGetStackHighWaterMark(NULL));

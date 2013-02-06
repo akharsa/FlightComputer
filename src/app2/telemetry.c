@@ -1,26 +1,12 @@
+#include "telemetry.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
 
 #include "quadrotor.h"
-#include "telemetry.h"
-#include <stdint.h>
+#include "board.h"
 
-#if 0
-static xTaskHandle tlm_hnd;
-static uint8_t taskRunning = 0;
-
-void StartTelemetry(portTickType interval){
-	taskRunning = 1;
-	xTaskCreate( Telemetry, ( signed char * ) "TLM", 300, ( void * ) interval, TLM_PRIORITY, &tlm_hnd);
-}
-
-void StopTelemetry(void){
-	if (taskRunning==1){
-		vTaskDelete(tlm_hnd);
-		taskRunning = 0;
-	}
-}
-
-#endif
+#include  "qCOMMS.h"
 
 void Telemetry(void * pvParameters){
 	portTickType xLastWakeTime;
@@ -28,9 +14,9 @@ void Telemetry(void * pvParameters){
 
 	for (;;)
 	{
-		sv.time = xTaskGetTickCount();
+		quadrotor.sv.time = xTaskGetTickCount();
 		//TODO: Mutex here!
-		qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_TELEMETRY,sizeof(sv),(uint8_t*)&sv);
+		qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_TELEMETRY,sizeof(quadrotor.sv),(uint8_t*)&quadrotor.sv);
 		vTaskDelayUntil( &xLastWakeTime, ((portTickType) pvParameters) /portTICK_RATE_MS );
 	}
 

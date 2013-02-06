@@ -12,12 +12,12 @@
 #include "qESC.h"
 #include "lpc17xx_gpio.h"
 #include "DebugConsole.h"
-#include "quadrotor.h"
 
+#include "board.h"
+#include "quadrotor.h"
 
 void hardwareInit(void){
 	uint8_t i,j;
-
 
 	// Early init will turn the motors off for safety
 	qESC_Init();
@@ -73,9 +73,10 @@ void hardwareInit(void){
 		vTaskDelay(10/portTICK_RATE_MS);
 	}
 
-	settings.gyroBias[0] = (int16_t)sum[0]/128;
-	settings.gyroBias[1] = (int16_t)sum[1]/128;
-	settings.gyroBias[2] = (int16_t)sum[2]/128;
+	quadrotor.settings.gyroBias[ROLL] = (int16_t)sum[0]/128;
+	quadrotor.settings.gyroBias[PITCH] = (int16_t)sum[1]/128;
+	quadrotor.settings.gyroBias[YAW] = (int16_t)sum[2]/128;
+
 #else
 	debug("Using GYRO in DMP mode");
 #endif

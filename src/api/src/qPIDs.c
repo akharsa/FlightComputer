@@ -32,7 +32,7 @@ void qPID_Init(qPID * q){
 	q->ctx.SP_old = 0.0;
 }
 
-float qPID_Process(qPID * q, float Input, float PV, float terms[]){
+float qPID_Process_(qPID * q, float Input, float PV, float terms[]){
 
 
 	// =====================================

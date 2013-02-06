@@ -8,6 +8,7 @@
 #ifndef JOYSTICK_H_
 #define JOYSTICK_H_
 
+#include <stdint.h>
 
 #define	BTN_SELECT	 	0x0001
 #define	BTN_L3			0x0002
@@ -25,5 +26,21 @@
 #define	BTN_CIRCLE		0x2000
 #define	BTN_CROSS		0x4000
 #define	BTN_SQUARE		0x8000
+
+typedef struct{
+	uint8_t x;
+	uint8_t y;
+}joystick_pad_t;
+
+typedef struct{
+	joystick_pad_t		left_pad;
+	joystick_pad_t		right_pad;
+	uint8_t 	L1;
+	uint8_t 	L2;
+	uint8_t 	R1;
+	uint8_t 	R2;
+	uint16_t 	buttons;
+}joystick_t;
+
 
 #endif /* JOYSTICK_H_ */

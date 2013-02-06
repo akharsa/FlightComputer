@@ -20,7 +20,6 @@
 #include "qESC.h"
 #include "leds.h"
 #include "qWDT.h"
-#include "joystick.h"
 #include "quadrotor.h"
 
 void UART_Rx_Handler(uint8_t * buff, size_t sz);
@@ -32,8 +31,6 @@ xSemaphoreHandle DataSmphr;
 traceLabel comms_trcLabel;
 
 void Communications(void * pvParameters){
-	ret_t ret;
-	uint8_t ch;
 
 	msg.Payload = msgBuff;
 
@@ -52,7 +49,7 @@ void Communications(void * pvParameters){
 			vTracePrintF(comms_trcLabel,"Got joystick package");
 			switch (msg.Type){
 				case MSG_TYPE_CONTROL:
-					memcpy(&Joystick,msg.Payload,10);
+					memcpy(&quadrotor.joystick,msg.Payload,10);
 				case MSG_TYPE_DEBUG:
 					 break;
 				default:
@@ -61,7 +58,7 @@ void Communications(void * pvParameters){
 		}else{
 			// Timeout to get a new joystick commands, values to 0
 			vTracePrintF(comms_trcLabel,"Joystick package timeout");
-			memset(&Joystick,0,sizeof(Joystick));
+			memset(&quadrotor.joystick,0,sizeof(quadrotor.joystick));
 		}
 	}
 }

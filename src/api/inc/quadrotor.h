@@ -8,19 +8,26 @@
 #ifndef QUADROTOR_H_
 #define QUADROTOR_H_
 
-#include "FreeRTOS.h"
-#include "queue.h"
-#include "task.h"
-#include "semphr.h"
+#include "joystick.h"
+#include "qPIDs.h"
 
-#include "qCOMMS.h"
-#include "board.h"
+#define ROLL		0
+#define PITCH		1
+#define YAW			2
+#define ALTITUDE	3
+
+#define K_Z		700
+#define K_PHI	200
+#define K_THETA	200
+#define K_PSI	300
 
 typedef struct {
-	float omega[3];
+	float rate[3];
 	float attitude[3];
 	float setpoint[4];
-	float CO[4];
+	float rateCtrlOutput[3];
+	float attiCtrlOutput[3];
+	uint16_t motorOutput[4];
 	uint32_t time;
 } SV_t;
 
@@ -28,24 +35,15 @@ typedef struct {
 	float gyroBias[3];
 } settings_t;
 
-typedef struct{
-	uint8_t x;
-	uint8_t y;
-}pad_t;
+typedef struct {
+	SV_t sv;
+	settings_t settings;
+	joystick_t joystick;
+	qPID rateController[3];
+	qPID attiController[3];
+	qPID altitudeController;
+}quadrotor_t;
 
-typedef struct{
-	pad_t		left_pad;
-	pad_t		right_pad;
-	uint8_t 	L1;
-	uint8_t 	L2;
-	uint8_t 	R1;
-	uint8_t 	R2;
-	uint16_t 	buttons;
-}groundControl_t;
-
-extern groundControl_t Joystick;
-extern SV_t sv;
-extern settings_t settings;
-
+extern quadrotor_t quadrotor;
 
 #endif /* QUADROTOR_H_ */

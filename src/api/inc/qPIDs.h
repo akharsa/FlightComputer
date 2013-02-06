@@ -79,6 +79,7 @@ typedef struct{
 // Prototypes
 //================================================================
 void qPID_Init(qPID * q);
-float qPID_Process(qPID * q, float Input, float ProcessVariable, float terms[]);
+float qPID_Process_(qPID * q, float Input, float ProcessVariable, float terms[]);
+#define qPID_Procees(pPID,input,pv) qPID_Process_(pPID,input,pv,NULL);
 
 #endif
