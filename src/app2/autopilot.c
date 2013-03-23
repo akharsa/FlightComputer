@@ -32,7 +32,6 @@ static xTaskHandle hnd;
 extern xTaskHandle BeaconHnd;
 
 float control[4]={0.0};
-uint16_t inputs[4]={0};
 
 float atti_buffer[3];
 
@@ -79,7 +78,6 @@ void Flight_onTimeStartup(void){
 	quadrotor.rateController[ROLL].Ti = 1/0.03;
 	quadrotor.rateController[ROLL].Td = 0.000;
 	quadrotor.rateController[ROLL].Nd = 5;
-
 
 	quadrotor.rateController[PITCH].K = 0.02;
 	quadrotor.rateController[PITCH].Ti = 1/0.03;
@@ -182,8 +180,8 @@ void Flight_Task(void){
 			quadrotor.sv.setpoint[ALTITUDE] = map((quadrotor.joystick.left_pad.y>127)?127:255-quadrotor.joystick.left_pad.y,127,255,0.0,1.0);
 			quadrotor.sv.setpoint[ROLL] = map(quadrotor.joystick.right_pad.x,0,255,-90.0,90.0);
 			quadrotor.sv.setpoint[PITCH] = map(quadrotor.joystick.right_pad.y,0,255,-90.0,90.0);
-			quadrotor.sv.setpoint[YAW] = map(quadrotor.joystick.left_pad.x,0,255,-180.0,180.0);
-			//quadrotor.sv.setpoint[YAW] = 0.0; //THIS IS FOR KILL-ROT ON YAW
+			//quadrotor.sv.setpoint[YAW] = map(quadrotor.joystick.left_pad.x,0,255,-180.0,180.0);
+			quadrotor.sv.setpoint[YAW] = 0.0; //THIS IS FOR KILL-ROT ON YAW
 
 			//-----------------------------------------------------------------------
 			// MPU Data adquisition
@@ -224,13 +222,13 @@ void Flight_Task(void){
 			// Angular velocity data
 			//-----------------------------------------------------------------------
 
-#define USE_GYRO_RAW
+#define USE_GYRO_DMP
 
 #ifndef USE_GYRO_RAW
 			MPU6050_dmpGetGyro(&buffer[0],fifoBuffer);
-			sv.rate[0] = -buffer[0];
-			sv.rate[1] = buffer[1];
-			sv.rate[2] = -buffer[2];
+			quadrotor.sv.rate[ROLL] = -buffer[0];
+			quadrotor.sv.rate[PITCH] = buffer[1];
+			quadrotor.sv.rate[YAW] = buffer[2];
 #else
 			// DAQ
 			MPU6050_getRotation(&buffer[0],&buffer[1],&buffer[2]);
@@ -284,23 +282,28 @@ void Flight_Task(void){
 			control[PHI_C] = sv.CO[PHI_C];
 			control[THETA_C] = sv.CO[THETA_C];
 			control[YAW] = -sv.CO[YAW];
-#else
-			control[ALTITUDE] = 0.3;
+
+			control[ALTITUDE] = quadrotor.sv.setpoint[ALTITUDE];
 			control[ROLL] = quadrotor.sv.rateCtrlOutput[ROLL];
-			control[PITCH] = 0.0;
-			control[YAW] = 0.0;//quadrotor.sv.rateCtrlOutput[YAW];;
+			control[PITCH] = quadrotor.sv.rateCtrlOutput[PITCH];
+			control[YAW] = 0.0; //quadrotor.sv.rateCtrlOutput[YAW];;
+#else
+			control[ALTITUDE] = quadrotor.sv.setpoint[ALTITUDE];
+			control[ROLL] = quadrotor.sv.rateCtrlOutput[ROLL];
+			control[PITCH] = quadrotor.sv.rateCtrlOutput[PITCH];
+			control[YAW] = quadrotor.sv.rateCtrlOutput[YAW];
 #endif
 			// Output state
-			inputs[0] = (	control[ALTITUDE]*K_Z - control[ROLL]*K_PHI - control[PITCH]*K_THETA - control[YAW]*K_PSI	);
-			inputs[1] = (	control[ALTITUDE]*K_Z - control[ROLL]*K_PHI + control[PITCH]*K_THETA + control[YAW]*K_PSI	);
-			inputs[2] = (	control[ALTITUDE]*K_Z + control[ROLL]*K_PHI + control[PITCH]*K_THETA - control[YAW]*K_PSI	);
-			inputs[3] = (	control[ALTITUDE]*K_Z + control[ROLL]*K_PHI - control[PITCH]*K_THETA + control[YAW]*K_PSI	);
+			quadrotor.sv.motorOutput[0] = (	control[ALTITUDE]*K_Z - control[ROLL]*K_PHI - control[PITCH]*K_THETA - control[YAW]*K_PSI	);
+			quadrotor.sv.motorOutput[1] = (	control[ALTITUDE]*K_Z - control[ROLL]*K_PHI + control[PITCH]*K_THETA + control[YAW]*K_PSI	);
+			quadrotor.sv.motorOutput[2] = (	control[ALTITUDE]*K_Z + control[ROLL]*K_PHI + control[PITCH]*K_THETA - control[YAW]*K_PSI	);
+			quadrotor.sv.motorOutput[3] = (	control[ALTITUDE]*K_Z + control[ROLL]*K_PHI - control[PITCH]*K_THETA + control[YAW]*K_PSI	);
 
 			// Motor command
-			qESC_SetOutput(MOTOR1,inputs[0]);
-			qESC_SetOutput(MOTOR2,inputs[1]);
-			qESC_SetOutput(MOTOR3,inputs[2]);
-			qESC_SetOutput(MOTOR4,inputs[3]);
+			qESC_SetOutput(MOTOR1,quadrotor.sv.motorOutput[0]);
+			qESC_SetOutput(MOTOR2,quadrotor.sv.motorOutput[1]);
+			qESC_SetOutput(MOTOR3,quadrotor.sv.motorOutput[2]);
+			qESC_SetOutput(MOTOR4,quadrotor.sv.motorOutput[3]);
 
 			qLed_TurnOff(STATUS_LED);
 #endif
