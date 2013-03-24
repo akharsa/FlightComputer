@@ -9,12 +9,6 @@
 static const char * colorArray[]={COLOR_BLACK,COLOR_RED,COLOR_GREEN,COLOR_YELLOW,COLOR_BLUE,COLOR_MAGENTA,COLOR_MAGENTA,COLOR_CYAN,COLOR_WHITE};
 static uint8_t buffer[20];
 
-void halt(const char * msg){
-	debug(msg);
-	while(1);
-}
-
-
 void intToString(int value, uint8_t* pBuf, uint32_t len, uint8_t base)
 {
     static const char* pAscii = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -79,7 +73,6 @@ void ConsolePuts(char * buff){
 uint8_t msgBuffer[300];
 
 void ConsolePuts_(char * buff,int color ){
-
 	uint8_t * msgs[] = {(uint8_t *)(colorArray[color]),(uint8_t *)buff};
 	uint32_t pos = 0;
 	memcpy(&msgBuffer[pos],msgs[0],strlen((char*)msgs[0]));

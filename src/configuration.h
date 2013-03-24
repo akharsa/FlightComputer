@@ -14,7 +14,7 @@
 #define GYRO_RAW	1
 #define GYRO_MPU	2
 
-#define DEBUG_LEVEL	RAM_TRACE
+#define DEBUG_LEVEL	UART_CONSOLE
 #define GYRO_MODE	GYRO_RAW
 #define TLM_PERIOD	20
 
