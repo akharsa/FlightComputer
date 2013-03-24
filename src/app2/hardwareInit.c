@@ -12,9 +12,10 @@
 #include "qESC.h"
 #include "lpc17xx_gpio.h"
 #include "DebugConsole.h"
-
+#include "eeprom.h"
 #include "board.h"
 #include "quadrotor.h"
+#include "nvram.h"
 
 void hardwareInit(void){
 	uint8_t i,j;
@@ -33,8 +34,19 @@ void hardwareInit(void){
 		qLed_Init(leds[i]);
 		qLed_TurnOn(leds[i]);
 	}
-
 	for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOn(leds[i]);
+
+	if (qI2C_Init()!=SUCCESS) halt("I2C INIT ERROR");
+
+	// --------------------------------------------------
+	// NVRAM
+	// --------------------------------------------------
+#undef WRITE_NVRAM
+#ifdef WRITE_NVRAM
+	qNVRAM_setDefaults(&nvramBuffer);
+	qNVRAM_Save(&nvramBuffer);
+#endif
+	qNVRAM_Load(&nvramBuffer);
 
 	// --------------------------------------------------
 	// MPU initializationand calibration
@@ -43,8 +55,6 @@ void hardwareInit(void){
 	int16_t buffer[3];
 
 	debug("Calibrating sensors...");
-
-	if (qI2C_Init()!=SUCCESS) halt("I2C INIT ERROR");
 
 	if (MPU6050_testConnection()==TRUE){
 		MPU6050_initialize();

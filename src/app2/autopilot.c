@@ -58,7 +58,6 @@ float map(long x, long in_min, long in_max, float out_min, float out_max)
 
 
 void Flight_onTimeStartup(void){
-
 	uint8_t i;
 	debug("Configuring PIDS");
 
@@ -73,7 +72,7 @@ void Flight_onTimeStartup(void){
 		quadrotor.rateController[i].c = 1.0;
 		qPID_Init(&quadrotor.rateController[i]);
 	}
-
+#if 0 // Now this is done in the NVRAM load part
 	quadrotor.rateController[ROLL].K = 0.02;
 	quadrotor.rateController[ROLL].Ti = 1/0.03;
 	quadrotor.rateController[ROLL].Td = 0.000;
@@ -88,6 +87,7 @@ void Flight_onTimeStartup(void){
 	quadrotor.rateController[YAW].Ti = 1/0.2;
 	quadrotor.rateController[YAW].Td = 0.000;
 	quadrotor.rateController[YAW].Nd = 5;
+#endif
 
 #ifdef ATTITUDE_MODE
 	for (i=0;i<3;i++){
