@@ -232,7 +232,6 @@ void Flight_Task(void){
 #else
 			// DAQ
 			MPU6050_getRotation(&buffer[0],&buffer[1],&buffer[2]);
-			//MPU6050_dmpGetGyro(&buffer[0],fifoBuffer);
 
 			// MPU axes aligment to Quad body axes
 			quadrotor.sv.rate[ROLL] = -(buffer[0]-quadrotor.settings.gyroBias[ROLL]);
@@ -312,6 +311,7 @@ void Flight_Task(void){
 	}
 }
 
+// Hardware IRQ for the MPU6050 DMP algorithm.
 void EINT3_IRQHandler(void)
 {
 	static signed portBASE_TYPE xHigherPriorityTaskWoken;
