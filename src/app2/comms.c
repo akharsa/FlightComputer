@@ -30,6 +30,21 @@ static uint8_t msgBuff[255];
 xSemaphoreHandle DataSmphr;
 traceLabel comms_trcLabel;
 
+#define COMMAND_READ	'R'
+#define COMMAND_WRITE	'W'
+
+void commandRead(uint8_t * buffer){
+	debug("Read commmand issued \r\n");
+	qComms_SendMsg(UART_GROUNDCOMM,0xBB,MSG_TYPE_SYSTEM,sizeof(nvram_t),&nvramBuffer);
+}
+
+void commandWrite(uint8_t * buffer){
+	debug("Write commmand issued with the following parameters:\r\n");
+	memcpy(&nvramBuffer,buffer,sizeof(nvram_t));
+	qNVRAM_Save(&nvramBuffer);
+	qNVRAM_Load(&nvramBuffer);
+}
+
 void Communications(void * pvParameters){
 
 	msg.Payload = msgBuff;
@@ -52,6 +67,19 @@ void Communications(void * pvParameters){
 					memcpy(&quadrotor.joystick,msg.Payload,10);
 				case MSG_TYPE_DEBUG:
 					 break;
+				case MSG_TYPE_SYSTEM:
+					switch (msg.Payload[0]) {
+						case COMMAND_READ:
+							commandRead(&msg.Payload[1]);
+							break;
+						case COMMAND_WRITE:
+							commandWrite(&msg.Payload[1]);
+							break;
+						default:
+							break;
+					}
+
+					break;
 				default:
 					break;
 			}

@@ -51,16 +51,17 @@ void hardwareInit(void){
 		qLed_Init(leds[i]);
 		qLed_TurnOn(leds[i]);
 	}
-	for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOn(leds[i]);
+
 
 	// =========================================================
 	// Startup waiting for xbee
-	for (j=0;j<80;j++){
+	for (j=0;j<100;j++){
 		for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOn(leds[i]);
 		vTaskDelay(50/portTICK_RATE_MS);
 		for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOff(leds[i]);
 		vTaskDelay(50/portTICK_RATE_MS);
 	}
+	for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOn(leds[i]);
 
 	// =========================================================
 	// UART init
@@ -122,35 +123,8 @@ void hardwareInit(void){
 
 	debug("MPU6050 initialized\r\n");
 
-#if (GYRO_MODE == GYRO_RAW)
-	debug("Using GYRO in RAW mode\r\n");
-	sum[0] = 0;
-	sum[1] = 0;
-	sum[2] = 0;
-	//FIXME: Don't know why this is happening but need to be called a few times
-	MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
-	MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
-	MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
-
-	debug("Getting GYRO bias\r\n");
-	for (i=0;i<128;i++){
-		MPU6050_getRotation(&buffer[0],&buffer[1],&buffer[2]);
-		sum[0] += buffer[0];
-		sum[1] += buffer[1];
-		sum[2] += buffer[2];
-		vTaskDelay(10/portTICK_RATE_MS);
-	}
-
-	quadrotor.settings.gyroBias[ROLL] = (int16_t)sum[0]/128;
-	quadrotor.settings.gyroBias[PITCH] = (int16_t)sum[1]/128;
-	quadrotor.settings.gyroBias[YAW] = (int16_t)sum[2]/128;
-
-#else
-	debug("Using GYRO in DMP mode\r\n");
-#endif
-
 	// DMP configuration
-	debug("Initializing MPU6050 DMP...\r\n");
+	debug("Initializing MPU6050 DMP...");
 
 	// GPIO0.4 as input with interrupt
 	GPIO_SetDir(0,(1<<4),0);
@@ -160,15 +134,15 @@ void hardwareInit(void){
 	NVIC_EnableIRQ(EINT3_IRQn);
 
 	// make sure it worked (returns 0 if so)
-	if (MPU6050_dmpInitialize() == 0) {
-		debug("MPU6050 DMP OK\r\n");
-	} else {
+	if (MPU6050_dmpInitialize() != 0) {
+		ConsolePuts_("[ERROR]\r\n",RED);
 		halt();
 		// ERROR!
 		// 1 = initial memory load failed
 		// 2 = DMP configuration updates failed
 		// (if it's going to break, usually the code will be 1)
 	}
+	ConsolePuts_("[OK]\r\n",GREEN);
 
 	//=======================================================================
 

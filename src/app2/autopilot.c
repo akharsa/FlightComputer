@@ -59,7 +59,7 @@ float map(long x, long in_min, long in_max, float out_min, float out_max)
 
 void Flight_onTimeStartup(void){
 	uint8_t i;
-	debug("Configuring PIDS");
+	debug("Configuring PIDS...");
 
 	for (i=0;i<3;i++){
 		quadrotor.rateController[i].AntiWindup = ENABLED;
@@ -72,22 +72,6 @@ void Flight_onTimeStartup(void){
 		quadrotor.rateController[i].c = 1.0;
 		qPID_Init(&quadrotor.rateController[i]);
 	}
-#if 0 // Now this is done in the NVRAM load part
-	quadrotor.rateController[ROLL].K = 0.02;
-	quadrotor.rateController[ROLL].Ti = 1/0.03;
-	quadrotor.rateController[ROLL].Td = 0.000;
-	quadrotor.rateController[ROLL].Nd = 5;
-
-	quadrotor.rateController[PITCH].K = 0.02;
-	quadrotor.rateController[PITCH].Ti = 1/0.03;
-	quadrotor.rateController[PITCH].Td = 0.000;
-	quadrotor.rateController[PITCH].Nd = 5;
-
-	quadrotor.rateController[YAW].K = 0.1;
-	quadrotor.rateController[YAW].Ti = 1/0.2;
-	quadrotor.rateController[YAW].Td = 0.000;
-	quadrotor.rateController[YAW].Nd = 5;
-#endif
 
 #ifdef ATTITUDE_MODE
 	for (i=0;i<3;i++){
@@ -102,12 +86,13 @@ void Flight_onTimeStartup(void){
 		qPID_Init(&quadrotor.attiController[i]);
 	}
 #endif
+
 	vSemaphoreCreateBinary(mpuSempahore);
-	debug("Flight: one time startup donde");
+	ConsolePuts_("[OK]\r\n",GREEN);
 }
 
 void Flight_onEntry(void){
-	debug("FLIGHT: On entry");
+	//debug("FLIGHT: On entry\r\n");
 	vTaskResume(BeaconHnd);
 	xSemaphoreTake(mpuSempahore,0);
 	NVIC_EnableIRQ(EINT3_IRQn);
@@ -120,7 +105,7 @@ void Flight_onEntry(void){
 void Flight_onExit(void){
 	uint8_t i;
 
-	debug("FLIGHT: On exit");
+	//debug("FLIGHT: On exit\r\n");
 	for (i=0;i<10;i++){
 		qESC_SetOutput(MOTOR1,0);
 		qESC_SetOutput(MOTOR2,0);
@@ -148,10 +133,10 @@ void Flight_Task(void){
 
 		// Transition handling
 		if ((systemArmed == 1) && (systemArmedOld == 0)){
-			debug("Arming system");
+			//debug("Arming system");
 			Flight_onEntry();
 		}else if ((systemArmed == 0) && (systemArmedOld == 1)){
-			debug("Disarming system");
+			//debug("Disarming system");
 			Flight_onExit();
 		}
 
@@ -169,9 +154,9 @@ void Flight_Task(void){
 			//uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
 
 			// Wait here for MPU DMP interrupt at 200Hz
-			xSemaphoreTake(mpuSempahore,portMAX_DELAY); //FIXME: instead of portMAX it would be nice to hae a time out for errors
+			xSemaphoreTake(mpuSempahore,portMAX_DELAY); //FIXME: instead of portMAX it would be nice to have a time out for errors
 
-			debug("Got DMP data!");
+			//debug("Got DMP data!");
 			qLed_TurnOn(STATUS_LED);
 
 			//-----------------------------------------------------------------------
@@ -187,7 +172,7 @@ void Flight_Task(void){
 			// MPU Data adquisition
 			//-----------------------------------------------------------------------
 
-			debug("Entering critical section for DMP");
+			//debug("Entering critical section for DMP");
 			portENTER_CRITICAL();
 
 			// reset interrupt flag and get INT_STATUS byte
@@ -217,7 +202,7 @@ void Flight_Task(void){
 			}
 
 			portEXIT_CRITICAL();
-			debug("Finished critical section");
+			//debug("Finished critical section");
 			//-----------------------------------------------------------------------
 			// Angular velocity data
 			//-----------------------------------------------------------------------
@@ -255,7 +240,7 @@ void Flight_Task(void){
 			//-----------------------------------------------------------------------
 			// PID Process
 			//-----------------------------------------------------------------------
-			debug("PID Controller start");
+			//debug("PID Controller start");
 
 #ifdef ATTITUDE_MODE
 			// ATTI
@@ -271,7 +256,7 @@ void Flight_Task(void){
 			quadrotor.sv.rateCtrlOutput[PITCH] = qPID_Procees(&quadrotor.rateController[PITCH],quadrotor.sv.setpoint[PITCH],quadrotor.sv.rate[PITCH]);
 			quadrotor.sv.rateCtrlOutput[YAW] = qPID_Procees(&quadrotor.rateController[YAW],quadrotor.sv.setpoint[YAW],quadrotor.sv.rate[YAW]);
 #endif
-			debug("PID Controller finish");
+			//debug("PID Controller finish");
 
 			//-----------------------------------------------------------------------
 			// Output stage

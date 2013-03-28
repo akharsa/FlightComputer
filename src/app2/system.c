@@ -24,13 +24,15 @@ uint8_t lastState = IDLE_STATE;
 
 void system(void * pvParameters){
 	hardwareInit();
+	Flight_onTimeStartup();
+	debug("System initialization completed\r\n");
 	ConsolePuts_("===============================================\r\n",BLACK);
+
 	xTaskCreate( Communications, ( signed char * ) "COMMS", 500, ( void * ) NULL, COMMS_PRIORITY, &comms_hnd);
 	xTaskCreate( Telemetry, ( signed char * ) "TLM", 300, ( void * ) TLM_PERIOD, TLM_PRIORITY, &tlm_hnd);
 	xTaskCreate( beacon, ( signed char * ) "BEACON", 100, ( void * ) NULL, BEACON_PRIORITY, &BeaconHnd );
 	vTaskSuspend(BeaconHnd);
-	Flight_onTimeStartup();
-	debug("Systim initialization complete");
+
 	Flight_Task();
 }
 

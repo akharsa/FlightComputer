@@ -16,7 +16,6 @@ typedef struct{
 }pid_config_t;
 
 typedef struct{
-	uint8_t sha[20];
 	pid_config_t rateController[3];
 	pid_config_t attiController[3];
 	pid_config_t altitudeController;

@@ -24,14 +24,31 @@ Status qNVRAM_Load(nvram_t * p){
 		quadrotor.rateController[YAW].Ti = p->rateController[YAW].Ti;
 		quadrotor.rateController[YAW].Td = p->rateController[YAW].Td;
 		quadrotor.rateController[YAW].Nd = p->rateController[YAW].Nd;
+
+		quadrotor.attiController[ROLL].K = p->attiController[ROLL].K;
+		quadrotor.attiController[ROLL].Ti = p->attiController[ROLL].Ti;
+		quadrotor.attiController[ROLL].Td = p->attiController[ROLL].Td;
+		quadrotor.attiController[ROLL].Nd = p->attiController[ROLL].Nd;
+
+		quadrotor.attiController[PITCH].K = p->attiController[PITCH].K;
+		quadrotor.attiController[PITCH].Ti = p->attiController[PITCH].Ti;
+		quadrotor.attiController[PITCH].Td = p->attiController[PITCH].Td;
+		quadrotor.attiController[PITCH].Nd = p->attiController[PITCH].Nd;
+
+		quadrotor.K = p->attiController[YAW].K;
+		quadrotor.attiController[YAW].Ti = p->attiController[YAW].Ti;
+		quadrotor.attiController[YAW].Td = p->attiController[YAW].Td;
+		quadrotor.attiController[YAW].Nd = p->attiController[YAW].Nd;
+
+		quadrotor.altitudeController.K = p->altitudeController.K;
+		quadrotor.altitudeController.Ti = p->altitudeController.Ti;
+		quadrotor.altitudeController.Td = p->altitudeController.Td;
+		quadrotor.altitudeController.Nd = p->altitudeController.Nd;
 		return SUCCESS;
 	}
 }
 
 Status qNVRAM_setDefaults(nvram_t * p){
-	uint8_t shabuff[]={"01234567890123456789"};
-	memcpy(p->sha,shabuff,sizeof(shabuff));
-
 	p->rateController[ROLL].K = 0.02;
 	p->rateController[ROLL].Ti = 1/0.03;
 	p->rateController[ROLL].Td = 0.000;
