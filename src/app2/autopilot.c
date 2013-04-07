@@ -88,18 +88,27 @@ void Flight_onTimeStartup(void){
 #endif
 
 	vSemaphoreCreateBinary(mpuSempahore);
-	ConsolePuts_("[OK]\r\n",GREEN);
-}
 
-void Flight_onEntry(void){
-	//debug("FLIGHT: On entry\r\n");
-	vTaskResume(BeaconHnd);
 	xSemaphoreTake(mpuSempahore,0);
 	NVIC_EnableIRQ(EINT3_IRQn);
 	MPU6050_setDMPEnabled(TRUE);
 
 	mpuIntStatus = MPU6050_getIntStatus();
 	packetSize = MPU6050_dmpGetFIFOPacketSize();
+
+	ConsolePuts_("[OK]\r\n",GREEN);
+}
+
+void Flight_onEntry(void){
+	//debug("FLIGHT: On entry\r\n");
+	vTaskResume(BeaconHnd);
+
+//	xSemaphoreTake(mpuSempahore,0);
+//	NVIC_EnableIRQ(EINT3_IRQn);
+//	MPU6050_setDMPEnabled(TRUE);
+
+//	mpuIntStatus = MPU6050_getIntStatus();
+//	packetSize = MPU6050_dmpGetFIFOPacketSize();
 }
 
 void Flight_onExit(void){
@@ -113,8 +122,8 @@ void Flight_onExit(void){
 		qESC_SetOutput(MOTOR4,0);
 	}
 	vTaskSuspend(BeaconHnd);
-	MPU6050_setDMPEnabled(FALSE);
-	NVIC_DisableIRQ(EINT3_IRQn);
+//	MPU6050_setDMPEnabled(FALSE);
+//	NVIC_DisableIRQ(EINT3_IRQn);
 	qLed_TurnOff(STATUS_LED);
 
 }
@@ -124,6 +133,10 @@ void Flight_Task(void){
 
 	for(;;){
 
+
+		// =======================================================================
+		// State things
+		// =======================================================================
 		systemArmedOld = systemArmed;
 		if ((quadrotor.joystick.buttons & (BTN_RIGHT2 | BTN_LEFT2)) != 0){
 			systemArmed = 1;
@@ -140,102 +153,109 @@ void Flight_Task(void){
 			Flight_onExit();
 		}
 
+		// =======================================================================
+		// Data adquisition
+		// =======================================================================
+
+		// Wait here for MPU DMP interrupt at 200Hz
+		xSemaphoreTake(mpuSempahore,portMAX_DELAY); //FIXME: instead of portMAX it would be nice to have a time out for errors
+
+		//debug("Got DMP data!");
+		qLed_TurnOn(STATUS_LED);
+
+		//-----------------------------------------------------------------------
+		// MPU Data adquisition
+		//-----------------------------------------------------------------------
+
+		//debug("Entering critical section for DMP");
+		portENTER_CRITICAL();
+
+		// reset interrupt flag and get INT_STATUS byte
+		mpuIntStatus = MPU6050_getIntStatus();
+
+		// get current FIFO count
+		fifoCount = MPU6050_getFIFOCount();
+
+		// check for overflow (this should never happen unless our code is too inefficient)
+		if ((mpuIntStatus & 0x10) || fifoCount == 1024) {
+			// reset so we can continue cleanly
+			MPU6050_resetFIFO();
+			debug("DMP FIFO OVERFLOW!\r\n");
+
+			// otherwise, check for DMP data ready interrupt (this should happen frequently)
+		} else if (mpuIntStatus & 0x02) {
+			// wait for correct available data length, should be a VERY short wait
+			while (fifoCount < packetSize) fifoCount = MPU6050_getFIFOCount();
+
+			// read a packet from FIFO
+			MPU6050_getFIFOBytes(fifoBuffer, packetSize);
+
+			// track FIFO count here in case there is > 1 packet available
+			// (this lets us immediately read more without waiting for an interrupt)
+			fifoCount -= packetSize;
+
+		}
+
+		portEXIT_CRITICAL();
+		//debug("Finished critical section");
+
+		qLed_TurnOff(STATUS_LED);
+
+		//-----------------------------------------------------------------------
+		// Joystick mapping
+		//-----------------------------------------------------------------------
+		quadrotor.sv.setpoint[ALTITUDE] = map((quadrotor.joystick.left_pad.y>127)?127:255-quadrotor.joystick.left_pad.y,127,255,0.0,1.0);
+		quadrotor.sv.setpoint[ROLL] = map(quadrotor.joystick.right_pad.x,0,255,-90.0,90.0);
+		quadrotor.sv.setpoint[PITCH] = map(quadrotor.joystick.right_pad.y,0,255,-90.0,90.0);
+		//quadrotor.sv.setpoint[YAW] = map(quadrotor.joystick.left_pad.x,0,255,-180.0,180.0);
+		quadrotor.sv.setpoint[YAW] = 0.0; //THIS IS FOR KILL-ROT ON YAW
+
+		//-----------------------------------------------------------------------
+		// Angular velocity data
+		//-----------------------------------------------------------------------
+
+#define USE_GYRO_DMP
+
+#ifndef USE_GYRO_RAW
+		MPU6050_dmpGetGyro(&buffer[0],fifoBuffer);
+		quadrotor.sv.rate[ROLL] = -buffer[0];
+		quadrotor.sv.rate[PITCH] = buffer[1];
+		quadrotor.sv.rate[YAW] = buffer[2];
+#else
+		// DAQ
+		MPU6050_getRotation(&buffer[0],&buffer[1],&buffer[2]);
+
+		// MPU axes aligment to Quad body axes
+		quadrotor.sv.rate[ROLL] = -(buffer[0]-quadrotor.settings.gyroBias[ROLL]);
+		quadrotor.sv.rate[PITCH] = (buffer[1]-quadrotor.settings.gyroBias[PITCH]);
+		quadrotor.sv.rate[YAW] = -(buffer[2]-quadrotor.settings.gyroBias[YAW]);
+
+		// MPU gyro scale transformation
+		quadrotor.sv.rate[ROLL] = quadrotor.sv.rate[ROLL]/16.4;
+		quadrotor.sv.rate[PITCH] = quadrotor.sv.rate[PITCH]/16.4;
+		quadrotor.sv.rate[YAW] = quadrotor.sv.rate[YAW]/16.4;
+#endif
+
+		//-----------------------------------------------------------------------
+		// Attitude data
+		//-----------------------------------------------------------------------
+		MPU6050_dmpGetEuler(&atti_buffer[0], fifoBuffer);
+		//MPU6050_dmpGetYawPitchRoll(&atti_buffer[0], fifoBuffer);
+		quadrotor.sv.attitude[ROLL] = atti_buffer[2]*180/3.141519;
+		quadrotor.sv.attitude[PITCH] = -atti_buffer[1]*180/3.141519;;
+		quadrotor.sv.attitude[YAW] = atti_buffer[0]*180/3.141519;;
+
+
 		if (systemArmed == 0){
 			qESC_SetOutput(MOTOR1,0);
 			qESC_SetOutput(MOTOR2,0);
 			qESC_SetOutput(MOTOR3,0);
 			qESC_SetOutput(MOTOR4,0);
-			vTaskDelay(10/portTICK_RATE_MS);
+			//vTaskDelay(10/portTICK_RATE_MS);
 			//debug("Idleing...");
 		}else{
 			//debug("Flying...");
 #if 1
-
-			//uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
-
-			// Wait here for MPU DMP interrupt at 200Hz
-			xSemaphoreTake(mpuSempahore,portMAX_DELAY); //FIXME: instead of portMAX it would be nice to have a time out for errors
-
-			//debug("Got DMP data!");
-			qLed_TurnOn(STATUS_LED);
-
-			//-----------------------------------------------------------------------
-			// Joystick mapping
-			//-----------------------------------------------------------------------
-			quadrotor.sv.setpoint[ALTITUDE] = map((quadrotor.joystick.left_pad.y>127)?127:255-quadrotor.joystick.left_pad.y,127,255,0.0,1.0);
-			quadrotor.sv.setpoint[ROLL] = map(quadrotor.joystick.right_pad.x,0,255,-90.0,90.0);
-			quadrotor.sv.setpoint[PITCH] = map(quadrotor.joystick.right_pad.y,0,255,-90.0,90.0);
-			//quadrotor.sv.setpoint[YAW] = map(quadrotor.joystick.left_pad.x,0,255,-180.0,180.0);
-			quadrotor.sv.setpoint[YAW] = 0.0; //THIS IS FOR KILL-ROT ON YAW
-
-			//-----------------------------------------------------------------------
-			// MPU Data adquisition
-			//-----------------------------------------------------------------------
-
-			//debug("Entering critical section for DMP");
-			portENTER_CRITICAL();
-
-			// reset interrupt flag and get INT_STATUS byte
-			mpuIntStatus = MPU6050_getIntStatus();
-
-			// get current FIFO count
-			fifoCount = MPU6050_getFIFOCount();
-
-			// check for overflow (this should never happen unless our code is too inefficient)
-			if ((mpuIntStatus & 0x10) || fifoCount == 1024) {
-				// reset so we can continue cleanly
-				MPU6050_resetFIFO();
-				debug("DMP FIFO OVERFLOW!\r\n");
-
-				// otherwise, check for DMP data ready interrupt (this should happen frequently)
-			} else if (mpuIntStatus & 0x02) {
-				// wait for correct available data length, should be a VERY short wait
-				while (fifoCount < packetSize) fifoCount = MPU6050_getFIFOCount();
-
-				// read a packet from FIFO
-				MPU6050_getFIFOBytes(fifoBuffer, packetSize);
-
-				// track FIFO count here in case there is > 1 packet available
-				// (this lets us immediately read more without waiting for an interrupt)
-				fifoCount -= packetSize;
-
-			}
-
-			portEXIT_CRITICAL();
-			//debug("Finished critical section");
-			//-----------------------------------------------------------------------
-			// Angular velocity data
-			//-----------------------------------------------------------------------
-
-#define USE_GYRO_DMP
-
-#ifndef USE_GYRO_RAW
-			MPU6050_dmpGetGyro(&buffer[0],fifoBuffer);
-			quadrotor.sv.rate[ROLL] = -buffer[0];
-			quadrotor.sv.rate[PITCH] = buffer[1];
-			quadrotor.sv.rate[YAW] = buffer[2];
-#else
-			// DAQ
-			MPU6050_getRotation(&buffer[0],&buffer[1],&buffer[2]);
-
-			// MPU axes aligment to Quad body axes
-			quadrotor.sv.rate[ROLL] = -(buffer[0]-quadrotor.settings.gyroBias[ROLL]);
-			quadrotor.sv.rate[PITCH] = (buffer[1]-quadrotor.settings.gyroBias[PITCH]);
-			quadrotor.sv.rate[YAW] = -(buffer[2]-quadrotor.settings.gyroBias[YAW]);
-
-			// MPU gyro scale transformation
-			quadrotor.sv.rate[ROLL] = quadrotor.sv.rate[ROLL]/16.4;
-			quadrotor.sv.rate[PITCH] = quadrotor.sv.rate[PITCH]/16.4;
-			quadrotor.sv.rate[YAW] = quadrotor.sv.rate[YAW]/16.4;
-#endif
-
-			//-----------------------------------------------------------------------
-			// Attitude data
-			//-----------------------------------------------------------------------
-			MPU6050_dmpGetEuler(&atti_buffer[0], fifoBuffer);
-			quadrotor.sv.attitude[ROLL] = atti_buffer[2]*180/3.141519;
-			quadrotor.sv.attitude[PITCH] = -atti_buffer[1]*180/3.141519;;
-			quadrotor.sv.attitude[YAW] = atti_buffer[0]*180/3.141519;;
 
 			//-----------------------------------------------------------------------
 			// PID Process
@@ -289,7 +309,7 @@ void Flight_Task(void){
 			qESC_SetOutput(MOTOR3,quadrotor.sv.motorOutput[2]);
 			qESC_SetOutput(MOTOR4,quadrotor.sv.motorOutput[3]);
 
-			qLed_TurnOff(STATUS_LED);
+
 #endif
 		}
 

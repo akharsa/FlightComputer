@@ -546,6 +546,8 @@ void MPU6050_setDMPConfig2(uint8_t config);
     uint32_t MPU6050_dmpGetAccelSumOfSquare();
     void MPU6050_dmpOverrideQuaternion(long *q);
     uint16_t MPU6050_dmpGetFIFOPacketSize();
+
+    uint8_t MPU6050_dmpGetYawPitchRoll(float *data, const uint8_t* packet);
 #endif
 
 // special methods for MotionApps 4.1 implementation

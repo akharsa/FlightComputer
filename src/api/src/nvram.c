@@ -35,7 +35,7 @@ Status qNVRAM_Load(nvram_t * p){
 		quadrotor.attiController[PITCH].Td = p->attiController[PITCH].Td;
 		quadrotor.attiController[PITCH].Nd = p->attiController[PITCH].Nd;
 
-		quadrotor.K = p->attiController[YAW].K;
+		quadrotor.attiController[YAW].K = p->attiController[YAW].K;
 		quadrotor.attiController[YAW].Ti = p->attiController[YAW].Ti;
 		quadrotor.attiController[YAW].Td = p->attiController[YAW].Td;
 		quadrotor.attiController[YAW].Nd = p->attiController[YAW].Nd;

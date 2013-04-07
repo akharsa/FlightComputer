@@ -598,15 +598,27 @@ uint8_t MPU6050_dmpGetEuler(float *euler, const uint8_t* packet) {
 	q[1] = (float)q1[1] / 16384.0f;
 	q[2] = (float)q1[2] / 16384.0f;
 	q[3] = (float)q1[3] / 16384.0f;
-
-	/*
-	data[0] = atan2(2*q -> x*q -> y - 2*q -> w*q -> z, 2*q -> w*q -> w + 2*q -> x*q -> x - 1);   // psi
-	data[1] = -asin(2*q -> x*q -> z + 2*q -> w*q -> y);                              // theta
-	data[2] = atan2(2*q -> y*q -> z - 2*q -> w*q -> x, 2*q -> w*q -> w + 2*q -> z*q -> z - 1);   // phi
-	  */
+/*
 	euler[0] = atan2(2*q[1]*q[2] - 2*q[0]*q[3], 2*q[0]*q[0] + 2*q[1]*q[1] - 1);
 	euler[1] = -asin(2*q[1]*q[3] + 2*q[0]*q[2]);
 	euler[2] = atan2(2*q[2]*q[3] - 2*q[0]*q[1], 2*q[0]*q[0] + 2*q[3]*q[3] - 1);
+*/
+	float test;
+	test = q[0]*q[1] + q[2]*q[3];
+
+	if (test>0.499){
+		euler[0] = -180.0;
+		euler[1] = 0;
+		euler[2] = 2*atan2(q[0],q[3]);
+	}else if (test<-0.499) {
+		euler[0] = 180.0;
+		euler[1] = 0;
+		euler[2] = -2*atan2(q[0],q[3]);
+	}else{
+		euler[0] = atan2(2*(q[0]*q[1] + q[2]*q[3]),1- 2*(q[1]*q[1] + q[2]*q[2]));
+		euler[1] = asin(2*(q[0]*q[2] - q[3]*q[1]));
+		euler[2] = atan2(2*(q[0]*q[3] + q[1]*q[2]),1- 2*(q[2]*q[2] + q[3]*q[3]));
+	}
 
 	return 0;
 }
@@ -672,12 +684,7 @@ uint8_t MPU6050_dmpGetLinearAccelInWorld(VectorInt16 *v, VectorInt16 *vReal, Qua
 // uint8_t MPU6050_dmpGetControlData(long *data, const uint8_t* packet);
 // uint8_t MPU6050_dmpGetTemperature(long *data, const uint8_t* packet);
 // uint8_t MPU6050_dmpGetGravity(long *data, const uint8_t* packet);
-uint8_t MPU6050_dmpGetGravity(VectorFloat *v, Quaternion *q) {
-    v -> x = 2 * (q -> x*q -> z - q -> w*q -> y);
-    v -> y = 2 * (q -> w*q -> x + q -> y*q -> z);
-    v -> z = q -> w*q -> w - q -> x*q -> x - q -> y*q -> y + q -> z*q -> z;
-    return 0;
-}
+
 // uint8_t MPU6050_dmpGetUnquantizedAccel(long *data, const uint8_t* packet);
 // uint8_t MPU6050_dmpGetQuantizedAccel(long *data, const uint8_t* packet);
 // uint8_t MPU6050_dmpGetExternalSensorData(long *data, int size, const uint8_t* packet);
@@ -701,7 +708,47 @@ uint8_t MPU6050_dmpGetYawPitchRoll(float *data, Quaternion *q, VectorFloat *grav
     data[2] = atan(gravity -> y / sqrt(gravity -> x*gravity -> x + gravity -> z*gravity -> z));
     return 0;
 }
+
+uint8_t MPU6050_dmpGetGravity(VectorFloat *v, Quaternion *q) {
+    v -> x = 2 * (q -> x*q -> z - q -> w*q -> y);
+    v -> y = 2 * (q -> w*q -> x + q -> y*q -> z);
+    v -> z = q -> w*q -> w - q -> x*q -> x - q -> y*q -> y + q -> z*q -> z;
+    return 0;
+}
+
 #endif
+
+
+
+uint8_t MPU6050_dmpGetYawPitchRoll(float *data, const uint8_t* packet) {
+
+	int16_t q1[4];
+	float q[4];
+	MPU6050_dmpGetQuaternion(q1, packet);
+
+	q[0] = (float)q1[0] / 16384.0f;
+	q[1] = (float)q1[1] / 16384.0f;
+	q[2] = (float)q1[2] / 16384.0f;
+	q[3] = (float)q1[3] / 16384.0f;
+
+
+	float gravity[3];
+	gravity[0] = 2 * (q[0]*q[2] - q[3]*q[1]);
+	gravity[1] = 2 * (q[3]*q[0] + q[1]*q[2]);
+	gravity[2] = q[3]*q[3] - q[0]*q[0] - q[1]*q[1] + q[2]*q[2];
+
+
+    // yaw: (about Z axis)
+	//data[0] = atan2(2*q -> x*q -> y - 2*q -> w*q -> z, 2*q -> w*q -> w + 2*q -> x*q -> x - 1);
+	data[0] = atan2(2*q[0]*q[1] - 2*q[3]*q[2], 2*q[3]*q[3] + 2*q[0]*q[0] - 1);
+
+    // pitch: (nose up/down, about Y axis)
+    data[1] = atan(gravity[0] / sqrt(gravity[1]*gravity[1] + gravity[2]*gravity[2]));
+    // roll: (tilt left/right, about X axis)
+    data[2] = atan(gravity[1] / sqrt(gravity[0]*gravity[0] + gravity[2]*gravity[2]));
+    return 0;
+}
+
 // uint8_t MPU6050_dmpGetAccelFloat(float *data, const uint8_t* packet);
 // uint8_t MPU6050_dmpGetQuaternionFloat(float *data, const uint8_t* packet);
 
