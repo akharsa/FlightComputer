@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "HMC5883L.h"
 #include "types.h"
 #include "qI2C.h"
-#include "MPU6050.h" //FIXME: This is very ugly,but the definitions por the I2C operations byte wide are there.
+//#include "MPU6050.h" //FIXME: This is very ugly,but the definitions por the I2C operations byte wide are there.
 
 static uint8_t devAddr=HMC5883L_DEFAULT_ADDRESS;
 static uint8_t buffer[6];

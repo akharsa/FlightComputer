@@ -10,7 +10,9 @@
 #include "board.h"
 #include "DebugConsole.h"
 #include "qCOMMS.h"
-#include "MPU6050.h"
+#include "eMPL/inv_mpu.h"
+#include "eMPL/inv_mpu_dmp_motion_driver.h"
+
 
 #include "quadrotor.h"
 #include "taskList.h"
@@ -91,10 +93,10 @@ void Flight_onTimeStartup(void){
 
 	xSemaphoreTake(mpuSempahore,0);
 	NVIC_EnableIRQ(EINT3_IRQn);
-	MPU6050_setDMPEnabled(TRUE);
+//	MPU6050_setDMPEnabled(TRUE);
 
-	mpuIntStatus = MPU6050_getIntStatus();
-	packetSize = MPU6050_dmpGetFIFOPacketSize();
+//	mpuIntStatus = MPU6050_getIntStatus();
+//	packetSize = MPU6050_dmpGetFIFOPacketSize();
 
 	ConsolePuts_("[OK]\r\n",GREEN);
 }
@@ -127,6 +129,46 @@ void Flight_onExit(void){
 	qLed_TurnOff(STATUS_LED);
 
 }
+
+int16_t gyro[3];
+int16_t accel[3];
+int32_t quat[4];
+uint16_t sensors;
+uint8_t more;
+#include "math.h"
+uint8_t MPU6050_dmpGetEuler(float *euler, const int32_t q[]) {
+
+	int32_t q1[4];
+
+	q1[0] = (float)q1[0] / 16384.0f;
+	q1[1] = (float)q1[1] / 16384.0f;
+	q1[2] = (float)q1[2] / 16384.0f;
+	q1[3] = (float)q1[3] / 16384.0f;
+/*
+	euler[0] = atan2(2*q[1]*q[2] - 2*q[0]*q[3], 2*q[0]*q[0] + 2*q[1]*q[1] - 1);
+	euler[1] = -asin(2*q[1]*q[3] + 2*q[0]*q[2]);
+	euler[2] = atan2(2*q[2]*q[3] - 2*q[0]*q[1], 2*q[0]*q[0] + 2*q[3]*q[3] - 1);
+*/
+	float test;
+	test = q[0]*q[1] + q[2]*q[3];
+
+	if (test>0.499){
+		euler[0] = -180.0;
+		euler[1] = 0;
+		euler[2] = 2*atan2(q[0],q[3]);
+	}else if (test<-0.499) {
+		euler[0] = 180.0;
+		euler[1] = 0;
+		euler[2] = -2*atan2(q[0],q[3]);
+	}else{
+		euler[0] = atan2(2*(q[0]*q[1] + q[2]*q[3]),1- 2*(q[1]*q[1] + q[2]*q[2]));
+		euler[1] = asin(2*(q[0]*q[2] - q[3]*q[1]));
+		euler[2] = atan2(2*(q[0]*q[3] + q[1]*q[2]),1- 2*(q[2]*q[2] + q[3]*q[3]));
+	}
+
+	return 0;
+}
+
 
 void Flight_Task(void){
 	uint8_t zc;
@@ -170,6 +212,9 @@ void Flight_Task(void){
 		//debug("Entering critical section for DMP");
 		portENTER_CRITICAL();
 
+        dmp_read_fifo(gyro, accel, quat, NULL, &sensors,&more);
+
+#if 0
 		// reset interrupt flag and get INT_STATUS byte
 		mpuIntStatus = MPU6050_getIntStatus();
 
@@ -195,7 +240,7 @@ void Flight_Task(void){
 			fifoCount -= packetSize;
 
 		}
-
+#endif
 		portEXIT_CRITICAL();
 		//debug("Finished critical section");
 
@@ -217,10 +262,16 @@ void Flight_Task(void){
 #define USE_GYRO_DMP
 
 #ifndef USE_GYRO_RAW
-		MPU6050_dmpGetGyro(&buffer[0],fifoBuffer);
-		quadrotor.sv.rate[ROLL] = -buffer[0];
-		quadrotor.sv.rate[PITCH] = buffer[1];
-		quadrotor.sv.rate[YAW] = buffer[2];
+		//MPU6050_dmpGetGyro(&buffer[0],fifoBuffer);
+//		quadrotor.sv.rate[ROLL] = -buffer[0];
+//		quadrotor.sv.rate[PITCH] = buffer[1];
+//		quadrotor.sv.rate[YAW] = buffer[2];
+		float scale;
+		mpu_get_gyro_sens(&scale);
+		quadrotor.sv.rate[ROLL] = -gyro[0]/scale;
+		quadrotor.sv.rate[PITCH] = gyro[1]/scale;
+		quadrotor.sv.rate[YAW] = gyro[2]/scale;
+
 #else
 		// DAQ
 		MPU6050_getRotation(&buffer[0],&buffer[1],&buffer[2]);
@@ -239,8 +290,9 @@ void Flight_Task(void){
 		//-----------------------------------------------------------------------
 		// Attitude data
 		//-----------------------------------------------------------------------
-		MPU6050_dmpGetEuler(&atti_buffer[0], fifoBuffer);
+		//MPU6050_dmpGetEuler(&atti_buffer[0], fifoBuffer);
 		//MPU6050_dmpGetYawPitchRoll(&atti_buffer[0], fifoBuffer);
+		MPU6050_dmpGetEuler(atti_buffer,quat);
 		quadrotor.sv.attitude[ROLL] = atti_buffer[2]*180/3.141519;
 		quadrotor.sv.attitude[PITCH] = -atti_buffer[1]*180/3.141519;;
 		quadrotor.sv.attitude[YAW] = atti_buffer[0]*180/3.141519;;

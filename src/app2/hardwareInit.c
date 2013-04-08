@@ -8,7 +8,8 @@
 
 #include "qUART.h"
 #include "qI2C.h"
-#include "MPU6050.h"
+#include "eMPL/inv_mpu.h"
+#include "eMPL/inv_mpu_dmp_motion_driver.h"
 #include "qESC.h"
 #include "lpc17xx_gpio.h"
 #include "DebugConsole.h"
@@ -111,7 +112,7 @@ void hardwareInit(void){
 	int16_t buffer[3];
 
 	//debug("Calibrating sensors...\r\n");
-
+#if 0
 	debug("Searching for MPU6050 IMU...");
 	if (MPU6050_testConnection()==TRUE){
 		ConsolePuts_("[OK]\r\n",GREEN);
@@ -120,7 +121,54 @@ void hardwareInit(void){
 		ConsolePuts_("[ERROR]\r\n",RED);
 		halt();
 	}
+#endif
 
+	debug("Initializing MPU6050 IMU...");
+	if (mpu_init(NULL)==0){
+		ConsolePuts_("[OK]\r\n",GREEN);
+	}else{
+		ConsolePuts_("[ERROR]\r\n",RED);
+		halt();
+	}
+
+
+    /* Get/set hardware configuration. Start gyro. */
+    /* Wake up all sensors. */
+    mpu_set_sensors(INV_XYZ_GYRO | INV_XYZ_ACCEL);
+    /* Push both gyro and accel data into the FIFO. */
+    mpu_configure_fifo(INV_XYZ_GYRO | INV_XYZ_ACCEL);
+    mpu_set_sample_rate(200);
+
+    dmp_load_motion_driver_firmware();
+
+    mpu_set_gyro_fsr();
+    //dmp_set_orientation(inv_orientation_matrix_to_scalar(gyro_orientation));
+    //dmp_register_tap_cb(tap_cb);
+    //dmp_register_android_orient_cb(android_orient_cb);
+    //hal.dmp_features = DMP_FEATURE_6X_LP_QUAT | DMP_FEATURE_TAP |
+    //    DMP_FEATURE_ANDROID_ORIENT | DMP_FEATURE_SEND_RAW_ACCEL | DMP_FEATURE_SEND_CAL_GYRO |
+    //    DMP_FEATURE_GYRO_CAL;
+    dmp_enable_feature(DMP_FEATURE_6X_LP_QUAT | DMP_FEATURE_SEND_RAW_ACCEL | DMP_FEATURE_SEND_CAL_GYRO |
+            DMP_FEATURE_GYRO_CAL);
+
+
+
+    dmp_set_fifo_rate(200);
+
+    dmp_enable_gyro_cal(1);
+
+    mpu_set_dmp_state(1);
+
+
+
+	// GPIO0.4 as input with interrupt
+	GPIO_SetDir(0,(1<<4),0);
+	GPIO_IntCmd(0,(1<<4),1);
+	GPIO_ClearInt(0,(1<<4));
+	NVIC_SetPriority(EINT3_IRQn, 6);
+	NVIC_EnableIRQ(EINT3_IRQn);
+
+#if 0
 	debug("MPU6050 initialized\r\n");
 
 	// DMP configuration
@@ -143,7 +191,7 @@ void hardwareInit(void){
 		// (if it's going to break, usually the code will be 1)
 	}
 	ConsolePuts_("[OK]\r\n",GREEN);
-
+#endif
 	//=======================================================================
 
 	for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOff(leds[i]);
