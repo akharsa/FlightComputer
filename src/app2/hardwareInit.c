@@ -75,14 +75,14 @@ void hardwareInit(void){
 
 	// =========================================================
 	// NVRAM
-#undef WRITE_NVRAM
+#define WRITE_NVRAM
 #ifdef WRITE_NVRAM
 	debug("Writing defaults to NVRAM...");
 	if (qNVRAM_setDefaults(&nvramBuffer)!=SUCCESS){
 		halt();
 		ConsolePuts_("[ERROR]\r\n",RED);
 	}
-	if (qNVRAM_Save(&nvramBuffer)!=SUCCES){
+	if (qNVRAM_Save(&nvramBuffer)!=SUCCESS){
 		halt();
 		ConsolePuts_("[ERROR]\r\n",RED);
 	}

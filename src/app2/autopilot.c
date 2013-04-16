@@ -69,6 +69,8 @@ float map(long x, long in_min, long in_max, float out_min, float out_max)
 }
 
 
+#define ATTITUDE_MODE
+
 void Flight_onTimeStartup(void){
 	uint8_t i;
 	debug("Configuring PIDS...");
@@ -90,8 +92,8 @@ void Flight_onTimeStartup(void){
 		quadrotor.attiController[i].AntiWindup = ENABLED;
 		quadrotor.attiController[i].Bumpless = ENABLED;
 		quadrotor.attiController[i].Mode = AUTOMATIC;
-		quadrotor.attiController[i].OutputMax = 1.0;
-		quadrotor.attiController[i].OutputMin = 1.0;
+		quadrotor.attiController[i].OutputMax = 90.0;
+		quadrotor.attiController[i].OutputMin = -90.0;
 		quadrotor.attiController[i].Ts = 0.005;
 		quadrotor.attiController[i].b = 1.0;
 		quadrotor.attiController[i].c = 1.0;
@@ -193,13 +195,25 @@ void Flight_Task(void){
 		//-----------------------------------------------------------------------
 		// Joystick mapping
 		//-----------------------------------------------------------------------
+#ifdef ATTITUDE_MODE
+		quadrotor.sv.setpoint[ALTITUDE] = map((quadrotor.joystick.left_pad.y>127)?127:255-quadrotor.joystick.left_pad.y,127,255,0.0,1.0);
+		quadrotor.sv.setpoint[ROLL] = map(quadrotor.joystick.right_pad.x,0,255,-20.0,20.0);
+		quadrotor.sv.setpoint[PITCH] = map(quadrotor.joystick.right_pad.y,0,255,-20.0,20.0);
+		// TODO: this should be deactivated via ground control stations and send always a 0
+		//quadrotor.sv.setpoint[YAW] = map(quadrotor.joystick.left_pad.x,0,255,-180.0,180.0);
+		quadrotor.sv.setpoint[YAW] = 0.0; //THIS IS FOR KILL-ROT ON YAW
+
+		// This is for testing only:
+		quadrotor.sv.setpoint[ROLL] = 0.0;
+		quadrotor.sv.setpoint[PITCH] = 0.0;
+#else
 		quadrotor.sv.setpoint[ALTITUDE] = map((quadrotor.joystick.left_pad.y>127)?127:255-quadrotor.joystick.left_pad.y,127,255,0.0,1.0);
 		quadrotor.sv.setpoint[ROLL] = map(quadrotor.joystick.right_pad.x,0,255,-90.0,90.0);
 		quadrotor.sv.setpoint[PITCH] = map(quadrotor.joystick.right_pad.y,0,255,-90.0,90.0);
 		// TODO: this should be deactivated via ground control stations and send always a 0
 		//quadrotor.sv.setpoint[YAW] = map(quadrotor.joystick.left_pad.x,0,255,-180.0,180.0);
 		quadrotor.sv.setpoint[YAW] = 0.0; //THIS IS FOR KILL-ROT ON YAW
-
+#endif
 		//-----------------------------------------------------------------------
 		// Angular velocity data
 		//-----------------------------------------------------------------------
@@ -216,6 +230,43 @@ void Flight_Task(void){
 		quadrotor.sv.attitude[PITCH] = -atti_buffer[1]*180/3.141519;;
 		quadrotor.sv.attitude[YAW] = atti_buffer[0]*180/3.141519;;
 
+		//-----------------------------------------------------------------------
+		// PID Process
+		//-----------------------------------------------------------------------
+		//debug("PID Controller start");
+
+#ifdef ATTITUDE_MODE
+
+		// ATTI
+		quadrotor.sv.attiCtrlOutput[ROLL] = qPID_Procees(&quadrotor.attiController[ROLL],quadrotor.sv.setpoint[ROLL],quadrotor.sv.attitude[ROLL]);
+		quadrotor.sv.attiCtrlOutput[PITCH] = qPID_Procees(&quadrotor.attiController[PITCH],quadrotor.sv.setpoint[PITCH],quadrotor.sv.attitude[PITCH]);
+		//quadrotor.sv.attiCtrlOutput[YAW] = qPID_Procees(&quadrotor.rateController[YAW],quadrotor.sv.setpoint[YAW],quadrotor.sv.rate[YAW]);
+
+		// RATE
+		quadrotor.sv.rateCtrlOutput[ROLL] = qPID_Procees(&quadrotor.rateController[ROLL],quadrotor.sv.attiCtrlOutput[ROLL],quadrotor.sv.rate[ROLL]);
+		quadrotor.sv.rateCtrlOutput[PITCH] = qPID_Procees(&quadrotor.rateController[PITCH],quadrotor.sv.attiCtrlOutput[PITCH],quadrotor.sv.rate[PITCH]);
+		quadrotor.sv.rateCtrlOutput[YAW] = qPID_Procees(&quadrotor.rateController[YAW],quadrotor.sv.setpoint[YAW],quadrotor.sv.rate[YAW]);
+
+#else
+		quadrotor.sv.rateCtrlOutput[ROLL] = qPID_Procees(&quadrotor.rateController[ROLL],quadrotor.sv.setpoint[ROLL],quadrotor.sv.rate[ROLL]);
+		quadrotor.sv.rateCtrlOutput[PITCH] = qPID_Procees(&quadrotor.rateController[PITCH],quadrotor.sv.setpoint[PITCH],quadrotor.sv.rate[PITCH]);
+		quadrotor.sv.rateCtrlOutput[YAW] = qPID_Procees(&quadrotor.rateController[YAW],quadrotor.sv.setpoint[YAW],quadrotor.sv.rate[YAW]);
+#endif
+		//debug("PID Controller finish");
+
+		//-----------------------------------------------------------------------
+		// Output stage
+		//-----------------------------------------------------------------------
+		control[ALTITUDE] = quadrotor.sv.setpoint[ALTITUDE];
+		control[ROLL] = quadrotor.sv.rateCtrlOutput[ROLL];
+		control[PITCH] = quadrotor.sv.rateCtrlOutput[PITCH];
+		control[YAW] = quadrotor.sv.rateCtrlOutput[YAW];
+
+		// Output state
+		quadrotor.sv.motorOutput[0] = (	control[ALTITUDE]*K_Z - control[ROLL]*K_PHI - control[PITCH]*K_THETA - control[YAW]*K_PSI	);
+		quadrotor.sv.motorOutput[1] = (	control[ALTITUDE]*K_Z - control[ROLL]*K_PHI + control[PITCH]*K_THETA + control[YAW]*K_PSI	);
+		quadrotor.sv.motorOutput[2] = (	control[ALTITUDE]*K_Z + control[ROLL]*K_PHI + control[PITCH]*K_THETA - control[YAW]*K_PSI	);
+		quadrotor.sv.motorOutput[3] = (	control[ALTITUDE]*K_Z + control[ROLL]*K_PHI - control[PITCH]*K_THETA + control[YAW]*K_PSI	);
 
 		if (systemArmed == 0){
 			qESC_SetOutput(MOTOR1,0);
@@ -223,64 +274,13 @@ void Flight_Task(void){
 			qESC_SetOutput(MOTOR3,0);
 			qESC_SetOutput(MOTOR4,0);
 		}else{
-#if 1
-
-			//-----------------------------------------------------------------------
-			// PID Process
-			//-----------------------------------------------------------------------
-			//debug("PID Controller start");
-
-#ifdef ATTITUDE_MODE
-			// ATTI
-			phi_atti = qPID_Process(&ctrl[PHI_ATTI],sv.setpoint[PHI_C],sv.attitude[0],NULL);
-
-			// RATE
-			sv.CO[PHI_C] = qPID_Process(&ctrl[PHI_C],phi_atti,sv.rate[0],NULL);
-			sv.CO[THETA_C] = qPID_Process(&ctrl[THETA_C],sv.setpoint[THETA_C],sv.rate[1],NULL);
-			sv.CO[YAW] = qPID_Process(&ctrl[YAW],sv.setpoint[YAW],sv.rate[2],NULL);
-			sv.CO[Z_C] = phi_atti;
-#else
-			quadrotor.sv.rateCtrlOutput[ROLL] = qPID_Procees(&quadrotor.rateController[ROLL],quadrotor.sv.setpoint[ROLL],quadrotor.sv.rate[ROLL]);
-			quadrotor.sv.rateCtrlOutput[PITCH] = qPID_Procees(&quadrotor.rateController[PITCH],quadrotor.sv.setpoint[PITCH],quadrotor.sv.rate[PITCH]);
-			quadrotor.sv.rateCtrlOutput[YAW] = qPID_Procees(&quadrotor.rateController[YAW],quadrotor.sv.setpoint[YAW],quadrotor.sv.rate[YAW]);
-#endif
-			//debug("PID Controller finish");
-
-			//-----------------------------------------------------------------------
-			// Output stage
-			//-----------------------------------------------------------------------
-#ifdef	USE_FULL_AUTOPILOT
-			control[Z_C] = sv.setpoint[Z_C];
-			control[PHI_C] = sv.CO[PHI_C];
-			control[THETA_C] = sv.CO[THETA_C];
-			control[YAW] = -sv.CO[YAW];
-
-			control[ALTITUDE] = quadrotor.sv.setpoint[ALTITUDE];
-			control[ROLL] = quadrotor.sv.rateCtrlOutput[ROLL];
-			control[PITCH] = quadrotor.sv.rateCtrlOutput[PITCH];
-			control[YAW] = 0.0; //quadrotor.sv.rateCtrlOutput[YAW];;
-#else
-			control[ALTITUDE] = quadrotor.sv.setpoint[ALTITUDE];
-			control[ROLL] = quadrotor.sv.rateCtrlOutput[ROLL];
-			control[PITCH] = quadrotor.sv.rateCtrlOutput[PITCH];
-			control[YAW] = quadrotor.sv.rateCtrlOutput[YAW];
-#endif
-			// Output state
-			quadrotor.sv.motorOutput[0] = (	control[ALTITUDE]*K_Z - control[ROLL]*K_PHI - control[PITCH]*K_THETA - control[YAW]*K_PSI	);
-			quadrotor.sv.motorOutput[1] = (	control[ALTITUDE]*K_Z - control[ROLL]*K_PHI + control[PITCH]*K_THETA + control[YAW]*K_PSI	);
-			quadrotor.sv.motorOutput[2] = (	control[ALTITUDE]*K_Z + control[ROLL]*K_PHI + control[PITCH]*K_THETA - control[YAW]*K_PSI	);
-			quadrotor.sv.motorOutput[3] = (	control[ALTITUDE]*K_Z + control[ROLL]*K_PHI - control[PITCH]*K_THETA + control[YAW]*K_PSI	);
-
 			// Motor command
 			qESC_SetOutput(MOTOR1,quadrotor.sv.motorOutput[0]);
 			qESC_SetOutput(MOTOR2,quadrotor.sv.motorOutput[1]);
 			qESC_SetOutput(MOTOR3,quadrotor.sv.motorOutput[2]);
 			qESC_SetOutput(MOTOR4,quadrotor.sv.motorOutput[3]);
 
-
-#endif
 		}
-
 	}
 }
 
