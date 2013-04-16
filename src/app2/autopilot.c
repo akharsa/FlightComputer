@@ -136,42 +136,53 @@ int32_t quat[4];
 uint16_t sensors;
 uint8_t more;
 #include "math.h"
-uint8_t MPU6050_dmpGetEuler(float *euler, const int32_t q[]) {
 
-	int32_t q1[4];
+uint8_t MPU6050_dmpGetEuler(float *euler, int32_t q[]) {
 
-	q1[0] = (float)q1[0] / 16384.0f;
-	q1[1] = (float)q1[1] / 16384.0f;
-	q1[2] = (float)q1[2] / 16384.0f;
-	q1[3] = (float)q1[3] / 16384.0f;
-/*
-	euler[0] = atan2(2*q[1]*q[2] - 2*q[0]*q[3], 2*q[0]*q[0] + 2*q[1]*q[1] - 1);
-	euler[1] = -asin(2*q[1]*q[3] + 2*q[0]*q[2]);
-	euler[2] = atan2(2*q[2]*q[3] - 2*q[0]*q[1], 2*q[0]*q[0] + 2*q[3]*q[3] - 1);
-*/
-	float test;
-	test = q[0]*q[1] + q[2]*q[3];
+#if 1
+	float q1[4];
+	uint8_t i;
 
-	if (test>0.499){
-		euler[0] = -180.0;
-		euler[1] = 0;
-		euler[2] = 2*atan2(q[0],q[3]);
-	}else if (test<-0.499) {
-		euler[0] = 180.0;
-		euler[1] = 0;
-		euler[2] = -2*atan2(q[0],q[3]);
-	}else{
-		euler[0] = atan2(2*(q[0]*q[1] + q[2]*q[3]),1- 2*(q[1]*q[1] + q[2]*q[2]));
-		euler[1] = asin(2*(q[0]*q[2] - q[3]*q[1]));
-		euler[2] = atan2(2*(q[0]*q[3] + q[1]*q[2]),1- 2*(q[2]*q[2] + q[3]*q[3]));
+	for(i = 0; i < 4; i++ ) {
+	//	if( q[i] > 32767 ) {
+	//		q[i] -= 65536;
+	//	}
+		q1[i] = ((float) (q[i]>>16)) / 16384.0f;
 	}
 
+	euler[0] = atan2(2*q1[1]*q1[2] - 2*q1[0]*q1[3], 2*q1[0]*q1[0] + 2*q1[1]*q1[1] - 1);
+	euler[1] = -asin(2*q1[1]*q1[3] + 2*q1[0]*q1[2]);
+	euler[2] = atan2(2*q1[2]*q1[3] - 2*q1[0]*q1[1], 2*q1[0]*q1[0] + 2*q1[3]*q1[3] - 1);
+
+#endif
+#if 0
+	float test;
+	test = q1[0]*q1[1] + q1[2]*q1[3];
+/*
+	if (test>0.499){
+		euler[0] = -3.14159265;
+		euler[1] = 0;
+		euler[2] = 2*atan2(q1[0],q1[3]);
+	}else if (test<-0.499) {
+		euler[0] = 3.14159265;
+		euler[1] = 0;
+		euler[2] = -2*atan2(q1[0],q1[3]);
+	}else{
+	*/
+		euler[0] = atan2(2*(q1[0]*q1[1] + q1[2]*q1[3]),1- 2*(q1[1]*q1[1] + q1[2]*q1[2]));
+		euler[1] = asin(2*(q1[0]*q1[2] - q1[3]*q1[1]));
+		euler[2] = atan2(2*(q1[0]*q1[3] + q1[1]*q1[2]),1- 2*(q1[2]*q1[2] + q1[3]*q1[3]));
+	//}
+#endif
 	return 0;
 }
 
 
 void Flight_Task(void){
 	uint8_t zc;
+	float scale;
+
+	mpu_get_gyro_sens(&scale);
 
 	for(;;){
 
@@ -259,33 +270,13 @@ void Flight_Task(void){
 		// Angular velocity data
 		//-----------------------------------------------------------------------
 
-#define USE_GYRO_DMP
-
-#ifndef USE_GYRO_RAW
 		//MPU6050_dmpGetGyro(&buffer[0],fifoBuffer);
 //		quadrotor.sv.rate[ROLL] = -buffer[0];
 //		quadrotor.sv.rate[PITCH] = buffer[1];
 //		quadrotor.sv.rate[YAW] = buffer[2];
-		float scale;
-		mpu_get_gyro_sens(&scale);
 		quadrotor.sv.rate[ROLL] = -gyro[0]/scale;
 		quadrotor.sv.rate[PITCH] = gyro[1]/scale;
-		quadrotor.sv.rate[YAW] = gyro[2]/scale;
-
-#else
-		// DAQ
-		MPU6050_getRotation(&buffer[0],&buffer[1],&buffer[2]);
-
-		// MPU axes aligment to Quad body axes
-		quadrotor.sv.rate[ROLL] = -(buffer[0]-quadrotor.settings.gyroBias[ROLL]);
-		quadrotor.sv.rate[PITCH] = (buffer[1]-quadrotor.settings.gyroBias[PITCH]);
-		quadrotor.sv.rate[YAW] = -(buffer[2]-quadrotor.settings.gyroBias[YAW]);
-
-		// MPU gyro scale transformation
-		quadrotor.sv.rate[ROLL] = quadrotor.sv.rate[ROLL]/16.4;
-		quadrotor.sv.rate[PITCH] = quadrotor.sv.rate[PITCH]/16.4;
-		quadrotor.sv.rate[YAW] = quadrotor.sv.rate[YAW]/16.4;
-#endif
+		quadrotor.sv.rate[YAW] = -gyro[2]/scale;
 
 		//-----------------------------------------------------------------------
 		// Attitude data

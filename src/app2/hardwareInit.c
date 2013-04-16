@@ -53,17 +53,6 @@ void hardwareInit(void){
 		qLed_TurnOn(leds[i]);
 	}
 
-
-	// =========================================================
-	// Startup waiting for xbee
-	for (j=0;j<100;j++){
-		for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOn(leds[i]);
-		vTaskDelay(50/portTICK_RATE_MS);
-		for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOff(leds[i]);
-		vTaskDelay(50/portTICK_RATE_MS);
-	}
-	for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOn(leds[i]);
-
 	// =========================================================
 	// UART init
 	if (qUART_Init(UART_GROUNDCOMM,57600,8,QUART_PARITY_NONE,1)!=RET_OK){
@@ -131,6 +120,11 @@ void hardwareInit(void){
 		halt();
 	}
 
+#ifdef RUN_SELF_TEST
+	long int gyro[3],accel[3];
+	int result;
+	result = mpu_run_self_test(gyro,accel);
+#endif
 
     /* Get/set hardware configuration. Start gyro. */
     /* Wake up all sensors. */
@@ -141,7 +135,11 @@ void hardwareInit(void){
 
     dmp_load_motion_driver_firmware();
 
-    mpu_set_gyro_fsr();
+    mpu_set_gyro_fsr(2000);
+    mpu_set_accel_fsr(2);
+
+    mpu_set_lpf(5);
+
     //dmp_set_orientation(inv_orientation_matrix_to_scalar(gyro_orientation));
     //dmp_register_tap_cb(tap_cb);
     //dmp_register_android_orient_cb(android_orient_cb);
@@ -151,17 +149,13 @@ void hardwareInit(void){
     dmp_enable_feature(DMP_FEATURE_6X_LP_QUAT | DMP_FEATURE_SEND_RAW_ACCEL | DMP_FEATURE_SEND_CAL_GYRO |
             DMP_FEATURE_GYRO_CAL);
 
-
-
     dmp_set_fifo_rate(200);
 
     dmp_enable_gyro_cal(1);
 
     mpu_set_dmp_state(1);
 
-
-
-	// GPIO0.4 as input with interrupt
+    // GPIO0.4 as input with interrupt
 	GPIO_SetDir(0,(1<<4),0);
 	GPIO_IntCmd(0,(1<<4),1);
 	GPIO_ClearInt(0,(1<<4));
@@ -193,6 +187,16 @@ void hardwareInit(void){
 	ConsolePuts_("[OK]\r\n",GREEN);
 #endif
 	//=======================================================================
+	// =========================================================
+	// Startup waiting for xbee
+
+	for (j=0;j<100;j++){
+		for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOn(leds[i]);
+		vTaskDelay(50/portTICK_RATE_MS);
+		for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOff(leds[i]);
+		vTaskDelay(50/portTICK_RATE_MS);
+	}
+
 
 	for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOff(leds[i]);
 
