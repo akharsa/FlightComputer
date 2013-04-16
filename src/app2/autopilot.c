@@ -19,6 +19,8 @@
 
 #include "qWDT.h"
 #include "lpc17xx_gpio.h"
+
+#include "math.h"
 /* ================================ */
 /* Prototypes	 					*/
 /* ================================ */
@@ -37,7 +39,6 @@ float control[4]={0.0};
 
 float atti_buffer[3];
 
-static 	uint8_t fifoBuffer[64]; // FIFO storage buffer
 xSemaphoreHandle mpuSempahore;
 
 int16_t buffer[3];
@@ -51,6 +52,15 @@ uint8_t systemArmed = 0;
 uint8_t systemArmedOld = 0;
 
 float phi_atti;
+
+
+int16_t gyro[3];
+int16_t accel[3];
+int32_t quat[4];
+int16_t sensors;
+uint8_t more;
+
+float scale;
 
 
 float map(long x, long in_min, long in_max, float out_min, float out_max)
@@ -93,10 +103,6 @@ void Flight_onTimeStartup(void){
 
 	xSemaphoreTake(mpuSempahore,0);
 	NVIC_EnableIRQ(EINT3_IRQn);
-//	MPU6050_setDMPEnabled(TRUE);
-
-//	mpuIntStatus = MPU6050_getIntStatus();
-//	packetSize = MPU6050_dmpGetFIFOPacketSize();
 
 	ConsolePuts_("[OK]\r\n",GREEN);
 }
@@ -104,13 +110,6 @@ void Flight_onTimeStartup(void){
 void Flight_onEntry(void){
 	//debug("FLIGHT: On entry\r\n");
 	vTaskResume(BeaconHnd);
-
-//	xSemaphoreTake(mpuSempahore,0);
-//	NVIC_EnableIRQ(EINT3_IRQn);
-//	MPU6050_setDMPEnabled(TRUE);
-
-//	mpuIntStatus = MPU6050_getIntStatus();
-//	packetSize = MPU6050_dmpGetFIFOPacketSize();
 }
 
 void Flight_onExit(void){
@@ -124,29 +123,16 @@ void Flight_onExit(void){
 		qESC_SetOutput(MOTOR4,0);
 	}
 	vTaskSuspend(BeaconHnd);
-//	MPU6050_setDMPEnabled(FALSE);
-//	NVIC_DisableIRQ(EINT3_IRQn);
 	qLed_TurnOff(STATUS_LED);
-
 }
 
-int16_t gyro[3];
-int16_t accel[3];
-int32_t quat[4];
-uint16_t sensors;
-uint8_t more;
-#include "math.h"
 
 uint8_t MPU6050_dmpGetEuler(float *euler, int32_t q[]) {
 
-#if 1
 	float q1[4];
 	uint8_t i;
 
 	for(i = 0; i < 4; i++ ) {
-	//	if( q[i] > 32767 ) {
-	//		q[i] -= 65536;
-	//	}
 		q1[i] = ((float) (q[i]>>16)) / 16384.0f;
 	}
 
@@ -154,33 +140,12 @@ uint8_t MPU6050_dmpGetEuler(float *euler, int32_t q[]) {
 	euler[1] = -asin(2*q1[1]*q1[3] + 2*q1[0]*q1[2]);
 	euler[2] = atan2(2*q1[2]*q1[3] - 2*q1[0]*q1[1], 2*q1[0]*q1[0] + 2*q1[3]*q1[3] - 1);
 
-#endif
-#if 0
-	float test;
-	test = q1[0]*q1[1] + q1[2]*q1[3];
-/*
-	if (test>0.499){
-		euler[0] = -3.14159265;
-		euler[1] = 0;
-		euler[2] = 2*atan2(q1[0],q1[3]);
-	}else if (test<-0.499) {
-		euler[0] = 3.14159265;
-		euler[1] = 0;
-		euler[2] = -2*atan2(q1[0],q1[3]);
-	}else{
-	*/
-		euler[0] = atan2(2*(q1[0]*q1[1] + q1[2]*q1[3]),1- 2*(q1[1]*q1[1] + q1[2]*q1[2]));
-		euler[1] = asin(2*(q1[0]*q1[2] - q1[3]*q1[1]));
-		euler[2] = atan2(2*(q1[0]*q1[3] + q1[1]*q1[2]),1- 2*(q1[2]*q1[2] + q1[3]*q1[3]));
-	//}
-#endif
 	return 0;
 }
 
 
 void Flight_Task(void){
-	uint8_t zc;
-	float scale;
+
 
 	mpu_get_gyro_sens(&scale);
 
@@ -219,42 +184,10 @@ void Flight_Task(void){
 		//-----------------------------------------------------------------------
 		// MPU Data adquisition
 		//-----------------------------------------------------------------------
-
-		//debug("Entering critical section for DMP");
 		portENTER_CRITICAL();
-
-        dmp_read_fifo(gyro, accel, quat, NULL, &sensors,&more);
-
-#if 0
-		// reset interrupt flag and get INT_STATUS byte
-		mpuIntStatus = MPU6050_getIntStatus();
-
-		// get current FIFO count
-		fifoCount = MPU6050_getFIFOCount();
-
-		// check for overflow (this should never happen unless our code is too inefficient)
-		if ((mpuIntStatus & 0x10) || fifoCount == 1024) {
-			// reset so we can continue cleanly
-			MPU6050_resetFIFO();
-			debug("DMP FIFO OVERFLOW!\r\n");
-
-			// otherwise, check for DMP data ready interrupt (this should happen frequently)
-		} else if (mpuIntStatus & 0x02) {
-			// wait for correct available data length, should be a VERY short wait
-			while (fifoCount < packetSize) fifoCount = MPU6050_getFIFOCount();
-
-			// read a packet from FIFO
-			MPU6050_getFIFOBytes(fifoBuffer, packetSize);
-
-			// track FIFO count here in case there is > 1 packet available
-			// (this lets us immediately read more without waiting for an interrupt)
-			fifoCount -= packetSize;
-
-		}
-#endif
+        dmp_read_fifo(gyro, accel, quat, NULL, &sensors, &more);
 		portEXIT_CRITICAL();
-		//debug("Finished critical section");
-
+		MPU6050_dmpGetEuler(atti_buffer,quat);
 		qLed_TurnOff(STATUS_LED);
 
 		//-----------------------------------------------------------------------
@@ -263,17 +196,14 @@ void Flight_Task(void){
 		quadrotor.sv.setpoint[ALTITUDE] = map((quadrotor.joystick.left_pad.y>127)?127:255-quadrotor.joystick.left_pad.y,127,255,0.0,1.0);
 		quadrotor.sv.setpoint[ROLL] = map(quadrotor.joystick.right_pad.x,0,255,-90.0,90.0);
 		quadrotor.sv.setpoint[PITCH] = map(quadrotor.joystick.right_pad.y,0,255,-90.0,90.0);
+		// TODO: this should be deactivated via ground control stations and send always a 0
 		//quadrotor.sv.setpoint[YAW] = map(quadrotor.joystick.left_pad.x,0,255,-180.0,180.0);
 		quadrotor.sv.setpoint[YAW] = 0.0; //THIS IS FOR KILL-ROT ON YAW
 
 		//-----------------------------------------------------------------------
 		// Angular velocity data
 		//-----------------------------------------------------------------------
-
-		//MPU6050_dmpGetGyro(&buffer[0],fifoBuffer);
-//		quadrotor.sv.rate[ROLL] = -buffer[0];
-//		quadrotor.sv.rate[PITCH] = buffer[1];
-//		quadrotor.sv.rate[YAW] = buffer[2];
+		// Data scaling and axis rotatation
 		quadrotor.sv.rate[ROLL] = -gyro[0]/scale;
 		quadrotor.sv.rate[PITCH] = gyro[1]/scale;
 		quadrotor.sv.rate[YAW] = -gyro[2]/scale;
@@ -281,9 +211,7 @@ void Flight_Task(void){
 		//-----------------------------------------------------------------------
 		// Attitude data
 		//-----------------------------------------------------------------------
-		//MPU6050_dmpGetEuler(&atti_buffer[0], fifoBuffer);
-		//MPU6050_dmpGetYawPitchRoll(&atti_buffer[0], fifoBuffer);
-		MPU6050_dmpGetEuler(atti_buffer,quat);
+		// Data scaling and axis rotatation
 		quadrotor.sv.attitude[ROLL] = atti_buffer[2]*180/3.141519;
 		quadrotor.sv.attitude[PITCH] = -atti_buffer[1]*180/3.141519;;
 		quadrotor.sv.attitude[YAW] = atti_buffer[0]*180/3.141519;;
@@ -294,10 +222,7 @@ void Flight_Task(void){
 			qESC_SetOutput(MOTOR2,0);
 			qESC_SetOutput(MOTOR3,0);
 			qESC_SetOutput(MOTOR4,0);
-			//vTaskDelay(10/portTICK_RATE_MS);
-			//debug("Idleing...");
 		}else{
-			//debug("Flying...");
 #if 1
 
 			//-----------------------------------------------------------------------
