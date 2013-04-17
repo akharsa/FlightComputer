@@ -61,7 +61,7 @@ int16_t sensors;
 uint8_t more;
 
 float scale;
-
+float atti_bias[3];
 
 float map(long x, long in_min, long in_max, float out_min, float out_max)
 {
@@ -69,7 +69,7 @@ float map(long x, long in_min, long in_max, float out_min, float out_max)
 }
 
 
-#define ATTITUDE_MODE
+#undef ATTITUDE_MODE
 
 void Flight_onTimeStartup(void){
 	uint8_t i;
@@ -203,9 +203,6 @@ void Flight_Task(void){
 		//quadrotor.sv.setpoint[YAW] = map(quadrotor.joystick.left_pad.x,0,255,-180.0,180.0);
 		quadrotor.sv.setpoint[YAW] = 0.0; //THIS IS FOR KILL-ROT ON YAW
 
-		// This is for testing only:
-		quadrotor.sv.setpoint[ROLL] = 0.0;
-		quadrotor.sv.setpoint[PITCH] = 0.0;
 #else
 		quadrotor.sv.setpoint[ALTITUDE] = map((quadrotor.joystick.left_pad.y>127)?127:255-quadrotor.joystick.left_pad.y,127,255,0.0,1.0);
 		quadrotor.sv.setpoint[ROLL] = map(quadrotor.joystick.right_pad.x,0,255,-90.0,90.0);
@@ -220,7 +217,7 @@ void Flight_Task(void){
 		// Data scaling and axis rotatation
 		quadrotor.sv.rate[ROLL] = -gyro[0]/scale;
 		quadrotor.sv.rate[PITCH] = gyro[1]/scale;
-		quadrotor.sv.rate[YAW] = -gyro[2]/scale;
+		quadrotor.sv.rate[YAW] = gyro[2]/scale;
 
 		//-----------------------------------------------------------------------
 		// Attitude data
@@ -229,6 +226,19 @@ void Flight_Task(void){
 		quadrotor.sv.attitude[ROLL] = atti_buffer[2]*180/3.141519;
 		quadrotor.sv.attitude[PITCH] = -atti_buffer[1]*180/3.141519;;
 		quadrotor.sv.attitude[YAW] = atti_buffer[0]*180/3.141519;;
+
+		//-----------------------------------------------------------------------
+		// Biasing
+		//-----------------------------------------------------------------------
+		if ((quadrotor.joystick.buttons & BTN_START) != 0){
+			atti_bias[ROLL] = quadrotor.sv.attitude[ROLL];
+			atti_bias[PITCH] = quadrotor.sv.attitude[PITCH];
+			atti_bias[YAW] = quadrotor.sv.attitude[YAW];
+		}
+
+		quadrotor.sv.attitude[ROLL] -= atti_bias[ROLL];
+		quadrotor.sv.attitude[PITCH] -= atti_bias[PITCH];
+		quadrotor.sv.attitude[YAW] -= atti_bias[YAW];
 
 		//-----------------------------------------------------------------------
 		// PID Process
@@ -257,10 +267,10 @@ void Flight_Task(void){
 		//-----------------------------------------------------------------------
 		// Output stage
 		//-----------------------------------------------------------------------
-		control[ALTITUDE] = quadrotor.sv.setpoint[ALTITUDE];
 		control[ROLL] = quadrotor.sv.rateCtrlOutput[ROLL];
 		control[PITCH] = quadrotor.sv.rateCtrlOutput[PITCH];
 		control[YAW] = quadrotor.sv.rateCtrlOutput[YAW];
+		control[ALTITUDE] = quadrotor.sv.setpoint[ALTITUDE];
 
 		// Output state
 		quadrotor.sv.motorOutput[0] = (	control[ALTITUDE]*K_Z - control[ROLL]*K_PHI - control[PITCH]*K_THETA - control[YAW]*K_PSI	);
