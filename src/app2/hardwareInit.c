@@ -138,7 +138,7 @@ void hardwareInit(void){
     mpu_set_gyro_fsr(2000);
     mpu_set_accel_fsr(2);
 
-    mpu_set_lpf(5);
+    mpu_set_lpf(150);
 
     //dmp_set_orientation(inv_orientation_matrix_to_scalar(gyro_orientation));
     //dmp_register_tap_cb(tap_cb);

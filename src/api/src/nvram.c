@@ -59,8 +59,8 @@ Status qNVRAM_setDefaults(nvram_t * p){
 	p->rateController[PITCH].Td = 0.28;
 	p->rateController[PITCH].Nd = 78.0;
 
-	p->rateController[YAW].K = 0.01;
-	p->rateController[YAW].Ti = 1/0.2;
+	p->rateController[YAW].K = 0.05;
+	p->rateController[YAW].Ti = 1/0.1;
 	p->rateController[YAW].Td = 0.000;
 	p->rateController[YAW].Nd = 5;
 

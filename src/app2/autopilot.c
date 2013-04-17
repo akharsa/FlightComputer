@@ -208,8 +208,8 @@ void Flight_Task(void){
 		quadrotor.sv.setpoint[ROLL] = map(quadrotor.joystick.right_pad.x,0,255,-90.0,90.0);
 		quadrotor.sv.setpoint[PITCH] = map(quadrotor.joystick.right_pad.y,0,255,-90.0,90.0);
 		// TODO: this should be deactivated via ground control stations and send always a 0
-		//quadrotor.sv.setpoint[YAW] = map(quadrotor.joystick.left_pad.x,0,255,-180.0,180.0);
-		quadrotor.sv.setpoint[YAW] = 0.0; //THIS IS FOR KILL-ROT ON YAW
+		quadrotor.sv.setpoint[YAW] = map(quadrotor.joystick.left_pad.x,0,255,-180.0,180.0);
+		//quadrotor.sv.setpoint[YAW] = 0.0; //THIS IS FOR KILL-ROT ON YAW
 #endif
 		//-----------------------------------------------------------------------
 		// Angular velocity data
@@ -217,7 +217,7 @@ void Flight_Task(void){
 		// Data scaling and axis rotatation
 		quadrotor.sv.rate[ROLL] = -gyro[0]/scale;
 		quadrotor.sv.rate[PITCH] = gyro[1]/scale;
-		quadrotor.sv.rate[YAW] = gyro[2]/scale;
+		quadrotor.sv.rate[YAW] = -gyro[2]/scale;
 
 		//-----------------------------------------------------------------------
 		// Attitude data
@@ -267,10 +267,16 @@ void Flight_Task(void){
 		//-----------------------------------------------------------------------
 		// Output stage
 		//-----------------------------------------------------------------------
+#if 0 // this is the correct one
 		control[ROLL] = quadrotor.sv.rateCtrlOutput[ROLL];
 		control[PITCH] = quadrotor.sv.rateCtrlOutput[PITCH];
 		control[YAW] = quadrotor.sv.rateCtrlOutput[YAW];
 		control[ALTITUDE] = quadrotor.sv.setpoint[ALTITUDE];
+#endif
+		control[ROLL] = 0.0;
+		control[PITCH] = 0.0;
+		control[YAW] = -quadrotor.sv.rateCtrlOutput[YAW]; //FIXME: there is a problem with the sign (maybe in the Mq)
+		control[ALTITUDE] = 0.40;
 
 		// Output state
 		quadrotor.sv.motorOutput[0] = (	control[ALTITUDE]*K_Z - control[ROLL]*K_PHI - control[PITCH]*K_THETA - control[YAW]*K_PSI	);
