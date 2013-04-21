@@ -49,34 +49,36 @@ Status qNVRAM_Load(nvram_t * p){
 }
 
 Status qNVRAM_setDefaults(nvram_t * p){
-	p->rateController[ROLL].K = 0.012;
-	p->rateController[ROLL].Ti = 1/0.000000000000000000001;
-	p->rateController[ROLL].Td = 0.28;
-	p->rateController[ROLL].Nd = 78.0;
+	p->rateController[ROLL].K = 0.01;
+	p->rateController[ROLL].Ti = 1/0.1;
+	p->rateController[ROLL].Td = 0.0;
+	p->rateController[ROLL].Nd = 5.0;
 
-	p->rateController[PITCH].K = 0.012;
-	p->rateController[PITCH].Ti = 1/0.000000000000000000001;
-	p->rateController[PITCH].Td = 0.28;
-	p->rateController[PITCH].Nd = 78.0;
+	p->rateController[PITCH].K = 0.01;
+	p->rateController[PITCH].Ti = 1/0.1;
+	p->rateController[PITCH].Td = 0.0;
+	p->rateController[PITCH].Nd = 5.0;
 
+
+	p->attiController[ROLL].K = 1.0;
+	p->attiController[ROLL].Ti = 1/0.02;
+	p->attiController[ROLL].Td = 0.0;
+	p->attiController[ROLL].Nd = 4.0;
+
+	p->attiController[PITCH].K = 1.0;
+	p->attiController[PITCH].Ti = 1/0.02;
+	p->attiController[PITCH].Td = 0.0;
+	p->attiController[PITCH].Nd = 4.0;
+
+	// =========================================================
 	p->rateController[YAW].K = 0.05;
 	p->rateController[YAW].Ti = 1/0.1;
 	p->rateController[YAW].Td = 0.000;
 	p->rateController[YAW].Nd = 5;
 
-	p->attiController[ROLL].K = 20.0;
-	p->attiController[ROLL].Ti = 1/0.35;
-	p->attiController[ROLL].Td = 0.0;
-	p->attiController[ROLL].Nd = 4.0;
-
-	p->attiController[PITCH].K = 20.0;
-	p->attiController[PITCH].Ti = 1/0.35;
-	p->attiController[PITCH].Td = 0.0;
-	p->attiController[PITCH].Nd = 4.0;
-
-	p->attiController[YAW].K = 2.8;
-	p->attiController[YAW].Ti = 1/0.005;
-	p->attiController[YAW].Td = 0.16;
+	p->attiController[YAW].K = 5;
+	p->attiController[YAW].Ti = 1/0.05;
+	p->attiController[YAW].Td = 0.0;
 	p->attiController[YAW].Nd = 4;
 
 	return eeprom_write(EEPROM_ADDRESS,(uint8_t*)p,0x0000,sizeof(nvram_t));

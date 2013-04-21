@@ -188,9 +188,9 @@ void hardwareInit(void){
 #endif
 	//=======================================================================
 	// =========================================================
+#if 1
 	// Startup waiting for xbee
-
-	for (j=0;j<100;j++){
+	for (j=0;j<150;j++){
 		for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOn(leds[i]);
 		vTaskDelay(50/portTICK_RATE_MS);
 		for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOff(leds[i]);
@@ -199,6 +199,7 @@ void hardwareInit(void){
 
 
 	for (i=0;i<TOTAL_LEDS;i++) qLed_TurnOff(leds[i]);
+#endif
 
 	debug("Hardware initialization complete!\r\n");
 }
