@@ -21,6 +21,8 @@
 #include "lpc17xx_gpio.h"
 
 #include "math.h"
+
+#include "timing.h"
 /* ================================ */
 /* Prototypes	 					*/
 /* ================================ */
@@ -153,9 +155,12 @@ uint8_t MPU6050_dmpGetEuler(float *euler, int32_t q[]) {
 
 void Flight_Task(void){
 	uint8_t firstTime = 0;
-
+	uint8_t i;
 
 	mpu_get_gyro_sens(&scale);
+
+	timerHnd timer;
+	timerConfig(1,&timer);
 
 	for(;;){
 
@@ -186,7 +191,7 @@ void Flight_Task(void){
 		xSemaphoreTake(mpuSempahore,portMAX_DELAY); //FIXME: instead of portMAX it would be nice to have a time out for errors
 
 		//debug("Got DMP data!");
-		qLed_TurnOn(STATUS_LED);
+		//qLed_TurnOn(STATUS_LED);
 
 		//-----------------------------------------------------------------------
 		// MPU Data adquisition
@@ -195,12 +200,13 @@ void Flight_Task(void){
         dmp_read_fifo(gyro, accel, quat, NULL, &sensors, &more);
 		portEXIT_CRITICAL();
 		MPU6050_dmpGetEuler(atti_buffer,quat);
-		qLed_TurnOff(STATUS_LED);
+		//qLed_TurnOff(STATUS_LED);
 
 		//-----------------------------------------------------------------------
 		// Joystick mapping
 		//-----------------------------------------------------------------------
 #ifdef ATTITUDE_MODE
+
 		quadrotor.sv.setpoint[ALTITUDE] = map((quadrotor.joystick.left_pad.y>127)?127:255-quadrotor.joystick.left_pad.y,127,255,0.0,1.0);
 		quadrotor.sv.setpoint[ROLL] = map(quadrotor.joystick.right_pad.x,0,255,-40.0,40.0);
 		quadrotor.sv.setpoint[PITCH] = map(quadrotor.joystick.right_pad.y,0,255,-40.0,40.0);
@@ -231,6 +237,15 @@ void Flight_Task(void){
 		quadrotor.sv.attitude[ROLL] = atti_buffer[2]*180/3.141519;
 		quadrotor.sv.attitude[PITCH] = -atti_buffer[1]*180/3.141519;;
 		quadrotor.sv.attitude[YAW] = atti_buffer[0]*180/3.141519;;
+
+#define GYRO_THRESHOLD 0.8
+#define ATTI_THRESHOLD 3.0
+
+		if ((quadrotor.sv.rate[ROLL]<=GYRO_THRESHOLD) && (quadrotor.sv.rate[PITCH]<=GYRO_THRESHOLD) && (quadrotor.sv.rate[YAW]<=GYRO_THRESHOLD)){
+			qLed_TurnOn(STATUS_LED);
+		}else{
+			qLed_TurnOff(STATUS_LED);
+		}
 
 		//-----------------------------------------------------------------------
 		// Biasing
@@ -272,6 +287,14 @@ void Flight_Task(void){
 		quadrotor.sv.attitude[PITCH] -= atti_bias[PITCH];
 		quadrotor.sv.attitude[YAW] -= atti_bias[YAW];
 
+		if (systemArmed == 0){
+			if ((fabsf(quadrotor.sv.attitude[ROLL])<=ATTI_THRESHOLD) && (fabsf(quadrotor.sv.attitude[PITCH])<=ATTI_THRESHOLD) && (fabsf(quadrotor.sv.attitude[YAW])<=ATTI_THRESHOLD)){
+				for (i=1;i<5;i++) qLed_TurnOn(leds[i]);
+			}else{
+				for (i=1;i<5;i++) qLed_TurnOff(leds[i]);
+			}
+		}
+
 		//-----------------------------------------------------------------------
 		// PID Process
 		//-----------------------------------------------------------------------
@@ -280,7 +303,14 @@ void Flight_Task(void){
 #ifdef ATTITUDE_MODE
 
 		// ATTI
+		//uint32_t exec;
+		//timerStart(&timer);
+
 		quadrotor.sv.attiCtrlOutput[ROLL] = qPID_Procees(&quadrotor.attiController[ROLL],quadrotor.sv.setpoint[ROLL],quadrotor.sv.attitude[ROLL]);
+
+		//timerStop(&timer);
+		//exec = timerGetElapsed(&timer);
+
 		quadrotor.sv.attiCtrlOutput[PITCH] = qPID_Procees(&quadrotor.attiController[PITCH],quadrotor.sv.setpoint[PITCH],quadrotor.sv.attitude[PITCH]);
 		//quadrotor.sv.attiCtrlOutput[YAW] = qPID_Procees(&quadrotor.attiController[YAW],quadrotor.sv.setpoint[YAW],quadrotor.sv.attitude[YAW]);
 

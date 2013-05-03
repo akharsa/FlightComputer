@@ -8,7 +8,7 @@
 #include "timing.h"
 #include "lpc17xx_timer.h"
 
-#define TIMER	LPC_TIM0
+#define TIMER	LPC_TIM3
 
 void timerConfig(uint32_t resolution, timerHnd * t){
 

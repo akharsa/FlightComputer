@@ -1,7 +1,6 @@
 
 void AppMain(void);
 
-int main(void){
- 	AppMain();
+int main(void){ 	AppMain();
 	return 0;
 }
