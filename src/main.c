@@ -143,7 +143,7 @@ int main(void) {
 	//---------------------------------------------------------
 
 
-	while(1);
+//	while(1);
 
 	GPIO_SetDir(0,(1<<24),1);
 	GPIO_ClearValue(0,(1<<24));
@@ -160,20 +160,20 @@ int main(void) {
 		delay(500);
 	}
 #endif
-
+/*
 	int j;
 	GPIO_SetValue(0,(1<<24));
 
 	for (j=200;j<=500;j=j+100){
 		GPIO_SetValue(0,(1<<24));
-		qESC_SetOutput(MOTOR4,j);
+		qESC_SetOutput(MOTOR3,j);
 		delay(5000);
-		qESC_SetOutput(MOTOR4,0);
+		qESC_SetOutput(MOTOR3,0);
 		GPIO_ClearValue(0,(1<<24));
 		delay(5000);
 	}
 
-
+*/
 	//SYSTICK_InternalInit(1);
 	//SYSTICK_IntCmd(ENABLE);
 	//SYSTICK_Cmd(ENABLE);
@@ -183,20 +183,20 @@ int main(void) {
 		delay(SAMPLE_TIME);
 	}
 */
-	while(1);
+//	while(1);
 
 
-/*
+
 	for(;;){
-		ConsolePuts("Speed: ");
+		//ConsolePuts("Speed: ");
 		ConsolePutNumber(speed,10);
-		ConsolePuts("               ");
-		ConsolePuts("Capture: ");
+		ConsolePuts("\t");
+		//ConsolePuts("Capture: ");
 		ConsolePutNumber(speed_capture,10);
-		ConsolePuts("              \r\n");
-		delay(500);
+		ConsolePuts("\r\n");
+		delay(10);
 	}
-*/
+
 
 	return 0;
 }
@@ -211,6 +211,22 @@ void UART0_IRQHandler(void){
 	switch(c){
 		case 'Q':
 		case 'q':
+			speed = 600;
+			break;
+
+		case 'A':
+		case 'a':
+			speed = 550;
+			break;
+
+		case 'Z':
+		case 'z':
+			speed = 500;
+			break;
+
+	/*
+		case 'Q':
+		case 'q':
 			if (speed<=(1000-STEP))
 				speed += STEP;
 			break;
@@ -220,6 +236,7 @@ void UART0_IRQHandler(void){
 			if (speed>=STEP)
 				speed -= STEP;
 			break;
+	*/
 		default:
 			speed = 0;
 			break;
