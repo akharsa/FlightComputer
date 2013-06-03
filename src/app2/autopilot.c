@@ -75,7 +75,7 @@ float map(long x, long in_min, long in_max, float out_min, float out_max)
 }
 
 
-typedef enum{ ATTI_MODE=0, STABILIZE_MODE, ACRO_MODE} FlyingMode_t;
+typedef enum{ ATTI_MODE=0, STABILIZE_MODE, ACRO_MODE, NO_YAW_MODE} FlyingMode_t;
 
 FlyingMode_t FlyingMode = STABILIZE_MODE;
 
@@ -127,6 +127,8 @@ void Flight_onEntry(void){
 		FlyingMode = STABILIZE_MODE;
 	}else if ((quadrotor.joystick.buttons & BTN_SQUARE) != 0){
 		FlyingMode = ATTI_MODE;
+	}else if ((quadrotor.joystick.buttons & BTN_TRIANGLE) != 0){
+		FlyingMode = NO_YAW_MODE;
 	}else{
 		FlyingMode = STABILIZE_MODE;
 	}
@@ -217,16 +219,18 @@ void Flight_Task(void){
 		//-----------------------------------------------------------------------
 		// MPU Data adquisition
 		//-----------------------------------------------------------------------
+		//debug("MPU download start");
 		portENTER_CRITICAL();
         dmp_read_fifo(gyro, accel, quat, NULL, &sensors, &more);
 		portEXIT_CRITICAL();
 		MPU6050_dmpGetEuler(atti_buffer,quat);
+		//debug("MPU download end");
 		//qLed_TurnOff(STATUS_LED);
 
 		//-----------------------------------------------------------------------
 		// Joystick mapping
 		//-----------------------------------------------------------------------
-
+		//debug("JoyMap download start");
 		switch (FlyingMode){
 			case ACRO_MODE:
 				quadrotor.sv.setpoint[ALTITUDE] = map((quadrotor.joystick.left_pad.y>127)?127:255-quadrotor.joystick.left_pad.y,127,255,0.0,1.0);
@@ -249,8 +253,14 @@ void Flight_Task(void){
 				quadrotor.sv.setpoint[PITCH] = map(quadrotor.joystick.right_pad.y,0,255,-40.0,40.0);
 				quadrotor.sv.setpoint[YAW] = map(quadrotor.joystick.left_pad.x,0,255,-45.0,45.0);
 				break;
+			case NO_YAW_MODE:
+				quadrotor.sv.setpoint[ALTITUDE] = map((quadrotor.joystick.left_pad.y>127)?127:255-quadrotor.joystick.left_pad.y,127,255,0.0,1.0);
+				quadrotor.sv.setpoint[ROLL] = map(quadrotor.joystick.right_pad.x,0,255,-40.0,40.0);
+				quadrotor.sv.setpoint[PITCH] = map(quadrotor.joystick.right_pad.y,0,255,-40.0,40.0);
+				quadrotor.sv.setpoint[YAW] = map(quadrotor.joystick.left_pad.x,0,255,-180.0,180.0); // not being used
+				break;
 		}
-
+		//debug("JoyMap download end");
 		//-----------------------------------------------------------------------
 		// Angular velocity data
 		//-----------------------------------------------------------------------
@@ -326,7 +336,7 @@ void Flight_Task(void){
 		// PID Process
 		//-----------------------------------------------------------------------
 		//debug("PID Controller start");
-
+		//debug("PIDs download start");
 		switch (FlyingMode){
 			case ACRO_MODE:
 				quadrotor.sv.rateCtrlOutput[ROLL] = qPID_Procees(&quadrotor.rateController[ROLL],quadrotor.sv.setpoint[ROLL],quadrotor.sv.rate[ROLL]);
@@ -375,9 +385,21 @@ void Flight_Task(void){
 				quadrotor.sv.rateCtrlOutput[YAW] = qPID_Procees(&quadrotor.rateController[YAW],quadrotor.sv.attiCtrlOutput[YAW],quadrotor.sv.rate[YAW]);
 
 				break;
-		}
+			case NO_YAW_MODE:
+				// CAS
+				quadrotor.sv.attiCtrlOutput[ROLL] = qPID_Procees(&quadrotor.attiController[ROLL],quadrotor.sv.setpoint[ROLL],quadrotor.sv.attitude[ROLL]);
+				quadrotor.sv.attiCtrlOutput[PITCH] = qPID_Procees(&quadrotor.attiController[PITCH],quadrotor.sv.setpoint[PITCH],quadrotor.sv.attitude[PITCH]);
+				quadrotor.sv.attiCtrlOutput[YAW] = qPID_Procees(&quadrotor.attiController[YAW],quadrotor.sv.setpoint[YAW],quadrotor.sv.attitude[YAW]);
 
-		//debug("PID Controller finish");
+				// SAS
+				quadrotor.sv.rateCtrlOutput[ROLL] = qPID_Procees(&quadrotor.rateController[ROLL],quadrotor.sv.attiCtrlOutput[ROLL],quadrotor.sv.rate[ROLL]);
+				quadrotor.sv.rateCtrlOutput[PITCH] = qPID_Procees(&quadrotor.rateController[PITCH],quadrotor.sv.attiCtrlOutput[PITCH],quadrotor.sv.rate[PITCH]);
+				quadrotor.sv.rateCtrlOutput[YAW] = 0.0;
+
+				break;
+
+		}
+		//debug("PIDS download finish");
 
 		//-----------------------------------------------------------------------
 		// Output stage
